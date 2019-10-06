@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: service-a
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: service-a
+  template:
+    metadata:
+      labels:
+        component: service-a
+    spec:
+      containers:
+      - env:
+        - name: SPRING_EUREKA
+          value: http://eureka-cluster-ip-service.default.svc.cluster.local:8761/eureka
+        image: asia.gcr.io/indigo-muse-254504/service-a:1.0
+        name: service-a
+        ports:
+        - containerPort: 8762
