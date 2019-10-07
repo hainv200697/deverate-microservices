@@ -1,4 +1,5 @@
-﻿using AuthenServices.Models;
+﻿using AuthenServices.Model;
+using AuthenServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,18 @@ namespace TestManagementServices.Service
     public class SystemDAO
     {
 
-        public static List<QuestionDTO> GenerateTest(DeverateContext db)
-        {   
-
+        public static List<QuestionDTO> GenerateTest(DeverateContext db, ConfigurationDTO config)
+        {
+            var emps = from c in db.Configuration
+                       join a in db.Account on c.TestOwnerId equals a.AccountId
+                       join co in db.Company on a.CompanyId equals co.CompanyId
+                       where c.ConfigId == config.configId && a.RoleId == 3
+                       select new AccountDTO(a);
+            List<AccountDTO> accounts = emps.ToList();
+            for(int i = 0; i < accounts.Count; i++)
+            {
+                GenerateQuestion(db, accounts[i].AccountId, config);
+            }
             return null;
         }
 
