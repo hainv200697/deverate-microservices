@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: testmanagement
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: testmanagement
+  template:
+    metadata:
+      labels:
+        component: testmanagement
+    spec:
+      containers:
+      - env:
+        - name: SPRING_EUREKA
+          value: http://eureka-cluster-ip-service:8761/eureka
+        image: asia.gcr.io/indigo-muse-254504/testmanagement:1.0
+        name: testmanagement
+        ports:
+        - containerPort: 80
