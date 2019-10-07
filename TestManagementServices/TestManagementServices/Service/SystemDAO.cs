@@ -17,9 +17,79 @@ namespace TestManagementServices.Service
             return null;
         }
 
-        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db,  int? catalogueId)
+        /// <summary>
+        /// Tạo bài kiểm tra cho người dùng dưa trên config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="accountId"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, ConfigurationDTO config)
         {
-            return null;
+            Random rand = new Random();
+            List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.configId);
+            for (int i = 0; i < catalogues.Count; i++)
+            {
+                catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+            }
+            catalogues = GetNumberOfQuestionEachCatalogue(db, config.totalQuestion, catalogues);
+            List<QuestionDTO> questions = new List<QuestionDTO>();
+            for (int i = 0; i < catalogues.Count; i++)
+            {
+                List<int?> quesIds = new List<int?>();
+                List<QuestionDTO> totalQues = catalogues[i].questions;
+                int quesLenght = totalQues.Count;
+                int numbOfQues = catalogues[i].numberOfQuestion > catalogues[i].questions.Count ? catalogues[i].questions.Count : catalogues[i].numberOfQuestion.Value;
+                for (int j = 0; j < numbOfQues; j++)
+                {
+                    int rQues = rand.Next(0, quesLenght);
+                    if (!quesIds.Contains(totalQues[rQues].questionId))
+                    {
+                        quesIds.Add(totalQues[rQues].questionId);
+                        questions.Add(totalQues[rQues]);
+                    }
+                    else
+                    {
+                        j--;
+                    }
+                }
+            }
+            return questions;
+        }
+
+        /// <summary>
+        /// Lấy câu hỏi của từng catalogue
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="catalogueId"></param>
+        /// <returns></returns>
+        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? catalogueId)
+        {
+            var ques = from ca in db.Catalogue
+                       join q in db.Question on ca.CatalogueId equals q.CatalogueId
+                       where ca.CatalogueId == catalogueId
+                       select new QuestionDTO(q.QuestionId, null);
+            List<QuestionDTO> questions = ques.ToList();
+            for (int i = 0; i < questions.Count; i++)
+            {
+                questions[i].answers = GetAnswerOfQuestion(db, questions[i].questionId);
+            }
+            return questions;
+        }
+
+        /// <summary>
+        /// Lấy câu trả lời của từng đâu hỏi
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="questionId"></param>
+        /// <returns></returns>
+        public static List<AnswerDTO> GetAnswerOfQuestion(DeverateContext db, int? questionId)
+        {
+            var answers = from q in db.Question
+                          join a in db.Answer on q.QuestionId equals a.QuestionId
+                          where q.QuestionId == questionId
+                          select new AnswerDTO(a);
+            return answers.ToList();
         }
 
         public static List<CatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db,  int? totalQuestion, List<CatalogueDTO> catalogues)
@@ -36,19 +106,25 @@ namespace TestManagementServices.Service
             return catalogues;
         }
 
+        /// <summary>
+        /// Lấy list trọng số ứng với các catalogue có trong config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="configId"></param>
+        /// <returns></returns>
         public static List<CatalogueDTO> GetCatalogueWeights(DeverateContext db, int? configId)
         {
             var result = from cf in db.Configuration
                          join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
                          where cf.ConfigId == configId
-                         select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, cif.Catalogue.IsActive);
+                         select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, null, cif.Catalogue.IsActive);
             if (result == null)
             {
                 return null;
             }
             return result.ToList();
         }
-        
+
 
 
         /// <summary>
