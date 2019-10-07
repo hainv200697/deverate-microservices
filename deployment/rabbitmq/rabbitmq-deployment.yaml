@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: rabbitmq
+  template:
+    metadata:
+      labels:
+        component: rabbitmq
+    spec:
+      containers:
+      - env:
+        - name: SPRING_EUREKA
+          value: http://eureka-cluster-ip-service:8761/eureka
+        image: rabbitmq:management
+        name: rabbitmq
+        ports:
+        - containerPort: 5672
+        - containerPort: 15672
