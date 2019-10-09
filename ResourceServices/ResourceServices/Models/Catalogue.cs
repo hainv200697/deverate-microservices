@@ -15,6 +15,7 @@ namespace AuthenServices.Models
         public int CatalogueId { get; set; }
         public string Name { get; set; }
         public bool? IsActive { get; set; }
+        public string Description { get; set; }
 
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
         public virtual ICollection<CompanyCatalogue> CompanyCatalogue { get; set; }

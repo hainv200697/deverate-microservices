@@ -11,6 +11,7 @@ namespace AuthenServices.Models
             QuestionInTest = new HashSet<QuestionInTest>();
         }
 
+
         public int QuestionId { get; set; }
         public int? CatalogueId { get; set; }
         public string Question1 { get; set; }
