@@ -24,38 +24,38 @@ namespace ResourceServices.Controllers
 
         [Route("GetAllCompany")]
         [HttpGet]
-        public IActionResult GetAllCompany(bool isActive)
+        public ActionResult<IEnumerable<string>> GetAllCompany(bool isActive)
         {
             List<CompanyDTO> com = CompanyDAO.GetAllCompany(isActive);
-            return Ok(com);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("GetAllCompanyById")]
         [HttpGet]
-        public IActionResult GetAllCompanyById(int id)
+        public ActionResult<IEnumerable<string>> GetAllCompanyById(int id)
         {
             CompanyDTO com = CompanyDAO.GetCompanyById(id);
-            return Ok(com);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("GetAllCompanyByName")]
         [HttpGet]
-        public IActionResult GetAllCompanyByName(string name)
+        public ActionResult<IEnumerable<string>> GetAllCompanyByName(string name)
         {
             List<CompanyDTO> com = CompanyDAO.GetCompanyByName(name);
-            return Ok(com);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("CreateCompany")]
         [HttpPost]
-        public IActionResult PostCreateCompany([FromBody] CompanyDTO company)
+        public ActionResult<IEnumerable<string>> PostCreateCompany([FromBody] CompanyDTO company)
         {
             string message = CompanyDAO.CreateCompany(company);
             if (message == null)
             {
-                return Ok(message);
+                return new JsonResult(rm.Success(message));
             }
-            return StatusCode(0);
+            return new JsonResult(rm.Error(message));
         }
 
         [Route("UpdateCompany")]
@@ -65,9 +65,9 @@ namespace ResourceServices.Controllers
             string message = CompanyDAO.UpdateCompany(company);
             if (message == null)
             {
-                return Ok(message);
+                return new JsonResult(rm.Success(message));
             }
-            return StatusCode(0);
+            return new JsonResult(rm.Error(message));
         }
     }
 }
