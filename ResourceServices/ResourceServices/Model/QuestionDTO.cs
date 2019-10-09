@@ -15,7 +15,7 @@ namespace ResourceServices.Model
         public QuestionDTO()
         {
         }
-        public QuestionDTO(Question ques, ICollection<Answer> ans)
+        public QuestionDTO(Question ques,string name, ICollection<Answer> ans)
         {
             this.QuestionId = ques.QuestionId;
             this.CatalogueId = ques.CatalogueId;
@@ -25,7 +25,14 @@ namespace ResourceServices.Model
             this.IsActive = ques.IsActive;
             this.CreateBy = ques.CreateBy;
             this.Answer = ans;
-
+            if (String.IsNullOrEmpty(name))
+            {
+                this.CatalogueName = "";
+            }
+            else
+            {
+                this.CatalogueName = name;
+            }
         }
 
 
@@ -38,6 +45,7 @@ namespace ResourceServices.Model
         public int? CreateBy { get; set; }
         public bool? IsActive { get; set; }
         public DateTime? CreatAt { get; set; }
+        public string CatalogueName { get; set; }
 
         public virtual ICollection<Answer> Answer { get; set; }
 

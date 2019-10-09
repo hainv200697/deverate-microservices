@@ -15,25 +15,27 @@ namespace ResourceServices.Service
             {
                 var question = from ques in context.Question
                                where ques.IsActive == true
-                                select new QuestionDTO(ques ,ques.Answer.ToList());
+                                select new QuestionDTO(ques,ques.Catalogue.Name ,ques.Answer.ToList());
                 return question.ToList();
             }
 
         }
 
-        public static string CreateQuestion(QuestionDTO ques)
+        public static string CreateQuestion(List<QuestionDTO> quest)
         {
             using (DeverateContext context = new DeverateContext())
             {
-                Question question = new Question();
-                question.CatalogueId = ques.CatalogueId;
-                question.Question1 = ques.Question1;
-                question.IsActive = ques.IsActive;
-                question.MaxPoint = ques.MaxPoint;
-                question.CreateBy = ques.CreateBy;
-                question.Answer = ques.Answer;
-                context.Question.Add(question);
-                context.SaveChanges();
+                foreach (var ques in quest)
+                {
+                    Question question = new Question();
+                    question.CatalogueId = ques.CatalogueId;
+                    question.Question1 = ques.Question1;
+                    question.IsActive = ques.IsActive;
+                    question.CreateBy = ques.CreateBy;
+                    question.Answer = ques.Answer;
+                    context.Question.Add(question);
+                    context.SaveChanges();
+                }
                 return "Creating Question success";
             }
 
@@ -48,9 +50,9 @@ namespace ResourceServices.Service
                 question.Question1 = ques.Question1;
                 question.IsActive = ques.IsActive;
                 question.MaxPoint = ques.MaxPoint;
-                //question.CreateBy = ques.CreateBy;
-                //question.Answer = ques.Answer;
-                //context.SaveChanges();
+                question.CreateBy = ques.CreateBy;
+                question.Answer = ques.Answer;
+                context.SaveChanges();
                 return "UPdating Question success"; 
             }
 

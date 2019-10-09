@@ -34,11 +34,12 @@ namespace ResourceServices.Controllers
 
         [HttpPost]
         [Route("CreateQuestion")]
-        public ActionResult CreateQuestion(QuestionDTO ques)
+        public ActionResult CreateQuestion(List<Question> question)
         {
             try
             {
-                string message = QuestionDAO.CreateQuestion(ques);
+                // string message = QuestionDAO.CreateQuestion(question);
+                string message = "avc";
                 return Ok(message);
             }
             catch (Exception)
