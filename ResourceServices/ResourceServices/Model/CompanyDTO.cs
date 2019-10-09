@@ -15,6 +15,17 @@ namespace ResourceServices.Model
 
         }
 
+        public CompanyDTO(Company company)
+        {
+            this.CompanyId = company.CompanyId;
+            this.Name = company.Name;
+            this.Address = company.Address;
+            this.Create_At = company.CreateAt;
+            this.Fax = company.Fax;
+            this.Phone = company.Phone;
+            this.IsActive = company.IsActive;
+        }
+
         public CompanyDTO(Company company, string name)
         {
             this.CompanyId = company.CompanyId;
@@ -25,18 +36,6 @@ namespace ResourceServices.Model
             this.Phone = company.Phone;
             this.IsActive = company.IsActive;
             this.ManagerName = name;
-        }
-
-        public CompanyDTO(Company company)
-        {
-            this.CompanyId = company.CompanyId;
-            this.Name = company.Name;
-            this.Address = company.Address;
-            this.Create_At = company.CreateAt;
-            this.Fax = company.Fax;
-            this.Phone = company.Phone;
-            this.IsActive = company.IsActive;
-
         }
 
         [JsonProperty("CompanyId")]
