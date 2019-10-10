@@ -8,11 +8,11 @@ using AuthenServices.Models;
 using AuthenServices.RabbitMQ;
 using AuthenServices.Service;
 using Microsoft.AspNetCore.Mvc;
-
+using Newtonsoft.Json;
 
 namespace AuthenServices.Controllers
 {
-    
+
     [Route("api/[controller]")]
     public class LoginController : Controller
     {
@@ -26,9 +26,9 @@ namespace AuthenServices.Controllers
         [HttpPost("Authen")]
         public ActionResult<IEnumerable<string>> PostAuthenUser([FromBody]AccountDTO account)
         {
-            
+
             string token = AccountDAO.CheckLogin(context, account.Username, account.Password);
-            if(token == null)
+            if (token == null)
             {
                 return new JsonResult(rm.Error("Invalid username or password"));
             }
@@ -41,7 +41,8 @@ namespace AuthenServices.Controllers
 
             var result = AccountDAO.CreateCompanyAccount(context, account).Split('_');
             Producer producer = new Producer();
-            producer.PublishMessage(message: result[0] + "|" + result[1], "AccountGenerate");
+            MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], account.email);
+            producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountGenerate");
             return new JsonResult(rm.Success("Login successful", result));
         }
     }

@@ -18,13 +18,13 @@ namespace MailingServices.Service
             Options = senderOptions;
         }
 
-        public static Task SendMailAsync(AccountDTO cust, string SUBJECT, string message)
+        public static Task SendMailAsync(string receiver, string SUBJECT, string message)
         {
             string myMail = "anhnhse62597@fpt.edu.vn";
             MailMessage mail = new MailMessage();
             SmtpClient smtp = new SmtpClient();
             mail.From = new MailAddress(myMail);
-            mail.To.Add(new MailAddress(cust.Email));
+            mail.To.Add(new MailAddress(receiver));
             mail.Subject = SUBJECT;
             mail.IsBodyHtml = true;
             mail.Body = message;
