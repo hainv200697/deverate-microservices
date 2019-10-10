@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using AuthenServices.Model;
 using AuthenServices.Models;
+using AuthenServices.RabbitMQ;
 using AuthenServices.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +40,8 @@ namespace AuthenServices.Controllers
         {
 
             var result = AccountDAO.CreateCompanyAccount(context, account).Split('_');
+            Producer producer = new Producer();
+            producer.PublishMessage(message: result[0] + "|" + result[1], "AccountGenerate");
             return new JsonResult(rm.Success("Login successful", result));
         }
     }
