@@ -32,5 +32,17 @@ namespace TestManagementServices.Controllers
             }
             return new JsonResult(rm.Success("Evaluate successful", rp));
         }
+
+        [HttpPost("GenTest")]
+        public ActionResult<IEnumerable<string>> GenTest([FromBody]ConfigurationDTO configuration)
+        {
+
+            string message = SystemDAO.GenerateTest(context, configuration);
+            if(message != null)
+            {
+                return new JsonResult(rm.Error(message));
+            }
+            return new JsonResult(rm.Success("Created succeed"));
+        }
     }
 }
