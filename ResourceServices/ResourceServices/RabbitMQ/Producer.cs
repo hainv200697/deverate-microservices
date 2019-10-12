@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AuthenServices.RabbitMQ
+namespace ResourceServices.RabbitMQ
 {
     public class Producer
     {
@@ -21,7 +21,6 @@ namespace AuthenServices.RabbitMQ
                                      routingKey: "",
                                      basicProperties: null,
                                      body: body);
-                Console.WriteLine(" [x] Sent {0}", message);
             }
         }
     }

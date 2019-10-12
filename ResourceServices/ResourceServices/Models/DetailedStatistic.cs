@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AuthenServices.Models
+namespace ResourceServices.Models
 {
     public partial class DetailedStatistic
     {
