@@ -366,5 +366,20 @@ namespace TestManagementServices.Service
             }
             return cataloguePoints;
         }
+
+        /// <summary>
+        /// Lấy danh sách các bài test của user trong ngày
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="acccountId"></param>
+        /// <returns></returns>
+        public static List<ConfigurationDTO> GetAllConfigTestTodayByUsername(DeverateContext db, int? acccountId)
+        {
+            var result = from cf in db.Configuration
+                         join t in db.Test on cf.ConfigId equals t.ConfigId
+                         where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
+                         select new ConfigurationDTO(cf);
+            return result.ToList();
+        }
     }
 }
