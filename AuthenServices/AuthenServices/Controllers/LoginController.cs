@@ -36,13 +36,12 @@ namespace AuthenServices.Controllers
         }
 
         [HttpPost("CreateManagerAccount")]
-        public ActionResult<IEnumerable<string>> PostCreateManagerAccount([FromBody]CompanyManagerDTO account)
+        public ActionResult<IEnumerable<string>> PostCreateManagerAccount([FromBody]MessageAccount account)
         {
-
-            var result = AccountDAO.CreateCompanyAccount(context, account).Split('_');
+            var result = AccountDAO.GenerateCompanyAccount(context, account).Split('_');
             Producer producer = new Producer();
-            MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], account.email);
-            producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountGenerate");
+            MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], account.Email);
+            producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
             return new JsonResult(rm.Success("Login successful", result));
         }
     }
