@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthenServices.Models;
-using AuthenServices.RabbitMQ;
+using MailingServices.RabbitMQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -31,7 +31,8 @@ namespace Deverate
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IHostedService>(provider => new Consumer("AccountCreate"));
+            services.AddSingleton<IHostedService>(provider => new Consumer("AccountGenerate"));
+            services.AddSingleton<IHostedService>(provider => new Consumer("TestGenerate"));
             services.AddDiscoveryClient(Configuration);
             services.AddMvc();
             services.AddCors(c =>

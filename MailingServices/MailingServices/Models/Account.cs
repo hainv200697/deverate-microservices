@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TestManagementServices.Models
+namespace AuthenServices.Models
 {
     public partial class Account
     {
         public Account()
         {
-            Test = new HashSet<Test>();
+            AccountInTest = new HashSet<AccountInTest>();
         }
 
         public int AccountId { get; set; }
@@ -26,6 +26,6 @@ namespace TestManagementServices.Models
 
         public virtual Company Company { get; set; }
         public virtual Role Role { get; set; }
-        public virtual ICollection<Test> Test { get; set; }
+        public virtual ICollection<AccountInTest> AccountInTest { get; set; }
     }
 }

@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TestManagementServices.Models;
 
 namespace AuthenServices.Model
 {
@@ -21,7 +20,6 @@ namespace AuthenServices.Model
         public string Address { get; set; }
         public bool? Gender { get; set; }
         public string Avatar { get; set; }
-        public int? companyId { get; set; }
         public DateTime? JoinDate { get; set; }
         public int? RoleId { get; set; }
         public bool? IsActive { get; set; }
@@ -42,7 +40,6 @@ namespace AuthenServices.Model
             this.Avatar = account.Avatar;
             this.JoinDate = account.JoinDate;
             this.RoleId = account.RoleId;
-            this.companyId = account.CompanyId;
             this.IsActive = account.IsActive;
         }
     }
