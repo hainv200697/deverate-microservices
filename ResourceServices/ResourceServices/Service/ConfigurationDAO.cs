@@ -1,4 +1,5 @@
-﻿using ResourceServices.Model;
+﻿using AuthenServices.Model;
+using ResourceServices.Model;
 using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
@@ -28,15 +29,29 @@ namespace ResourceServices.Service
             }
         }
 
+
+
         public static string CreateConfiguration(ConfigurationDTO configurationDTO)
         {
             using (DeverateContext db = new DeverateContext())
             {
+                var result = from a in db.Account
+                                 where a.AccountId == configurationDTO.TestOwnerId
+                                 select a.CompanyId;
+                int? companyId = result.First();
+                var emps = from a in db.Account
+                           where a.CompanyId == companyId && a.IsActive == true && a.RoleId == 3
+                           select new AccountDTO(a);
+                if(emps.ToList().Count == 0)
+                {
+                    return "No available employee";
+                }
+
                 Configuration configuration = new Configuration();
                 configuration.ConfigId = configurationDTO.ConfigId;
                 configuration.TestOwnerId = configurationDTO.TestOwnerId;
                 configuration.TotalQuestion = configurationDTO.TotalQuestion;
-                configuration.CreateDate = configurationDTO.CreateDate;
+                configuration.CreateDate = DateTime.Now;
                 configuration.StartDate = configurationDTO.StartDate;
                 configuration.EndDate = configurationDTO.EndDate;
                 configuration.Duration = configurationDTO.Duration;
@@ -66,6 +81,71 @@ namespace ResourceServices.Service
                     db.SaveChanges();
                 }                     
                 
+                return null;
+            }
+        }
+
+        public static ConfigurationDTO GetConfigurationById(int id)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                var configuration = from con in db.Configuration
+                                    where con.ConfigId == id
+                                    select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList());
+                return configuration.FirstOrDefault();
+            }
+        }
+
+        public static string UpdateConfiguration(ConfigurationDTO configurationDTO)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                var result = from a in db.Account
+                             where a.AccountId == configurationDTO.TestOwnerId
+                             select a.CompanyId;
+                int? companyId = result.First();
+                var emps = from a in db.Account
+                           where a.CompanyId == companyId && a.IsActive == true && a.RoleId == 3
+                           select new AccountDTO(a);
+                if (emps.ToList().Count == 0)
+                {
+                    return "No available employee";
+                }
+
+                Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == configurationDTO.ConfigId);
+                configuration.ConfigId = configurationDTO.ConfigId;
+                configuration.TestOwnerId = configurationDTO.TestOwnerId;
+                configuration.TotalQuestion = configurationDTO.TotalQuestion;
+                configuration.CreateDate = DateTime.Now;
+                configuration.StartDate = configurationDTO.StartDate;
+                configuration.EndDate = configurationDTO.EndDate;
+                configuration.Duration = configurationDTO.Duration;
+                configuration.IsActive = true;
+                db.Configuration.Update(configuration);
+                db.SaveChanges();
+
+                foreach (var item in configurationDTO.catalogueInConfigurations)
+                {
+                    CatalogueInConfiguration catalogueInConfiguration = db.CatalogueInConfiguration.SingleOrDefault(con => con.ConfigId == item.ConfigId);
+                    catalogueInConfiguration.ConfigId = configuration.ConfigId;
+                    catalogueInConfiguration.CatalogueId = item.CatalogueId;
+                    catalogueInConfiguration.WeightPoint = item.WeightPoint;
+                    catalogueInConfiguration.IsActive = item.IsActive;
+                    db.CatalogueInConfiguration.Add(catalogueInConfiguration);
+                    db.SaveChanges();
+                }
+
+                foreach (var item in configurationDTO.ConfigurationRank)
+                {
+                    ConfigurationRank configurationRank = new ConfigurationRank();
+                    configurationRank.ConfigId = configuration.ConfigId;
+                    configurationRank.RankId = item.RankId;
+                    configurationRank.WeightPoint = item.WeightPoint;
+                    configurationRank.IsActive = item.IsActive;
+                    db.ConfigurationRank.Add(configurationRank);
+                    db.SaveChanges();
+                }
+
                 return null;
             }
         }

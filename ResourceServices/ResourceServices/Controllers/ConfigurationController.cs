@@ -29,6 +29,14 @@ namespace ResourceServices.Controllers
             return new JsonResult(rm.Success(com));
         }
 
+        [Route("GetConfigurationById")]
+        [HttpGet]
+        public ActionResult<IEnumerable<string>> GetConfigurationById(int id)
+        {
+            ConfigurationDTO com = ConfigurationDAO.GetConfigurationById(id);
+            return new JsonResult(rm.Success(com));
+        }
+
         [Route("CreateConfiguration")]
         [HttpPost]
         public ActionResult<IEnumerable<string>> CreateConfiguration([FromBody] ConfigurationDTO configuration)
