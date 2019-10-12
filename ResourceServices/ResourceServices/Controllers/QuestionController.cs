@@ -9,14 +9,13 @@ using ResourceServices.Model;
 using ResourceServices.Service;
 using System.Net;
 using Newtonsoft.Json;
-using AuthenServices.Models;
+using ResourceServices.Models;
 
 namespace ResourceServices.Controllers
 {
     [Route("api/[controller]")]
     public class QuestionController : Controller
     {
-
         [HttpGet]
         [Route("GetAllQuestion")]
         public ActionResult GetAllQuestion()

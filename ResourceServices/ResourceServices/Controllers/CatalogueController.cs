@@ -8,14 +8,13 @@ using System.Net.Http;
 using ResourceServices.Model;
 using ResourceServices.Service;
 using System.Net;
-using AuthenServices.Models;
+using ResourceServices.Models;
 
 namespace ResourceServices.Controllers
 {
     [Route("api/[controller]")]
     public class CatalogueController : Controller
     {
-
         [HttpGet]
         [Route("GetAllCatalogue")]
         public ActionResult GetAllCatalogue()
@@ -45,7 +44,6 @@ namespace ResourceServices.Controllers
                 return BadRequest();
             }
         }
-
 
         [HttpPut]
         [Route("UpdateCatalogue")]

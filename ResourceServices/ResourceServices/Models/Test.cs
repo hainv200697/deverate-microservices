@@ -19,7 +19,6 @@ namespace ResourceServices.Models
         public string Code { get; set; }
         public bool Status { get; set; }
         public bool IsActive { get; set; }
-
         public virtual Account Account { get; set; }
         public virtual Configuration Config { get; set; }
         public virtual ICollection<DetailedStatistic> DetailedStatistic { get; set; }

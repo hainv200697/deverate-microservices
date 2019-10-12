@@ -7,7 +7,7 @@ using AuthenServices.Model;
 using AuthenServices.Models;
 using AuthenServices.Service;
 using Microsoft.AspNetCore.Mvc;
-
+using ResourceServices.Models;
 
 namespace AuthenServices.Controllers
 {

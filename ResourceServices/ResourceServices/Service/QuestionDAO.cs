@@ -21,7 +21,6 @@ namespace ResourceServices.Service
             }
 
         }
-
         public static List<QuestionDTO> GetQuestionByCatalogue(int id)
         {
             using (DeverateContext context = new DeverateContext())
@@ -53,7 +52,6 @@ namespace ResourceServices.Service
             }
 
         }
-
         public static string CreateQuestion(QuestionDTO ques)
         {
             using (DeverateContext context = new DeverateContext())

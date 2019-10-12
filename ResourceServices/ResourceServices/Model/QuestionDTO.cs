@@ -1,11 +1,10 @@
 ﻿using AuthenServices.Models;
 using Newtonsoft.Json;
-using AuthenServices.Models;
+using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ResourceServices.Models;
 
 namespace ResourceServices.Model
 {
@@ -48,7 +47,6 @@ namespace ResourceServices.Model
             this.CreateBy = ques.CreateBy;
             this.Answer = ques.Answer;
         }
-
 
         [JsonProperty("QuestionId")]
         public int QuestionId { get; set; }

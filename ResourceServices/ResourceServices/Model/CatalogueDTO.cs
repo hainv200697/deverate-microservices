@@ -1,6 +1,4 @@
-﻿using AuthenServices.Models;
-using Newtonsoft.Json;
-using ResourceServices.Model;
+﻿using Newtonsoft.Json;
 using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
@@ -21,7 +19,6 @@ namespace ResourceServices.Model
         {
             this.CatalogueId = catalogue.CatalogueId;
             this.Name = catalogue.Name;
-
             this.IsActive = catalogue.IsActive;
             this.Question = catalogue.Question;
             this.quescount = this.Question.Count;
