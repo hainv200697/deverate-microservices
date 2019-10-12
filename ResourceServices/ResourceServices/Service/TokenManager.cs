@@ -1,6 +1,7 @@
 ﻿using AuthenServices.Model;
 using AuthenServices.Models;
 using Microsoft.IdentityModel.Tokens;
+using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;

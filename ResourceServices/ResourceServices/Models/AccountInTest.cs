@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ResourceServices.Models;
+using System;
 using System.Collections.Generic;
 
 namespace AuthenServices.Models

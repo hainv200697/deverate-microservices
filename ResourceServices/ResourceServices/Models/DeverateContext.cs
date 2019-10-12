@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace AuthenServices.Models
+namespace ResourceServices.Models
 {
     public partial class DeverateContext : DbContext
     {
@@ -16,7 +16,6 @@ namespace AuthenServices.Models
         }
 
         public virtual DbSet<Account> Account { get; set; }
-        public virtual DbSet<AccountInTest> AccountInTest { get; set; }
         public virtual DbSet<Answer> Answer { get; set; }
         public virtual DbSet<Catalogue> Catalogue { get; set; }
         public virtual DbSet<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
@@ -61,38 +60,6 @@ namespace AuthenServices.Models
                 entity.Property(e => e.Phone).HasMaxLength(250);
 
                 entity.Property(e => e.Username).HasMaxLength(250);
-
-                entity.HasOne(d => d.Company)
-                    .WithMany(p => p.Account)
-                    .HasForeignKey(d => d.CompanyId)
-                    .HasConstraintName("FK_Account_Company");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.Account)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Account_Role");
-            });
-
-            modelBuilder.Entity<AccountInTest>(entity =>
-            {
-                entity.HasKey(e => e.Aitid);
-
-                entity.Property(e => e.Aitid)
-                    .HasColumnName("AITId")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Code).HasMaxLength(250);
-
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.AccountInTest)
-                    .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK_AccountInTest_Account");
-
-                entity.HasOne(d => d.Test)
-                    .WithMany(p => p.AccountInTest)
-                    .HasForeignKey(d => d.TestId)
-                    .HasConstraintName("FK_AccountInTest_Test");
             });
 
             modelBuilder.Entity<Answer>(entity =>
@@ -109,6 +76,8 @@ namespace AuthenServices.Models
 
             modelBuilder.Entity<Catalogue>(entity =>
             {
+                entity.Property(e => e.Description).HasMaxLength(250);
+
                 entity.Property(e => e.Name).HasMaxLength(250);
             });
 
@@ -116,9 +85,7 @@ namespace AuthenServices.Models
             {
                 entity.HasKey(e => e.Cicid);
 
-                entity.Property(e => e.Cicid)
-                    .HasColumnName("CICId")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Cicid).HasColumnName("CICId");
 
                 entity.HasOne(d => d.Catalogue)
                     .WithMany(p => p.CatalogueInConfiguration)
@@ -169,27 +136,25 @@ namespace AuthenServices.Models
             {
                 entity.HasKey(e => e.ConfigId);
 
-                entity.HasOne(d => d.Test)
-                    .WithMany(p => p.Configuration)
-                    .HasForeignKey(d => d.TestId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Configuration_Test");
+                entity.Property(e => e.CreateDate).HasColumnType("date");
+
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(250);
             });
 
             modelBuilder.Entity<ConfigurationRank>(entity =>
             {
-                entity.Property(e => e.ConfigurationRankId).ValueGeneratedNever();
-
-                entity.HasOne(d => d.ConfigurationRankNavigation)
-                    .WithOne(p => p.ConfigurationRank)
-                    .HasForeignKey<ConfigurationRank>(d => d.ConfigurationRankId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                entity.HasOne(d => d.Config)
+                    .WithMany(p => p.ConfigurationRank)
+                    .HasForeignKey(d => d.ConfigId)
                     .HasConstraintName("FK_ConfigurationRank_Configuration");
 
                 entity.HasOne(d => d.Rank)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.RankId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ConfigurationRank_Rank");
             });
 
@@ -199,14 +164,12 @@ namespace AuthenServices.Models
 
                 entity.Property(e => e.StatisticId).ValueGeneratedNever();
 
-                entity.Property(e => e.Aitid).HasColumnName("AITId");
-
                 entity.Property(e => e.RankId).HasMaxLength(250);
 
-                entity.HasOne(d => d.Ait)
+                entity.HasOne(d => d.Test)
                     .WithMany(p => p.DetailedStatistic)
-                    .HasForeignKey(d => d.Aitid)
-                    .HasConstraintName("FK_DetailedStatistic_AccountInTest");
+                    .HasForeignKey(d => d.TestId)
+                    .HasConstraintName("FK_DetailedStatistic_Test");
             });
 
             modelBuilder.Entity<Question>(entity =>
@@ -231,9 +194,7 @@ namespace AuthenServices.Models
             {
                 entity.HasKey(e => e.Qitid);
 
-                entity.Property(e => e.Qitid)
-                    .HasColumnName("QITId")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Qitid).HasColumnName("QITId");
 
                 entity.HasOne(d => d.Answer)
                     .WithMany(p => p.QuestionInTest)
@@ -273,13 +234,22 @@ namespace AuthenServices.Models
 
             modelBuilder.Entity<Test>(entity =>
             {
-                entity.Property(e => e.TestId).ValueGeneratedNever();
-
                 entity.Property(e => e.Code).HasMaxLength(250);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Test)
+                    .HasForeignKey(d => d.AccountId)
+                    .HasConstraintName("FK_Test_Account");
+
+                entity.HasOne(d => d.Config)
+                    .WithMany(p => p.Test)
+                    .HasForeignKey(d => d.ConfigId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Test_Configuration");
             });
         }
     }

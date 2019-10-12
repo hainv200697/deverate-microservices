@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AuthenServices.Models
+namespace ResourceServices.Models
 {
     public partial class Company
     {
         public Company()
         {
-            Account = new HashSet<Account>();
             CompanyCatalogue = new HashSet<CompanyCatalogue>();
         }
 
@@ -19,7 +18,6 @@ namespace AuthenServices.Models
         public int? Phone { get; set; }
         public string Fax { get; set; }
 
-        public virtual ICollection<Account> Account { get; set; }
         public virtual ICollection<CompanyCatalogue> CompanyCatalogue { get; set; }
     }
 }
