@@ -7,7 +7,7 @@ namespace TestManagementServices.Models
     {
         public Account()
         {
-            AccountInTest = new HashSet<AccountInTest>();
+            Test = new HashSet<Test>();
         }
 
         public int AccountId { get; set; }
@@ -26,6 +26,6 @@ namespace TestManagementServices.Models
 
         public virtual Company Company { get; set; }
         public virtual Role Role { get; set; }
-        public virtual ICollection<AccountInTest> AccountInTest { get; set; }
+        public virtual ICollection<Test> Test { get; set; }
     }
 }

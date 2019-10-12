@@ -1,0 +1,22 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: mailing
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mailing
+  template:
+    metadata:
+      labels:
+        component: mailing
+    spec:
+      containers:
+      - env:
+        - name: SPRING_EUREKA
+          value: http://eureka-cluster-ip-service:8761/eureka
+        image: asia.gcr.io/indigo-muse-254504/mailing:1.0.2
+        name: mailing
+        ports:
+        - containerPort: 80

@@ -1,6 +1,8 @@
-﻿using AuthenServices.Models;
+﻿using AuthenServices.Model;
+using AuthenServices.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TestManagementServices.Model;
@@ -10,16 +12,185 @@ namespace TestManagementServices.Service
 {
     public class SystemDAO
     {
+        public static List<QuestionDTO> Shuffle(List<QuestionDTO> questions)
+        {
+            Random rand = new Random();
+            int n = questions.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rand.Next(n + 1);
+                QuestionDTO value = questions[k];
+                questions[k] = questions[n];
+                questions[n] = value;
+            }
+            return questions;
+        }
 
-        public static List<QuestionDTO> GenerateTest(DeverateContext db)
-        {   
+        public static string GenerateTest(DeverateContext db, ConfigurationDTO config)
+        {
+            Configuration con = db.Configuration.SingleOrDefault(o => o.ConfigId == config.configId);
+            try
+            {
+                if(con.Duration < 5)
+                {
+                    return "Test duration at least 5 minutes";
+                }
+                List<CatalogueDTO> catas = GetCatalogueWeights(db, config.configId);
+                if(catas.Count == 0)
+                {
+                    return "Can't generate test because there's no catalogue chose";
+                }
+                if (con.TotalQuestion < catas.Count)
+                {
+                    return "Number of questions equal or greater than number of catalogue";
+                }
+                Account acc = db.Account.SingleOrDefault(o => o.AccountId == con.TestOwnerId);
+                int? companyId = acc.CompanyId;
+
+
+                var emps = from a in db.Account
+                           where a.CompanyId == companyId && a.RoleId == 3 && a.IsActive == true
+                           select new AccountDTO(a);
+                List < AccountDTO > accounts = emps.ToList();
+                if(accounts.Count == 0)
+                {
+                    return "There'is no available employee";
+                }
+                for (int i = 0; i < accounts.Count; i++)
+                {
+                    GenerateQuestion(db, accounts[i].AccountId, config);
+                }
+            }
+            catch(Exception e)
+            {
+                File.WriteAllText("log.txt", e.Message);
+            }
 
             return null;
         }
 
-        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db,  int? catalogueId)
+        /// <summary>
+        /// Tạo bài kiểm tra cho người dùng dưa trên config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="accountId"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, ConfigurationDTO config)
         {
-            return null;
+            List<QuestionDTO> questions = new List<QuestionDTO>();
+            try
+            {
+                Random rand = new Random();
+                List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.configId);
+                for (int i = 0; i < catalogues.Count; i++)
+                {
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                }
+                catalogues = GetNumberOfQuestionEachCatalogue(db, config.totalQuestion, catalogues);
+                
+                for (int i = 0; i < catalogues.Count; i++)
+                {
+                    List<int?> quesIds = new List<int?>();
+                    List<QuestionDTO> totalQues = catalogues[i].questions;
+                    int quesLenght = totalQues.Count;
+                    int numbOfQues = catalogues[i].numberOfQuestion > catalogues[i].questions.Count ? catalogues[i].questions.Count : catalogues[i].numberOfQuestion.Value;
+                    for (int j = 0; j < numbOfQues; j++)
+                    {
+                        int rQues = rand.Next(0, quesLenght);
+                        if (!quesIds.Contains(totalQues[rQues].questionId))
+                        {
+                            quesIds.Add(totalQues[rQues].questionId);
+                            questions.Add(totalQues[rQues]);
+                        }
+                        else
+                        {
+                            j--;
+                        }
+                    }
+                }
+                questions = Shuffle(questions);
+
+                Test test = new Test();
+                test.ConfigId = config.configId.Value;
+                test.AccountId = accountId;
+                test.CreateDate = DateTime.Now;
+                test.IsActive = true;
+                db.Test.Add(test);
+                db.SaveChanges();
+
+                test.Code = GenerateCode();
+                db.SaveChanges();
+
+                for(int i = 0; i < questions.Count; i++)
+                {
+                    QuestionInTest inTest = new QuestionInTest();
+                    inTest.TestId = test.TestId;
+                    inTest.QuestionId = questions[i].questionId;
+                    inTest.IsActive = true;
+                    db.QuestionInTest.Add(inTest);
+                    db.SaveChanges();
+                }
+
+            }
+            catch(Exception e)
+            {
+                File.WriteAllText("log.txt", e.Message);
+            }
+            
+            return questions;
+        }
+        public static string GenerateCode()
+        {
+            
+            string code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
+                AppConstrain.includeNumeric, AppConstrain.includeSpecial,
+                AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
+
+            while (!PasswordGenerator.PasswordIsValid(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
+                AppConstrain.includeNumeric, AppConstrain.includeSpecial, AppConstrain.includeSpaces, code))
+            {
+                code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
+                    AppConstrain.includeNumeric, AppConstrain.includeSpecial,
+                    AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
+            }
+            return code;
+        }
+
+        /// <summary>
+        /// Lấy câu hỏi của từng catalogue
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="catalogueId"></param>
+        /// <returns></returns>
+        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? catalogueId)
+        {
+            var ques = from ca in db.Catalogue
+                       join q in db.Question on ca.CatalogueId equals q.CatalogueId
+                       where ca.CatalogueId == catalogueId
+                       select new QuestionDTO(q.QuestionId, q.Question1, null);
+            List<QuestionDTO> questions = ques.ToList();
+            for (int i = 0; i < questions.Count; i++)
+            {
+                questions[i].answers = GetAnswerOfQuestion(db, questions[i].questionId);
+            }
+            return questions;
+        }
+
+        /// <summary>
+        /// Lấy câu trả lời của từng đâu hỏi
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="questionId"></param>
+        /// <returns></returns>
+        public static List<AnswerDTO> GetAnswerOfQuestion(DeverateContext db, int? questionId)
+        {
+            var answers = from q in db.Question
+                          join a in db.Answer on q.QuestionId equals a.QuestionId
+                          where q.QuestionId == questionId
+                          select new AnswerDTO(a);
+            return answers.ToList();
         }
 
         public static List<CatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db,  int? totalQuestion, List<CatalogueDTO> catalogues)
@@ -36,19 +207,25 @@ namespace TestManagementServices.Service
             return catalogues;
         }
 
+        /// <summary>
+        /// Lấy list trọng số ứng với các catalogue có trong config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="configId"></param>
+        /// <returns></returns>
         public static List<CatalogueDTO> GetCatalogueWeights(DeverateContext db, int? configId)
         {
             var result = from cf in db.Configuration
                          join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
                          where cf.ConfigId == configId
-                         select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, cif.Catalogue.IsActive);
+                         select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, null, cif.Catalogue.IsActive);
             if (result == null)
             {
                 return null;
             }
             return result.ToList();
         }
-        
+
 
 
         /// <summary>
@@ -90,15 +267,14 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<ConfigurationRankDTO> GetRankPoint(DeverateContext db, TestAnswerDTO answer)
         {
-            int? testId = db.AccountInTest.SingleOrDefault(a => a.Aitid == answer.AITId).TestId;
-            if (testId == null)
+            if (answer.testId == null)
             {
                 return null;
             }
             var result = from con in db.Configuration
                          join te in db.Test on con.ConfigId equals te.ConfigId
                          join cr in db.ConfigurationRank on con.ConfigId equals cr.ConfigId
-                         where te.TestId == testId
+                         where te.TestId == answer.testId
                          select new ConfigurationRankDTO(cr);
             return result.ToList();
         }
@@ -113,12 +289,11 @@ namespace TestManagementServices.Service
         {
             double? totalPoint = 0;
             List<CataloguePointDTO> cataloguePoints = CalculateCataloguePoints(db, answers);
-            int? testId = db.AccountInTest.SingleOrDefault(a => a.Aitid == answers.AITId).TestId;
-            if (testId == null)
+            if (answers.testId == null)
             {
                 return -1;
             }
-            List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(db, testId);
+            List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(db, answers.testId);
             for (int i = 0; i < cataloguePoints.Count; i++)
             {
                 totalPoint += (cataloguePoints[i].cataloguePoint / catalogueWeightPoints[i].weightPoint);
@@ -154,9 +329,7 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers)
         {
-
-            int? testId = db.AccountInTest.SingleOrDefault(ait => ait.Aitid == answers.AITId).TestId;
-            if (testId == null)
+            if (answers.testId == null)
             {
                 return null;
             }
@@ -165,7 +338,7 @@ namespace TestManagementServices.Service
                         join cf in db.Configuration on t.ConfigId equals cf.ConfigId
                         join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
                         join c in db.Catalogue on cif.CatalogueId equals c.CatalogueId
-                        where t.TestId == testId
+                        where t.TestId == answers.testId
                         select new CatalogueDTO(c);
 
 
@@ -192,6 +365,21 @@ namespace TestManagementServices.Service
                 cataloguePoints.Add(new CataloguePointDTO(cata.catalogueId, cataloguePoint));
             }
             return cataloguePoints;
+        }
+
+        /// <summary>
+        /// Lấy danh sách các bài test của user trong ngày
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="acccountId"></param>
+        /// <returns></returns>
+        public static List<ConfigurationDTO> GetAllConfigTestTodayByUsername(DeverateContext db, int? acccountId)
+        {
+            var result = from cf in db.Configuration
+                         join t in db.Test on cf.ConfigId equals t.ConfigId
+                         where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
+                         select new ConfigurationDTO(cf);
+            return result.ToList();
         }
     }
 }

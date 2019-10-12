@@ -40,10 +40,10 @@ namespace AuthenServices.Service
             }
         }
 
-        public static string CreateCompanyAccount(DeverateContext context, CompanyManagerDTO cm)
+        public static string GenerateCompanyAccount(DeverateContext context, MessageAccount ms)
         {
             Account account = new Account();
-            var items = cm.fullName.Split(' ');
+            var items = ms.Fullname.Split(' ');
             string username = items[items.Length - 1];
             for(int i = 0; i < items.Length  - 1; i++)
             {
@@ -70,11 +70,11 @@ namespace AuthenServices.Service
 
             account.Username = username.ToUpper();
             account.Password = encodedPassword;
-            account.Fullname = cm.fullName;
+            account.Fullname = ms.Fullname;
             account.Gender = false;
             account.JoinDate = DateTime.Now;
-            account.RoleId = 2;
-            account.CompanyId = cm.companyId;
+            account.RoleId = ms.Role;
+            account.CompanyId = ms.CompanyId;
             account.IsActive = true;
             context.Account.Add(account);
             context.SaveChanges();

@@ -33,6 +33,10 @@ namespace Deverate
         {
             services.AddDiscoveryClient(Configuration);
             services.AddMvc();
+            services.AddCors(c =>
+            {
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+            });
             var connection = @"Server=deverate.cxr5rxvkq6ui.us-east-2.rds.amazonaws.com;Database=Deverate;User ID=sa;Password=pass4deverate;Trusted_Connection=False;";
             services.AddDbContext<DeverateContext>(options => options.UseSqlServer(connection));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -54,6 +58,7 @@ namespace Deverate
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseDiscoveryClient();
             app.UseHttpsRedirection();
             app.UseMvc();

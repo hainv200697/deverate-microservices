@@ -16,7 +16,6 @@ namespace TestManagementServices.Models
         }
 
         public virtual DbSet<Account> Account { get; set; }
-        public virtual DbSet<AccountInTest> AccountInTest { get; set; }
         public virtual DbSet<Answer> Answer { get; set; }
         public virtual DbSet<Catalogue> Catalogue { get; set; }
         public virtual DbSet<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
@@ -74,27 +73,6 @@ namespace TestManagementServices.Models
                     .HasConstraintName("FK_Account_Role");
             });
 
-            modelBuilder.Entity<AccountInTest>(entity =>
-            {
-                entity.HasKey(e => e.Aitid);
-
-                entity.Property(e => e.Aitid)
-                    .HasColumnName("AITId")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Code).HasMaxLength(250);
-
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.AccountInTest)
-                    .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK_AccountInTest_Account");
-
-                entity.HasOne(d => d.Test)
-                    .WithMany(p => p.AccountInTest)
-                    .HasForeignKey(d => d.TestId)
-                    .HasConstraintName("FK_AccountInTest_Test");
-            });
-
             modelBuilder.Entity<Answer>(entity =>
             {
                 entity.Property(e => e.Answer1)
@@ -118,9 +96,7 @@ namespace TestManagementServices.Models
             {
                 entity.HasKey(e => e.Cicid);
 
-                entity.Property(e => e.Cicid)
-                    .HasColumnName("CICId")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Cicid).HasColumnName("CICId");
 
                 entity.HasOne(d => d.Catalogue)
                     .WithMany(p => p.CatalogueInConfiguration)
@@ -180,8 +156,6 @@ namespace TestManagementServices.Models
 
             modelBuilder.Entity<ConfigurationRank>(entity =>
             {
-                entity.Property(e => e.ConfigurationRankId).ValueGeneratedNever();
-
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.ConfigId)
@@ -190,7 +164,6 @@ namespace TestManagementServices.Models
                 entity.HasOne(d => d.Rank)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.RankId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ConfigurationRank_Rank");
             });
 
@@ -200,14 +173,12 @@ namespace TestManagementServices.Models
 
                 entity.Property(e => e.StatisticId).ValueGeneratedNever();
 
-                entity.Property(e => e.Aitid).HasColumnName("AITId");
-
                 entity.Property(e => e.RankId).HasMaxLength(250);
 
-                entity.HasOne(d => d.Ait)
+                entity.HasOne(d => d.Test)
                     .WithMany(p => p.DetailedStatistic)
-                    .HasForeignKey(d => d.Aitid)
-                    .HasConstraintName("FK_DetailedStatistic_AccountInTest");
+                    .HasForeignKey(d => d.TestId)
+                    .HasConstraintName("FK_DetailedStatistic_Test");
             });
 
             modelBuilder.Entity<Question>(entity =>
@@ -232,9 +203,7 @@ namespace TestManagementServices.Models
             {
                 entity.HasKey(e => e.Qitid);
 
-                entity.Property(e => e.Qitid)
-                    .HasColumnName("QITId")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Qitid).HasColumnName("QITId");
 
                 entity.HasOne(d => d.Answer)
                     .WithMany(p => p.QuestionInTest)
@@ -274,17 +243,21 @@ namespace TestManagementServices.Models
 
             modelBuilder.Entity<Test>(entity =>
             {
-                entity.Property(e => e.TestId).ValueGeneratedNever();
-
                 entity.Property(e => e.Code).HasMaxLength(250);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Test)
+                    .HasForeignKey(d => d.AccountId)
+                    .HasConstraintName("FK_Test_Account");
+
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.Test)
                     .HasForeignKey(d => d.ConfigId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Test_Configuration");
             });
         }
