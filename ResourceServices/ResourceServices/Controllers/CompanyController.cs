@@ -1,7 +1,9 @@
 ﻿using AuthenServices.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ResourceServices.Model;
 using ResourceServices.Models;
+using ResourceServices.RabbitMQ;
 using ResourceServices.Service;
 using System;
 using System.Collections.Generic;
@@ -51,12 +53,20 @@ namespace ResourceServices.Controllers
         [HttpPost]
         public ActionResult<IEnumerable<string>> PostCreateCompany([FromBody] CompanyDataDTO companyDataDTO)
         {
-            string message = CompanyDAO.CreateCompany(companyDataDTO);
-            if (message == null)
+            try
             {
-                return new JsonResult(rm.Success(message));
+                var company = CompanyDAO.CreateCompany(companyDataDTO);
+                var account = companyDataDTO.AccountDTO;
+                var messageAccount = new MessageAccount(company.CompanyId, account.Fullname, account.Email, 2);
+                Producer producer = new Producer();
+                producer.PublishMessage(message: JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
+                return new JsonResult(rm.Success("Save success"));
+            } catch
+            {
+                return new JsonResult(rm.Error("Save fail"));
             }
-            return new JsonResult(rm.Error(message));
+            
+            
         }
 
         [Route("UpdateCompany")]

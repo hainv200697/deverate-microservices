@@ -1,11 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: authenticate-78f8cc96d7-gffw5 	
+  name: resource-78dcbbc498-bdf4h	
 spec:
   type: ClusterIP
   selector:
-    component: authenticate
+    component: resource
   ports:
   - port: 80
     targetPort: 80

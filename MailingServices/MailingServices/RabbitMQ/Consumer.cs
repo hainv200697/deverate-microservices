@@ -19,8 +19,10 @@ namespace MailingServices.RabbitMQ
         private IConnection connection;
         private IModel channel;
         private string queueName;
+        private string exch;
         public Consumer(string exch)
         {
+            this.exch = exch;
             InitRabbitMQ(exch);
         }
         private void InitRabbitMQ(string exch)
@@ -45,8 +47,17 @@ namespace MailingServices.RabbitMQ
             {
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
-                var messageAccountDTO = JsonConvert.DeserializeObject<MessageAccountDTO>(message);
-                EmailSender.SendMailAsync(messageAccountDTO.Email, "Welcome To DEVERATE", "Username: " + messageAccountDTO.Username + ", Password: " + messageAccountDTO.Password);
+                switch (this.exch)
+                {
+                    case "AccountToEmail":
+                        var messageAccountDTO = JsonConvert.DeserializeObject<MessageAccountDTO>(message);
+                        EmailSender.SendMailAsync(messageAccountDTO.Email, "Welcome To DEVERATE System", "Username: " + messageAccountDTO.Username + ", Password: " + messageAccountDTO.Password);
+                        break;
+                    case "TestToEmail":
+                        break;
+
+                }
+
             };
             channel.BasicConsume(queue: queueName,
                                  autoAck: false,
