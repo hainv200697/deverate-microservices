@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AuthenServices.Models
+namespace ResourceServices.Models
 {
     public partial class Question
     {
@@ -10,7 +10,6 @@ namespace AuthenServices.Models
             Answer = new HashSet<Answer>();
             QuestionInTest = new HashSet<QuestionInTest>();
         }
-
 
         public int QuestionId { get; set; }
         public int? CatalogueId { get; set; }

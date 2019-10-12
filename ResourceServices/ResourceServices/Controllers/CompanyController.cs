@@ -1,6 +1,7 @@
 ﻿using AuthenServices.Models;
 using Microsoft.AspNetCore.Mvc;
 using ResourceServices.Model;
+using ResourceServices.Models;
 using ResourceServices.Service;
 using System;
 using System.Collections.Generic;
