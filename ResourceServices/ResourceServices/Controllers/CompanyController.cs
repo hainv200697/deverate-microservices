@@ -1,6 +1,7 @@
 ﻿using AuthenServices.Models;
 using Microsoft.AspNetCore.Mvc;
 using ResourceServices.Model;
+using ResourceServices.Models;
 using ResourceServices.Service;
 using System;
 using System.Collections.Generic;
@@ -48,9 +49,9 @@ namespace ResourceServices.Controllers
 
         [Route("CreateCompany")]
         [HttpPost]
-        public ActionResult<IEnumerable<string>> PostCreateCompany([FromBody] CompanyDTO company)
+        public ActionResult<IEnumerable<string>> PostCreateCompany([FromBody] CompanyDataDTO companyDataDTO)
         {
-            string message = CompanyDAO.CreateCompany(company);
+            string message = CompanyDAO.CreateCompany(companyDataDTO);
             if (message == null)
             {
                 return new JsonResult(rm.Success(message));
