@@ -12,7 +12,7 @@ namespace ResourceServices.Model
     public class ConfigurationDTO
     {
         [JsonProperty("ConfigId")]
-        public int ConfigId { get; set; }
+        public int configId { get; set; }
         public int? TestOwnerId { get; set; }
         public int? TotalQuestion { get; set; }
         public DateTime? CreateDate { get; set; }
@@ -30,7 +30,7 @@ namespace ResourceServices.Model
 
         public ConfigurationDTO(Configuration configuration)
         {
-            this.ConfigId = configuration.ConfigId;
+            this.configId = configuration.ConfigId;
             this.TestOwnerId = configuration.TestOwnerId;
             this.TotalQuestion = configuration.TotalQuestion;
             this.CreateDate = configuration.CreateDate;
@@ -42,7 +42,7 @@ namespace ResourceServices.Model
 
         public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<ConfigurationRank> configurationRank)
         {
-            this.ConfigId = configuration.ConfigId;
+            this.configId = configuration.ConfigId;
             this.TestOwnerId = configuration.TestOwnerId;
             this.TotalQuestion = configuration.TotalQuestion;
             this.CreateDate = configuration.CreateDate;
