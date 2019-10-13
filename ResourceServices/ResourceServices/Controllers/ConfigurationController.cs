@@ -25,16 +25,30 @@ namespace ResourceServices.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompany(bool isActive)
         {
-            List<ConfigurationDTO> com = ConfigurationDAO.GetAllConfiguration(isActive);
-            return new JsonResult(rm.Success(com));
+            try
+            {
+                List<ConfigurationDTO> con = ConfigurationDAO.GetAllConfiguration(isActive);
+                return Ok(rm.Success(con));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Route("GetConfigurationById")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetConfigurationById(int id)
         {
-            ConfigurationDTO com = ConfigurationDAO.GetConfigurationById(id);
-            return new JsonResult(rm.Success(com));
+            try
+            {
+                ConfigurationDTO con = ConfigurationDAO.GetConfigurationById(id);
+                return Ok(rm.Success(con));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Route("CreateConfiguration")]
@@ -44,11 +58,11 @@ namespace ResourceServices.Controllers
             try
             {
                 var message = ConfigurationDAO.CreateConfiguration(configuration);
-                return Ok(message);
+                return Ok(rm.Success(message));
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
             
@@ -64,10 +78,8 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
-            }
-            
-            
+                return StatusCode(500);
+            }  
         }
 
         [Route("ChangeStatusConfiguration")]
@@ -81,7 +93,7 @@ namespace ResourceServices.Controllers
             }
             catch(Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
             
         }

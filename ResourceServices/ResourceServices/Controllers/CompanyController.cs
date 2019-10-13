@@ -27,60 +27,90 @@ namespace ResourceServices.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompany(bool isActive)
         {
-            List<CompanyDTO> com = CompanyDAO.GetAllCompany(isActive);
-            return new JsonResult(rm.Success(com));
+            try
+            {
+                List<CompanyDTO> com = CompanyDAO.GetAllCompany(isActive);
+                return Ok(rm.Success(com));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Route("GetAllCompanyById")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompanyById(int id)
         {
-            CompanyDTO com = CompanyDAO.GetCompanyById(id);
-            return new JsonResult(rm.Success(com));
+            try
+            {
+                CompanyDTO com = CompanyDAO.GetCompanyById(id);
+                return Ok(rm.Success(com));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Route("GetAllCompanyByName")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompanyByName(string name)
         {
-            List<CompanyDTO> com = CompanyDAO.GetCompanyByName(name);
-            return new JsonResult(rm.Success(com));
+            try
+            {
+                List<CompanyDTO> com = CompanyDAO.GetCompanyByName(name);
+                return Ok(rm.Success(com));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Route("CreateCompany")]
         [HttpPost]
         public ActionResult<IEnumerable<string>> PostCreateCompany([FromBody] CompanyDataDTO companyDataDTO)
         {
-            string message = CompanyDAO.CreateCompany(companyDataDTO);
-            if (message == null)
+            try
             {
-                return new JsonResult(rm.Success(message));
+                string message = CompanyDAO.CreateCompany(companyDataDTO);
+                return Ok(rm.Success(message));
             }
-            return new JsonResult(rm.Error(message));
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Route("UpdateCompany")]
         [HttpPut]
         public IActionResult PutUpdateCompany([FromBody] CompanyDTO company)
         {
-            string message = CompanyDAO.UpdateCompany(company);
-            if (message == null)
+            try
             {
-                return new JsonResult(rm.Success(message));
+                string message = CompanyDAO.UpdateCompany(company);
+                return Ok(rm.Success(message));
             }
-            return new JsonResult(rm.Error(message));
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
         [Route("DisableCompany")]
         [HttpPut]
         public IActionResult PutDisableCompany([FromBody] List<CompanyDTO> company)
         {
-            string message = CompanyDAO.DisableCompany(company);
-            if (message == null)
+            try
             {
-                return new JsonResult(rm.Success(message));
+                string message = CompanyDAO.DisableCompany(company);
+                return Ok(rm.Success(message));
             }
-            return new JsonResult(rm.Error(message));
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }
