@@ -27,9 +27,9 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Catalogue cata = new Catalogue();
-                cata.Description = catalogue.Description;
-                cata.Name = catalogue.Name;
-                cata.IsActive = catalogue.IsActive;
+                cata.Description = catalogue.description;
+                cata.Name = catalogue.name;
+                cata.IsActive = catalogue.isActive;
                 context.Catalogue.Add(cata);
                 context.SaveChanges();
                 return "Creating catalogue success";
@@ -41,10 +41,10 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                Catalogue cata = context.Catalogue.SingleOrDefault(c => c.CatalogueId == catalogue.CatalogueId);
-                cata.Description = catalogue.Description;
-                cata.Name = catalogue.Name;
-                cata.IsActive = catalogue.IsActive;
+                Catalogue cata = context.Catalogue.SingleOrDefault(c => c.CatalogueId == catalogue.catalogueId);
+                cata.Description = catalogue.description;
+                cata.Name = catalogue.name;
+                cata.IsActive = catalogue.isActive;
                 context.SaveChanges();
                 return "UPdating catalogue success"; 
             }
@@ -57,7 +57,7 @@ namespace ResourceServices.Service
             {
                 foreach (var cata in catalogue)
                 {
-                    Catalogue cataDb = context.Catalogue.SingleOrDefault(c => c.CatalogueId == cata.CatalogueId);
+                    Catalogue cataDb = context.Catalogue.SingleOrDefault(c => c.CatalogueId == cata.catalogueId);
                     cataDb.IsActive = false;
                     context.SaveChanges();
                 }

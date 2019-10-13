@@ -24,7 +24,7 @@ namespace ResourceServices.Service
                 var ranks = from rank in db.Rank
                               where rank.IsActive == isActive
                               select new RankDTO(rank);
-                return ranks.ToList().OrderByDescending(x => x.RankId).ToList();
+                return ranks.ToList().OrderByDescending(x => x.rankId).ToList();
             }
         }
     }

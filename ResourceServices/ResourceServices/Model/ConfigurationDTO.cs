@@ -12,14 +12,14 @@ namespace ResourceServices.Model
     public class ConfigurationDTO
     {
         [JsonProperty("ConfigId")]
-        public int ConfigId { get; set; }
-        public int? TestOwnerId { get; set; }
-        public int? TotalQuestion { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? EndDate { get; set; }
-        public int? Duration { get; set; }
-        public bool? IsActive { get;set; }
+        public int configId { get; set; }
+        public int? testOwnerId { get; set; }
+        public int? totalQuestion { get; set; }
+        public DateTime? createDate { get; set; }
+        public DateTime? startDate { get; set; }
+        public DateTime? endDate { get; set; }
+        public int? duration { get; set; }
+        public bool? isActive { get;set; }
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
         public List<ConfigurationRank> ConfigurationRank { get; set; }
 
@@ -30,26 +30,26 @@ namespace ResourceServices.Model
 
         public ConfigurationDTO(Configuration configuration)
         {
-            this.ConfigId = configuration.ConfigId;
-            this.TestOwnerId = configuration.TestOwnerId;
-            this.TotalQuestion = configuration.TotalQuestion;
-            this.CreateDate = configuration.CreateDate;
-            this.StartDate = configuration.StartDate.Value.AddHours(7);
-            this.EndDate = configuration.EndDate;
-            this.Duration = configuration.Duration;
-            this.IsActive = configuration.IsActive;
+            this.configId = configuration.ConfigId;
+            this.testOwnerId = configuration.TestOwnerId;
+            this.totalQuestion = configuration.TotalQuestion;
+            this.createDate = configuration.CreateDate;
+            this.startDate = configuration.StartDate.Value.AddHours(7);
+            this.endDate = configuration.EndDate;
+            this.duration = configuration.Duration;
+            this.isActive = configuration.IsActive;
         }
 
         public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<ConfigurationRank> configurationRank)
         {
-            this.ConfigId = configuration.ConfigId;
-            this.TestOwnerId = configuration.TestOwnerId;
-            this.TotalQuestion = configuration.TotalQuestion;
-            this.CreateDate = configuration.CreateDate;
-            this.StartDate = configuration.StartDate.Value.AddHours(7);
-            this.EndDate = configuration.EndDate.Value.AddHours(7);
-            this.Duration = configuration.Duration;
-            this.IsActive = configuration.IsActive;
+            this.configId = configuration.ConfigId;
+            this.testOwnerId = configuration.TestOwnerId;
+            this.totalQuestion = configuration.TotalQuestion;
+            this.createDate = configuration.CreateDate;
+            this.startDate = configuration.StartDate.Value.AddHours(7);
+            this.endDate = configuration.EndDate.Value.AddHours(7);
+            this.duration = configuration.Duration;
+            this.isActive = configuration.IsActive;
             this.catalogueInConfigurations = catalogueInConfiguration;
             this.ConfigurationRank = configurationRank;
         }
