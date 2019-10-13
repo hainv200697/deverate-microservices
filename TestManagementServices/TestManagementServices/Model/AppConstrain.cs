@@ -20,6 +20,8 @@ namespace TestManagementServices.Model
 
         public const int minDuration = 5;
 
+        public const int empRole = 3;
+
         
     }
 }
