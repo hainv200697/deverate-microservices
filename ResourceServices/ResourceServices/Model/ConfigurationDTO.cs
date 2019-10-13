@@ -35,7 +35,7 @@ namespace ResourceServices.Model
             this.TotalQuestion = configuration.TotalQuestion;
             this.CreateDate = configuration.CreateDate;
             this.StartDate = configuration.StartDate.Value.AddHours(7);
-            this.EndDate = configuration.EndDate;
+            this.EndDate = configuration.EndDate.Value.AddHours(7);
             this.Duration = configuration.Duration;
             this.IsActive = configuration.IsActive;
         }

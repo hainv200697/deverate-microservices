@@ -25,7 +25,7 @@ namespace ResourceServices.Service
                 var configuration = from con in db.Configuration
                                     where con.IsActive == isActive
                                     select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList());
-                return configuration.ToList();
+                return configuration.ToList().OrderByDescending(x => x.ConfigId).ToList();
             }
         }
 
@@ -56,31 +56,10 @@ namespace ResourceServices.Service
                 configuration.EndDate = configurationDTO.EndDate;
                 configuration.Duration = configurationDTO.Duration;
                 configuration.IsActive = true;
+                configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
+                configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
                 db.Configuration.Add(configuration);
-                db.SaveChanges();
-                
-                foreach (var item in configurationDTO.catalogueInConfigurations)
-                {
-                    CatalogueInConfiguration catalogueInConfiguration = new CatalogueInConfiguration();
-                    catalogueInConfiguration.ConfigId = configuration.ConfigId;
-                    catalogueInConfiguration.CatalogueId = item.CatalogueId;
-                    catalogueInConfiguration.WeightPoint = item.WeightPoint;
-                    catalogueInConfiguration.IsActive = item.IsActive;
-                    db.CatalogueInConfiguration.Add(catalogueInConfiguration);
-                    db.SaveChanges();
-                }
-                
-                foreach (var item in configurationDTO.ConfigurationRank)
-                {
-                    ConfigurationRank configurationRank = new ConfigurationRank();
-                    configurationRank.ConfigId = configuration.ConfigId;
-                    configurationRank.RankId = item.RankId;
-                    configurationRank.WeightPoint = item.WeightPoint;
-                    configurationRank.IsActive = item.IsActive;
-                    db.ConfigurationRank.Add(configurationRank);
-                    db.SaveChanges();
-                }                     
-                
+                db.SaveChanges();  
                 return "Create configuration success";
             }
         }

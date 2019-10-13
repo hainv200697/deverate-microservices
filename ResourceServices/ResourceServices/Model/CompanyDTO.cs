@@ -21,7 +21,7 @@ namespace ResourceServices.Model
             this.CompanyId = company.CompanyId;
             this.Name = company.Name;
             this.Address = company.Address;
-            this.Create_At = company.CreateAt;
+            this.Create_At = company.CreateAt.Value.AddHours(7);
             this.Fax = company.Fax;
             this.Phone = company.Phone;
             this.IsActive = company.IsActive;
@@ -44,7 +44,7 @@ namespace ResourceServices.Model
             this.CompanyId = company.CompanyId;
             this.Name = company.Name;
             this.Address = company.Address;
-            this.Create_At = company.CreateAt;
+            this.Create_At = company.CreateAt.Value.AddHours(7);
             this.Fax = company.Fax;
             this.Phone = company.Phone;
             this.IsActive = company.IsActive;
