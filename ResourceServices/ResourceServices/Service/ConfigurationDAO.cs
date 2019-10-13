@@ -36,7 +36,7 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 var result = from a in db.Account
-                                 where a.AccountId == configurationDTO.TestOwnerId
+                                 where a.AccountId == configurationDTO.testOwnerId
                                  select a.CompanyId;
                 int? companyId = result.First();
                 var emps = from a in db.Account
@@ -48,13 +48,13 @@ namespace ResourceServices.Service
                 }
 
                 Configuration configuration = new Configuration();
-                configuration.ConfigId = configurationDTO.ConfigId;
-                configuration.TestOwnerId = configurationDTO.TestOwnerId;
-                configuration.TotalQuestion = configurationDTO.TotalQuestion;
+                configuration.ConfigId = configurationDTO.configId;
+                configuration.TestOwnerId = configurationDTO.testOwnerId;
+                configuration.TotalQuestion = configurationDTO.totalQuestion;
                 configuration.CreateDate = DateTime.Now;
-                configuration.StartDate = configurationDTO.StartDate;
-                configuration.EndDate = configurationDTO.EndDate;
-                configuration.Duration = configurationDTO.Duration;
+                configuration.StartDate = configurationDTO.startDate;
+                configuration.EndDate = configurationDTO.endDate;
+                configuration.Duration = configurationDTO.duration;
                 configuration.IsActive = true;
                 configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
@@ -79,14 +79,14 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == configurationDTO.ConfigId);
-                configuration.ConfigId = configurationDTO.ConfigId;
-                configuration.TestOwnerId = configurationDTO.TestOwnerId;
-                configuration.TotalQuestion = configurationDTO.TotalQuestion;
+                Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == configurationDTO.configId);
+                configuration.ConfigId = configurationDTO.configId;
+                configuration.TestOwnerId = configurationDTO.testOwnerId;
+                configuration.TotalQuestion = configurationDTO.totalQuestion;
                 configuration.CreateDate = DateTime.Now;
-                configuration.StartDate = configurationDTO.StartDate;
-                configuration.EndDate = configurationDTO.EndDate;
-                configuration.Duration = configurationDTO.Duration;
+                configuration.StartDate = configurationDTO.startDate;
+                configuration.EndDate = configurationDTO.endDate;
+                configuration.Duration = configurationDTO.duration;
                 configuration.IsActive = true;
                 db.Configuration.Update(configuration);
                 db.SaveChanges();
@@ -122,8 +122,8 @@ namespace ResourceServices.Service
             {
                 foreach (var item in configurationDTO)
                 { 
-                Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == item.ConfigId);
-                configuration.IsActive = item.IsActive;
+                Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == item.configId);
+                configuration.IsActive = item.isActive;
                 db.Configuration.Update(configuration);
                 db.SaveChanges();
                 
