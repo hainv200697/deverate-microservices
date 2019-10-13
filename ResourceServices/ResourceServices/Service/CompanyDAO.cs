@@ -26,7 +26,7 @@ namespace ResourceServices.Service
                               join acc in db.Account on com.CompanyId equals acc.CompanyId
                               where com.IsActive == isActive
                               select new CompanyDTO(acc.Company, acc.Fullname);
-                return company.ToList();
+                return company.ToList().OrderByDescending(x => x.CompanyId).ToList();
             }
         }
 

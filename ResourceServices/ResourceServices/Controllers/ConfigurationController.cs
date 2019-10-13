@@ -39,14 +39,51 @@ namespace ResourceServices.Controllers
 
         [Route("CreateConfiguration")]
         [HttpPost]
-        public ActionResult<IEnumerable<string>> CreateConfiguration([FromBody] ConfigurationDTO configuration)
+        public ActionResult CreateConfiguration([FromBody] ConfigurationDTO configuration)
         {
-            string message = ConfigurationDAO.CreateConfiguration(configuration);
-            if (message == null)
+            try
             {
-                return new JsonResult(rm.Success(message));
+                var message = ConfigurationDAO.CreateConfiguration(configuration);
+                return Ok(message);
             }
-            return new JsonResult(rm.Error(message));
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+            
+
+        [Route("UpdateConfiguration")]
+        [HttpPut]
+        public ActionResult<IEnumerable<string>> UpdateConfiguration([FromBody] ConfigurationDTO configuration)
+        {
+            try
+            {
+                var message = ConfigurationDAO.UpdateConfiguration(configuration);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+            
+            
+        }
+
+        [Route("ChangeStatusConfiguration")]
+        [HttpPut]
+        public ActionResult<IEnumerable<string>> ChangeStatusConfiguration([FromBody] List<ConfigurationDTO> configuration)
+        {
+            try
+            {
+                var message = ConfigurationDAO.ChangeStatusConfiguration(configuration);
+                return Ok(message);
+            }
+            catch(Exception)
+            {
+                return BadRequest();
+            }
+            
         }
     }
 }

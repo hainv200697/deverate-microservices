@@ -34,7 +34,7 @@ namespace ResourceServices.Model
             this.TestOwnerId = configuration.TestOwnerId;
             this.TotalQuestion = configuration.TotalQuestion;
             this.CreateDate = configuration.CreateDate;
-            this.StartDate = configuration.StartDate;
+            this.StartDate = configuration.StartDate.Value.AddHours(7);
             this.EndDate = configuration.EndDate;
             this.Duration = configuration.Duration;
             this.IsActive = configuration.IsActive;
@@ -46,8 +46,8 @@ namespace ResourceServices.Model
             this.TestOwnerId = configuration.TestOwnerId;
             this.TotalQuestion = configuration.TotalQuestion;
             this.CreateDate = configuration.CreateDate;
-            this.StartDate = configuration.StartDate;
-            this.EndDate = configuration.EndDate;
+            this.StartDate = configuration.StartDate.Value.AddHours(7);
+            this.EndDate = configuration.EndDate.Value.AddHours(7);
             this.Duration = configuration.Duration;
             this.IsActive = configuration.IsActive;
             this.catalogueInConfigurations = catalogueInConfiguration;

@@ -70,5 +70,17 @@ namespace ResourceServices.Controllers
             }
             return new JsonResult(rm.Error(message));
         }
+
+        [Route("DisableCompany")]
+        [HttpPut]
+        public IActionResult PutDisableCompany([FromBody] List<CompanyDTO> company)
+        {
+            string message = CompanyDAO.DisableCompany(company);
+            if (message == null)
+            {
+                return new JsonResult(rm.Success(message));
+            }
+            return new JsonResult(rm.Error(message));
+        }
     }
 }
