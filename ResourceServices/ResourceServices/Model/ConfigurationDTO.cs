@@ -19,6 +19,7 @@ namespace ResourceServices.Model
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }
         public int? duration { get; set; }
+        public string title { get; set; }
         public bool? isActive { get;set; }
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
         public List<ConfigurationRank> ConfigurationRank { get; set; }
