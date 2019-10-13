@@ -28,9 +28,9 @@ namespace TestManagementServices.Controllers
             RankPoint rp = SystemDAO.EvaluateRank(context, answer);
             if(rp == null)
             {
-                return new JsonResult(rm.Error("Evaluate Failed"));
+                return new JsonResult(rm.Error(Message.evaluateFailed));
             }
-            return new JsonResult(rm.Success("Evaluate successful", rp));
+            return new JsonResult(rm.Success(Message.evaluateSucceed, rp));
         }
 
         [HttpPost("GenTest")]
@@ -42,7 +42,7 @@ namespace TestManagementServices.Controllers
             {
                 return new JsonResult(rm.Error(message));
             }
-            return new JsonResult(rm.Success("Created succeed"));
+            return new JsonResult(rm.Success(Message.createSucceed));
         }
     }
 }

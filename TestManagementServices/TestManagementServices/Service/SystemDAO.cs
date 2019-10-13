@@ -12,6 +12,11 @@ namespace TestManagementServices.Service
 {
     public class SystemDAO
     {
+        /// <summary>
+        /// Trộn danh sách câu hỏi
+        /// </summary>
+        /// <param name="questions"></param>
+        /// <returns></returns>
         public static List<QuestionDTO> Shuffle(List<QuestionDTO> questions)
         {
             Random rand = new Random();
@@ -27,44 +32,50 @@ namespace TestManagementServices.Service
             return questions;
         }
 
+        /// <summary>
+        /// Tạo bài test dựa trên file config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
         public static string GenerateTest(DeverateContext db, ConfigurationDTO config)
         {
             Configuration con = db.Configuration.SingleOrDefault(o => o.ConfigId == config.configId);
             try
             {
-                if(con.Duration < 5)
+                if(con.Duration < AppConstrain.minDuration)
                 {
-                    return "Test duration at least 5 minutes";
+                    return Message.durationExceptopn;
                 }
-                List<CatalogueDTO> catas = GetCatalogueWeights(db, config.configId);
+                List<CatalogueDTO> catas = GetCatalogueWeights(db, con.ConfigId);
                 if(catas.Count == 0)
                 {
-                    return "Can't generate test because there's no catalogue chose";
+                    return Message.noCatalogueException;
                 }
                 if (con.TotalQuestion < catas.Count)
                 {
-                    return "Number of questions equal or greater than number of catalogue";
+                    return Message.numberQuestionExceptopn;
                 }
                 Account acc = db.Account.SingleOrDefault(o => o.AccountId == con.TestOwnerId);
                 int? companyId = acc.CompanyId;
 
 
                 var emps = from a in db.Account
-                           where a.CompanyId == companyId && a.RoleId == 3 && a.IsActive == true
+                           where a.CompanyId == companyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
                            select new AccountDTO(a);
                 List < AccountDTO > accounts = emps.ToList();
                 if(accounts.Count == 0)
                 {
-                    return "There'is no available employee";
+                    return Message.noEmployeeException;
                 }
                 for (int i = 0; i < accounts.Count; i++)
                 {
-                    GenerateQuestion(db, accounts[i].AccountId, config);
+                    GenerateQuestion(db, accounts[i].AccountId, con);
                 }
             }
             catch(Exception e)
             {
-                File.WriteAllText("log.txt", e.Message);
+                File.WriteAllText(AppConstrain.logFile, e.Message);
             }
 
             return null;
@@ -77,25 +88,32 @@ namespace TestManagementServices.Service
         /// <param name="accountId"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, ConfigurationDTO config)
+        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, Configuration config)
         {
             List<QuestionDTO> questions = new List<QuestionDTO>();
             try
             {
                 Random rand = new Random();
-                List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.configId);
+                int totalCataQues = 0;
+                List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
+                catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
                     catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                    totalCataQues += catalogues[i].questions.Count;
                 }
-                catalogues = GetNumberOfQuestionEachCatalogue(db, config.totalQuestion, catalogues);
-                
+                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
+                catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
+                List<QuestionRemain> remainQues = new List<QuestionRemain>();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
+                    QuestionRemain quesRe = new QuestionRemain();
+                    quesRe.catalogueId = catalogues[i].catalogueId;
                     List<int?> quesIds = new List<int?>();
                     List<QuestionDTO> totalQues = catalogues[i].questions;
+                    List<QuestionDTO> choosedQues = new List<QuestionDTO>();
                     int quesLenght = totalQues.Count;
-                    int numbOfQues = catalogues[i].numberOfQuestion > catalogues[i].questions.Count ? catalogues[i].questions.Count : catalogues[i].numberOfQuestion.Value;
+                    int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
                     for (int j = 0; j < numbOfQues; j++)
                     {
                         int rQues = rand.Next(0, quesLenght);
@@ -103,17 +121,46 @@ namespace TestManagementServices.Service
                         {
                             quesIds.Add(totalQues[rQues].questionId);
                             questions.Add(totalQues[rQues]);
+                            if(numbOfQues != quesLenght)
+                            {
+                                choosedQues.Add(totalQues[rQues]);
+                            }
                         }
                         else
                         {
                             j--;
                         }
                     }
+                    quesRe.curNumbQues = numbOfQues;
+                    quesRe.numbCataQues = catalogues[i].questions.Count;
+                    List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
+                    if(numbOfQues != quesLenght)
+                    {
+                        for(int k = 0; k < quesLenght; k++)
+                        {
+                            bool isContainQues = false;
+                            for(int m = 0; m < choosedQues.Count; m++)
+                            {
+                                if(choosedQues[m].questionId == totalQues[k].questionId)
+                                {
+                                    isContainQues = true;
+                                    break;
+                                }
+                            }
+                            if(isContainQues == false)
+                            {
+                                unchoosedQues.Add(totalQues[k]);
+                            }
+                        }
+                    }
+                    quesRe.unchoosedQues = unchoosedQues;
+                    remainQues.Add(quesRe);
                 }
+                questions = fillQues(remainQues, totalOfQues, questions);
                 questions = Shuffle(questions);
 
                 Test test = new Test();
-                test.ConfigId = config.configId.Value;
+                test.ConfigId = config.ConfigId;
                 test.AccountId = accountId;
                 test.CreateDate = DateTime.Now;
                 test.IsActive = true;
@@ -136,11 +183,60 @@ namespace TestManagementServices.Service
             }
             catch(Exception e)
             {
-                File.WriteAllText("log.txt", e.Message);
+                File.WriteAllText(AppConstrain.logFile, e.Message);
             }
             
             return questions;
         }
+
+
+        public static List<QuestionDTO> fillQues(List<QuestionRemain> remains, int totalOfQues, List<QuestionDTO> questions)
+        {
+            Random rand = new Random();
+            int? currentTotalQues = 0;
+            for(int i = 0; i < remains.Count; i++)
+            {
+                currentTotalQues += remains[i].curNumbQues;
+            }
+            int remainNumbQues = totalOfQues - currentTotalQues.Value;
+            if(totalOfQues <= currentTotalQues.Value)
+            {
+                return questions;
+            }
+            for(int i = 0; i < remains.Count; i++)
+            {
+                int unfilledQues = remains[i].numbCataQues.Value - remains[i].curNumbQues.Value;
+                if (unfilledQues == 0)
+                {
+                    continue;
+                }
+                else
+                {
+                    int difQues = remainNumbQues > remains[i].curNumbQues ? remains[i].curNumbQues.Value : remainNumbQues;
+                    for(int j = 0; j < difQues; j++)
+                    {
+                        int rQues = rand.Next(0, difQues);
+                        if (!questions.Contains(remains[i].unchoosedQues[rQues]))
+                        {
+                            questions.Add(remains[i].unchoosedQues[rQues]);
+                            remains[i].curNumbQues += 1;
+                        }
+                        else
+                        {
+                            j--;
+                        }
+                    }
+                    remainNumbQues = remainNumbQues - difQues;
+                }
+            }
+
+            return fillQues(remains, totalOfQues, questions);
+        }
+
+        /// <summary>
+        /// Tạo code access vào bài test
+        /// </summary>
+        /// <returns></returns>
         public static string GenerateCode()
         {
             
@@ -166,16 +262,24 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? catalogueId)
         {
-            var ques = from ca in db.Catalogue
-                       join q in db.Question on ca.CatalogueId equals q.CatalogueId
-                       where ca.CatalogueId == catalogueId
-                       select new QuestionDTO(q.QuestionId, q.Question1, null);
-            List<QuestionDTO> questions = ques.ToList();
-            for (int i = 0; i < questions.Count; i++)
+            try
             {
-                questions[i].answers = GetAnswerOfQuestion(db, questions[i].questionId);
+                var ques = from ca in db.Catalogue
+                           join q in db.Question on ca.CatalogueId equals q.CatalogueId
+                           where ca.CatalogueId == catalogueId
+                           select new QuestionDTO(q.QuestionId, q.Question1, null);
+                List<QuestionDTO> questions = ques.ToList();
+                for (int i = 0; i < questions.Count; i++)
+                {
+                    questions[i].answers = GetAnswerOfQuestion(db, questions[i].questionId);
+                }
+                return questions;
             }
-            return questions;
+            catch(Exception e)
+            {
+                File.WriteAllText(AppConstrain.logFile, e.Message);
+            }
+            return null;
         }
 
         /// <summary>
@@ -186,13 +290,29 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<AnswerDTO> GetAnswerOfQuestion(DeverateContext db, int? questionId)
         {
-            var answers = from q in db.Question
-                          join a in db.Answer on q.QuestionId equals a.QuestionId
-                          where q.QuestionId == questionId
-                          select new AnswerDTO(a);
-            return answers.ToList();
+            try
+            {
+                var answers = from q in db.Question
+                              join a in db.Answer on q.QuestionId equals a.QuestionId
+                              where q.QuestionId == questionId
+                              select new AnswerDTO(a);
+                return answers.ToList();
+            }
+            catch (Exception e)
+            {
+                File.WriteAllText(AppConstrain.logFile, e.Message);
+            }
+            return null;
+            
         }
 
+        /// <summary>
+        /// Lấy số lượng câu hỏi trong mỗi catalogue
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="totalQuestion"></param>
+        /// <param name="catalogues"></param>
+        /// <returns></returns>
         public static List<CatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db,  int? totalQuestion, List<CatalogueDTO> catalogues)
         {
             int currentQuestion = 0;
@@ -215,15 +335,25 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<CatalogueDTO> GetCatalogueWeights(DeverateContext db, int? configId)
         {
-            var result = from cf in db.Configuration
-                         join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
-                         where cf.ConfigId == configId
-                         select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, null, cif.Catalogue.IsActive);
-            if (result == null)
+            
+
+            try
             {
-                return null;
+                var result = from cf in db.Configuration
+                             join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
+                             where cf.ConfigId == configId
+                             select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, null, cif.Catalogue.IsActive);
+                if (result.ToList().Count == 0)
+                {
+                    return null;
+                }
+                return result.ToList();
             }
-            return result.ToList();
+            catch (Exception e)
+            {
+                File.WriteAllText(AppConstrain.logFile, e.Message);
+            }
+            return null;
         }
 
 

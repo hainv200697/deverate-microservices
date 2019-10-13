@@ -1,6 +1,7 @@
 ﻿using AuthenServices.Model;
 using AuthenServices.Models;
 using Microsoft.IdentityModel.Tokens;
+using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -83,9 +84,9 @@ namespace AuthenServices.Service
         {
             var data = ValidateToken(token).Split('_');
             AccountDTO acc = new AccountDTO();
-            acc.Username = data[0];
-            acc.RoleId = int.Parse(data[1]);
-            acc.Fullname = data[2];
+            acc.username = data[0];
+            acc.roleId = int.Parse(data[1]);
+            acc.fullname = data[2];
             return acc;
         }
     }
