@@ -27,12 +27,12 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Question question = new Question();
-                question.CatalogueId = ques.catalogueId;
-                question.Question1 = ques.question1;
-                question.IsActive = ques.isActive;
-                question.MaxPoint = ques.maxPoint;
-                question.CreateBy = ques.createBy;
-                question.Answer = ques.answer;
+                question.CatalogueId = ques.CatalogueId;
+                question.Question1 = ques.Question1;
+                question.IsActive = ques.IsActive;
+                question.MaxPoint = ques.MaxPoint;
+                question.CreateBy = ques.CreateBy;
+                question.Answer = ques.Answer;
                 context.Question.Add(question);
                 context.SaveChanges();
                 return "Creating Question success";
@@ -44,11 +44,11 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                Question question = context.Question.SingleOrDefault(c => c.QuestionId == ques.questionId);
-                question.CatalogueId = ques.catalogueId;
-                question.Question1 = ques.question1;
-                question.IsActive = ques.isActive;
-                question.MaxPoint = ques.maxPoint;
+                Question question = context.Question.SingleOrDefault(c => c.QuestionId == ques.QuestionId);
+                question.CatalogueId = ques.CatalogueId;
+                question.Question1 = ques.Question1;
+                question.IsActive = ques.IsActive;
+                question.MaxPoint = ques.MaxPoint;
                 //question.CreateBy = ques.CreateBy;
                 //question.Answer = ques.Answer;
                 //context.SaveChanges();
@@ -63,7 +63,7 @@ namespace ResourceServices.Service
             {
                 foreach (var ques in Question)
                 {
-                    Question questionDb = context.Question.SingleOrDefault(c => c.QuestionId == ques.questionId);
+                    Question questionDb = context.Question.SingleOrDefault(c => c.QuestionId == ques.QuestionId);
                     questionDb.IsActive = false;
                     context.SaveChanges();
                 }

@@ -18,23 +18,23 @@ namespace ResourceServices.Model
         }
         public CatalogueDTO(Catalogue catalogue)
         {
-            this.catalogueId = catalogue.CatalogueId;
-            this.name = catalogue.Name;
-            this.description = catalogue.Description;
-            this.isActive = catalogue.IsActive;
-            this.question = catalogue.Question;
-            this.quesCount = this.question.Count;
+            this.CatalogueId = catalogue.CatalogueId;
+            this.Name = catalogue.Name;
+            this.Description = catalogue.Description;
+            this.IsActive = catalogue.IsActive;
+            this.Question = catalogue.Question;
+            this.quescount = this.Question.Count;
         }
 
 
 
         [JsonProperty("CatalogueId")]
-        public int catalogueId { get; set; }
-        public string name { get; set; }
-        public bool? isActive { get; set; }
-        public string description { get; set; }
-        public int quesCount { get; set; }
+        public int CatalogueId { get; set; }
+        public string Name { get; set; }
+        public bool? IsActive { get; set; }
+        public string Description { get; set; }
+        public int quescount { get; set; }
 
-        public virtual ICollection<Question> question { get; set; }
+        public virtual ICollection<Question> Question { get; set; }
     }
 }
