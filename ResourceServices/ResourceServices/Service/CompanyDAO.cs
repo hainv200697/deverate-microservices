@@ -1,5 +1,6 @@
 ﻿using AuthenServices.Models;
 using ResourceServices.Model;
+using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,8 +25,8 @@ namespace ResourceServices.Service
                 var company = from com in db.Company
                               join acc in db.Account on com.CompanyId equals acc.CompanyId
                               where com.IsActive == isActive
-                              select new CompanyDTO(com, acc.Fullname);
-                return company.ToList();
+                              select new CompanyDTO(acc.Company, acc.Fullname);
+                return company.ToList().OrderByDescending(x => x.CompanyId).ToList();
             }
         }
 
@@ -51,18 +52,26 @@ namespace ResourceServices.Service
             }
         }
 
-        public static string CreateCompany(CompanyDTO company)
+        public static string CreateCompany(CompanyDataDTO companyData)
         {
             using (DeverateContext db = new DeverateContext())
             {
                 Company com = new Company();
-                com.Address = company.Address;
-                com.Name = company.Name;
+                com.Address = companyData.CompanyDTO.Address;
+                com.Name = companyData.CompanyDTO.Name;
                 com.CreateAt = DateTime.Now;
-                com.Fax = company.Fax;
-                com.Phone = company.Phone;
-                com.IsActive = company.IsActive;
+                com.Fax = companyData.CompanyDTO.Fax;
+                com.Phone = companyData.CompanyDTO.Phone;
+                com.IsActive = companyData.CompanyDTO.IsActive;
                 db.Company.Add(com);
+                db.SaveChanges();
+
+                Account account = new Account();
+                account.CompanyId = com.CompanyId;
+                account.Fullname = companyData.AccountDTO.Fullname;
+                account.Email = companyData.AccountDTO.Email;
+                account.IsActive = true;
+                db.Account.Add(account);
                 db.SaveChanges();
                 return null;
             }
