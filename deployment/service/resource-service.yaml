@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: resource-84755795d6-kb9rj 	 	
+spec:
+  type: ClusterIP
+  selector:
+    component: resource
+  ports:
+  - port: 80
+    targetPort: 80

@@ -58,8 +58,9 @@ namespace ResourceServices.Service
                 configuration.IsActive = true;
                 configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
-                db.Configuration.Add(configuration);
-                db.SaveChanges();  
+                var configSave = db.Configuration.Add(configuration);
+                db.SaveChanges();
+                configurationDTO.configId = configSave.Entity.ConfigId;
                 return configurationDTO;
             }
         }
