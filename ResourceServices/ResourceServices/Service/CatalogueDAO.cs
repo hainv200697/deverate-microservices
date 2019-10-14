@@ -14,10 +14,21 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var catelogue = from cate in context.Catalogue
-                                where cate.IsActive == true
-                                select new CatalogueDTO(cate);
-                return catelogue.ToList();
+                var catalogue = from cata in context.Catalogue
+                                where cata.IsActive == true
+                                select new CatalogueDTO(cata,cata.Question.Count(ques => ques.IsActive == true));
+                return catalogue.ToList();
+            }
+
+        }
+
+
+        public static CatalogueDTO GetCatalogueById(int id)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                var cataDb = context.Catalogue.Select(cata => new CatalogueDTO(cata)).SingleOrDefault(c => c.CatalogueId == id && c.IsActive == true);
+                return cataDb;
             }
 
         }
@@ -27,12 +38,12 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Catalogue cata = new Catalogue();
-                cata.Description = catalogue.description;
-                cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive;
+                cata.Description = catalogue.Description;
+                cata.Name = catalogue.Name;
+                cata.IsActive = catalogue.IsActive;
                 context.Catalogue.Add(cata);
                 context.SaveChanges();
-                return "Creating catalogue success";
+                return "{\"message\" : \"Creating catalogue success\"}";
             }
 
         }
@@ -41,12 +52,12 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                Catalogue cata = context.Catalogue.SingleOrDefault(c => c.CatalogueId == catalogue.catalogueId);
-                cata.Description = catalogue.description;
-                cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive;
+                Catalogue cata = context.Catalogue.SingleOrDefault(c => c.CatalogueId == catalogue.CatalogueId);
+                cata.Description = catalogue.Description;
+                cata.Name = catalogue.Name;
+                cata.IsActive = catalogue.IsActive;
                 context.SaveChanges();
-                return "UPdating catalogue success"; 
+                return "{\"message\" : \"Updating catalogue success\"}"; 
             }
 
         }
@@ -57,11 +68,15 @@ namespace ResourceServices.Service
             {
                 foreach (var cata in catalogue)
                 {
-                    Catalogue cataDb = context.Catalogue.SingleOrDefault(c => c.CatalogueId == cata.catalogueId);
+                    Catalogue cataDb = context.Catalogue.SingleOrDefault(c => c.CatalogueId == cata.CatalogueId);
                     cataDb.IsActive = false;
+                    foreach (var item in cataDb.Question.ToList())
+                    {
+                        item.IsActive = false;
+                    }
                     context.SaveChanges();
                 }
-                return "Removing catalog success";
+                return "{\"message\" : \"Removing catalog success\"}";
             }
         }
     }
