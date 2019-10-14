@@ -1,7 +1,9 @@
 ﻿using AuthenServices.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ResourceServices.Model;
 using ResourceServices.Models;
+using ResourceServices.RabbitMQ;
 using ResourceServices.Service;
 using System;
 using System.Collections.Generic;
@@ -57,10 +59,16 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = ConfigurationDAO.CreateConfiguration(configuration);
-                return Ok(rm.Success(message));
+                var save = ConfigurationDAO.CreateConfiguration(configuration);
+                if (save == null)
+                {
+                    return BadRequest("No employee");
+                }
+                Producer producer = new Producer();
+                producer.PublishMessage(save.configId + "", "GenerateTest");
+                return Ok(rm.Success("Save success"));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }

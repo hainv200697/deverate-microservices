@@ -18,13 +18,6 @@ namespace TestManagementServices.RabbitMQ
         private IModel channel;
         private string queueName;
         private string exch;
-
-        DeverateContext context;
-
-        public Consumer(DeverateContext context)
-        {
-            this.context = context;
-        }
         public Consumer(string exch)
         {
             InitRabbitMQ(exch);
@@ -55,8 +48,7 @@ namespace TestManagementServices.RabbitMQ
                 switch (this.exch)
                 {
                     case AppConstrain.gen_test_consumer:
-                        ConfigurationDTO configuration = JsonConvert.DeserializeObject<ConfigurationDTO>(message);
-                        SystemDAO.GenerateTest(context, configuration);
+                        SystemDAO.GenerateTest(message);
                         break;
                 }
                 

@@ -39,47 +39,49 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static string GenerateTest(DeverateContext db, ConfigurationDTO config)
+        public static string GenerateTest(string configId)
         {
-            Configuration con = db.Configuration.SingleOrDefault(o => o.ConfigId == config.configId);
-            try
+            using (DeverateContext context = new DeverateContext())
             {
-                if(con.Duration < AppConstrain.minDuration)
+                try
                 {
-                    return Message.durationExceptopn;
-                }
-                List<CatalogueDTO> catas = GetCatalogueWeights(db, con.ConfigId);
-                if(catas.Count == 0)
-                {
-                    return Message.noCatalogueException;
-                }
-                if (con.TotalQuestion < catas.Count)
-                {
-                    return Message.numberQuestionExceptopn;
-                }
-                Account acc = db.Account.SingleOrDefault(o => o.AccountId == con.TestOwnerId);
-                int? companyId = acc.CompanyId;
+                    Configuration con = context.Configuration.SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
+                    if (con.Duration < AppConstrain.minDuration)
+                    {
+                        return Message.durationExceptopn;
+                    }
+                    List<CatalogueDTO> catas = GetCatalogueWeights(context, con.ConfigId);
+                    if (catas.Count == 0)
+                    {
+                        return Message.noCatalogueException;
+                    }
+                    if (con.TotalQuestion < catas.Count)
+                    {
+                        return Message.numberQuestionExceptopn;
+                    }
+                    Account acc = context.Account.SingleOrDefault(o => o.AccountId == con.TestOwnerId);
+                    int? companyId = acc.CompanyId;
 
 
-                var emps = from a in db.Account
-                           where a.CompanyId == companyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
-                           select new AccountDTO(a);
-                List < AccountDTO > accounts = emps.ToList();
-                if(accounts.Count == 0)
-                {
-                    return Message.noEmployeeException;
+                    var emps = from a in context.Account
+                               where a.CompanyId == companyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
+                               select new AccountDTO(a);
+                    List<AccountDTO> accounts = emps.ToList();
+                    if (accounts.Count == 0)
+                    {
+                        return Message.noEmployeeException;
+                    }
+                    for (int i = 0; i < accounts.Count; i++)
+                    {
+                        GenerateQuestion(context, accounts[i].AccountId, con);
+                    }
                 }
-                for (int i = 0; i < accounts.Count; i++)
+                catch (Exception e)
                 {
-                    GenerateQuestion(db, accounts[i].AccountId, con);
+                    File.WriteAllText(AppConstrain.logFile, e.Message);
                 }
+                return null;
             }
-            catch(Exception e)
-            {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
-            }
-
-            return null;
         }
 
         /// <summary>
@@ -122,7 +124,7 @@ namespace TestManagementServices.Service
                         {
                             quesIds.Add(totalQues[rQues].questionId);
                             questions.Add(totalQues[rQues]);
-                            if(numbOfQues != quesLenght)
+                            if (numbOfQues != quesLenght)
                             {
                                 choosedQues.Add(totalQues[rQues]);
                             }
@@ -135,20 +137,20 @@ namespace TestManagementServices.Service
                     quesRe.curNumbQues = numbOfQues;
                     quesRe.numbCataQues = catalogues[i].questions.Count;
                     List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
-                    if(numbOfQues != quesLenght)
+                    if (numbOfQues != quesLenght)
                     {
-                        for(int k = 0; k < quesLenght; k++)
+                        for (int k = 0; k < quesLenght; k++)
                         {
                             bool isContainQues = false;
-                            for(int m = 0; m < choosedQues.Count; m++)
+                            for (int m = 0; m < choosedQues.Count; m++)
                             {
-                                if(choosedQues[m].questionId == totalQues[k].questionId)
+                                if (choosedQues[m].questionId == totalQues[k].questionId)
                                 {
                                     isContainQues = true;
                                     break;
                                 }
                             }
-                            if(isContainQues == false)
+                            if (isContainQues == false)
                             {
                                 unchoosedQues.Add(totalQues[k]);
                             }
@@ -171,7 +173,7 @@ namespace TestManagementServices.Service
                 test.Code = GenerateCode();
                 db.SaveChanges();
 
-                for(int i = 0; i < questions.Count; i++)
+                for (int i = 0; i < questions.Count; i++)
                 {
                     QuestionInTest inTest = new QuestionInTest();
                     inTest.TestId = test.TestId;
@@ -182,11 +184,11 @@ namespace TestManagementServices.Service
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 File.WriteAllText(AppConstrain.logFile, e.Message);
             }
-            
+
             return questions;
         }
 
@@ -195,16 +197,16 @@ namespace TestManagementServices.Service
         {
             Random rand = new Random();
             int? currentTotalQues = 0;
-            for(int i = 0; i < remains.Count; i++)
+            for (int i = 0; i < remains.Count; i++)
             {
                 currentTotalQues += remains[i].curNumbQues;
             }
             int remainNumbQues = totalOfQues - currentTotalQues.Value;
-            if(totalOfQues <= currentTotalQues.Value)
+            if (totalOfQues <= currentTotalQues.Value)
             {
                 return questions;
             }
-            for(int i = 0; i < remains.Count; i++)
+            for (int i = 0; i < remains.Count; i++)
             {
                 int unfilledQues = remains[i].numbCataQues.Value - remains[i].curNumbQues.Value;
                 if (unfilledQues == 0)
@@ -214,7 +216,7 @@ namespace TestManagementServices.Service
                 else
                 {
                     int difQues = remainNumbQues > remains[i].curNumbQues ? remains[i].curNumbQues.Value : remainNumbQues;
-                    for(int j = 0; j < difQues; j++)
+                    for (int j = 0; j < difQues; j++)
                     {
                         int rQues = rand.Next(0, difQues);
                         if (!questions.Contains(remains[i].unchoosedQues[rQues]))
@@ -240,7 +242,7 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static string GenerateCode()
         {
-            
+
             string code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
                 AppConstrain.includeNumeric, AppConstrain.includeSpecial,
                 AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
@@ -276,7 +278,7 @@ namespace TestManagementServices.Service
                 }
                 return questions;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 File.WriteAllText(AppConstrain.logFile, e.Message);
             }
@@ -304,7 +306,7 @@ namespace TestManagementServices.Service
                 File.WriteAllText(AppConstrain.logFile, e.Message);
             }
             return null;
-            
+
         }
 
         /// <summary>
@@ -314,10 +316,10 @@ namespace TestManagementServices.Service
         /// <param name="totalQuestion"></param>
         /// <param name="catalogues"></param>
         /// <returns></returns>
-        public static List<CatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db,  int? totalQuestion, List<CatalogueDTO> catalogues)
+        public static List<CatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db, int? totalQuestion, List<CatalogueDTO> catalogues)
         {
             int currentQuestion = 0;
-            for(int i = 0; i < catalogues.Count; i++)
+            for (int i = 0; i < catalogues.Count; i++)
             {
                 double numberOfQuestion = catalogues[i].weightPoint.Value * totalQuestion.Value;
                 catalogues[i].numberOfQuestion = Convert.ToInt32(numberOfQuestion);
@@ -336,7 +338,7 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<CatalogueDTO> GetCatalogueWeights(DeverateContext db, int? configId)
         {
-            
+
 
             try
             {
@@ -368,25 +370,25 @@ namespace TestManagementServices.Service
         public static RankPoint EvaluateRank(DeverateContext db, TestAnswerDTO answers)
         {
 
-                double? totalPoint = CalculateResultPoint(db, answers);
-                List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, answers);
-                configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
-                ConfigurationRankDTO tmp = new ConfigurationRankDTO();
-                tmp.rankId = configurationRanks[0].rankId.Value;
-                tmp.point = configurationRanks[0].point;
-                foreach (ConfigurationRankDTO cr in configurationRanks)
+            double? totalPoint = CalculateResultPoint(db, answers);
+            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, answers);
+            configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
+            ConfigurationRankDTO tmp = new ConfigurationRankDTO();
+            tmp.rankId = configurationRanks[0].rankId.Value;
+            tmp.point = configurationRanks[0].point;
+            foreach (ConfigurationRankDTO cr in configurationRanks)
+            {
+                if (tmp.point > cr.point)
                 {
-                    if (tmp.point > cr.point)
-                    {
-                        tmp = cr;
-                    }
+                    tmp = cr;
                 }
-                string rank = db.Rank.SingleOrDefault(r => r.RankId == tmp.rankId).Name;
-                if (rank == null)
-                {
-                    return null;
-                }
-                return new RankPoint(rank, tmp.point);
+            }
+            string rank = db.Rank.SingleOrDefault(r => r.RankId == tmp.rankId).Name;
+            if (rank == null)
+            {
+                return null;
+            }
+            return new RankPoint(rank, tmp.point);
 
         }
 
@@ -441,10 +443,10 @@ namespace TestManagementServices.Service
         public static List<CatalogueWeightPointDTO> GetWeightPoints(DeverateContext db, int? testId)
         {
             var result = from t in db.Test
-                            join cf in db.Configuration on t.ConfigId equals cf.ConfigId
-                            join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
-                            where t.TestId == testId
-                            select new CatalogueWeightPointDTO(cif.CatalogueId, cif.WeightPoint);
+                         join cf in db.Configuration on t.ConfigId equals cf.ConfigId
+                         join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
+                         where t.TestId == testId
+                         select new CatalogueWeightPointDTO(cif.CatalogueId, cif.WeightPoint);
             if (result == null)
             {
                 return null;
@@ -525,9 +527,9 @@ namespace TestManagementServices.Service
                                  .ThenInclude(y => y.Answer)
                                  .Where(t => t.TestId == test.TestId);
             var result = new List<QuestionInTestDTO>();
-            foreach(QuestionInTest item in questionInTest.ToList())
+            foreach (QuestionInTest item in questionInTest.ToList())
             {
-                result.Add(new QuestionInTestDTO(item.Qitid, item.TestId, item.Question.Answer.ToList(), item.AnswerId ,item.Question.Question1));
+                result.Add(new QuestionInTestDTO(item.Qitid, item.TestId, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
             }
             return result;
         }
