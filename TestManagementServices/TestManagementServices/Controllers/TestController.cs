@@ -22,11 +22,22 @@ namespace TestManagementServices.Controllers
         {
             this.context = context;
         }
-        [HttpGet("MyConfigTest/{acccountId}")]
-        public ActionResult<IEnumerable<string>> GetAllConfigTestInfoToday(int acccountId)
+        [HttpGet("MyConfigTest/{accountId}")]
+        public ActionResult<IEnumerable<string>> GetAllConfigTestInfoToday(int accountId)
         {
-            List<ConfigurationDTO> com = SystemDAO.GetAllConfigTestTodayByUsername(context, acccountId);
+            List<ConfigurationDTO> com = SystemDAO.GetAllConfigTestTodayByUsername(context, accountId);
             return new JsonResult(rm.Success(com));
+        }
+
+        [HttpPost("MyTest")]
+        public IActionResult QueryQuestionInMyTest([FromBody]QueryTest queryTest) 
+        {
+            var listQuestion = SystemDAO.GetQuestionInTest(context, queryTest);
+            if (listQuestion == null)
+            {
+                return BadRequest("Code invalid");
+            }
+            return Ok(listQuestion);
         }
     }
 }

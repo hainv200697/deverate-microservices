@@ -1,5 +1,6 @@
 ﻿using AuthenServices.Model;
 using AuthenServices.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -510,6 +511,25 @@ namespace TestManagementServices.Service
                          where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
                          select new ConfigurationDTO(cf);
             return result.ToList();
+        }
+
+        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, QueryTest queryTest)
+        {
+            Test test = db.Test.SingleOrDefault(c => c.AccountId == queryTest.accountId && c.ConfigId == queryTest.configId);
+            if (test.Code != queryTest.code)
+            {
+                return null;
+            }
+            var questionInTest = db.QuestionInTest
+                                 .Include(x => x.Question)
+                                 .ThenInclude(y => y.Answer)
+                                 .Where(t => t.TestId == test.TestId);
+            var result = new List<QuestionInTestDTO>();
+            foreach(QuestionInTest item in questionInTest.ToList())
+            {
+                result.Add(new QuestionInTestDTO(item.Qitid, item.TestId, item.Question.Answer.ToList(), item.AnswerId ,item.Question.Question1));
+            }
+            return result;
         }
     }
 }
