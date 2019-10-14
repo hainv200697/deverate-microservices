@@ -35,7 +35,7 @@ namespace ResourceServices.Service
                 question.Answer = ques.answer;
                 context.Question.Add(question);
                 context.SaveChanges();
-                return "Creating Question success";
+                return Message.createQuestionSucceed;
             }
 
         }
@@ -52,7 +52,7 @@ namespace ResourceServices.Service
                 //question.CreateBy = ques.CreateBy;
                 //question.Answer = ques.Answer;
                 //context.SaveChanges();
-                return "UPdating Question success"; 
+                return Message.updateQuestionSucceed; 
             }
 
         }
@@ -67,7 +67,7 @@ namespace ResourceServices.Service
                     questionDb.IsActive = false;
                     context.SaveChanges();
                 }
-                return "Removing Question success";
+                return Message.removeQuestionSucceed;
             }
         }
     }

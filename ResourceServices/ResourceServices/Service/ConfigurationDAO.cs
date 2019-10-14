@@ -44,7 +44,7 @@ namespace ResourceServices.Service
                            select new AccountDTO(a);
                 if(emps.ToList().Count == 0)
                 {
-                    return null;
+                    return Message.noAvailableEmployee;
                 }
 
                 Configuration configuration = new Configuration();
@@ -57,10 +57,9 @@ namespace ResourceServices.Service
                 configuration.IsActive = configurationDTO.isActive;
                 configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
-                var configSave = db.Configuration.Add(configuration);
-                db.SaveChanges();
-                configurationDTO.configId = configSave.Entity.ConfigId;
-                return configurationDTO;
+                db.Configuration.Add(configuration);
+                db.SaveChanges();  
+                return Message.createConfigSucceed;
             }
         }
 
