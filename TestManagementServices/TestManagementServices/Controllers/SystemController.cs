@@ -26,19 +26,19 @@ namespace TestManagementServices.Controllers
         {
 
             RankPoint rp = SystemDAO.EvaluateRank(context, answer);
-            if(rp == null)
+            if (rp == null)
             {
                 return new JsonResult(rm.Error(Message.evaluateFailed));
             }
             return new JsonResult(rm.Success(Message.evaluateSucceed, rp));
         }
 
-        [HttpPost("GenTest")]
-        public ActionResult<IEnumerable<string>> GenTest([FromBody]ConfigurationDTO configuration)
+        [HttpGet("GenTest/{configId}")]
+        public ActionResult<IEnumerable<string>> GenTest(int configId)
         {
 
-            string message = SystemDAO.GenerateTest(context, configuration);
-            if(message != null)
+            string message = SystemDAO.GenerateTest(configId + "");
+            if (message != null)
             {
                 return new JsonResult(rm.Error(message));
             }
