@@ -62,7 +62,7 @@ namespace ResourceServices.Service
                     context.Question.Add(question);
                     context.SaveChanges();
                 }
-                return "Creating Question success";
+                return Message.createQuestionSucceed;
             }
 
         }
@@ -70,15 +70,16 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                    Question question = new Question();
-                    question.CatalogueId = ques.CatalogueId;
-                    question.Question1 = ques.Question1;
-                    question.IsActive = true;
-                    question.CreateBy = ques.CreateBy;
-                    question.Answer = ques.Answer;
-                    context.Question.Add(question);
-                    context.SaveChanges();
-                return "Creating Question success";
+                Question question = new Question();
+                question.CatalogueId = ques.catalogueId;
+                question.Question1 = ques.question1;
+                question.IsActive = ques.isActive;
+                question.MaxPoint = ques.maxPoint;
+                question.CreateBy = ques.createBy;
+                question.Answer = ques.answer;
+                context.Question.Add(question);
+                context.SaveChanges();
+                return Message.createQuestionSucceed;
             }
 
         }
@@ -103,7 +104,7 @@ namespace ResourceServices.Service
                     question.Answer = answers;
                     context.Question.Update(question);
                     context.SaveChanges();
-                    return "{\"message\" : \"Updating Question success\"}";
+                    return Message.updateQuestionSucceed; 
                 }
             } catch (Exception ex)
             {
@@ -128,7 +129,7 @@ namespace ResourceServices.Service
                     }
                     context.SaveChanges();
                 }
-                return "Removing Question success";
+                return Message.removeQuestionSucceed;
             }
         }
 

@@ -11,18 +11,18 @@ namespace ResourceServices.Model
     [JsonObject("ConfigurationDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ConfigurationDTO
     {
-        [JsonProperty("ConfigId")]
         public int configId { get; set; }
         public int? testOwnerId { get; set; }
         public int? totalQuestion { get; set; }
-        public DateTime? createDate { get; set; }
+        public DateTime? createDate { get; set; } = DateTime.Now;
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }
         public int? duration { get; set; }
         public string title { get; set; }
-        public bool? isActive { get;set; }
+        public bool? isActive { get; set; } = true;
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
         public List<ConfigurationRank> ConfigurationRank { get; set; }
+
 
         public ConfigurationDTO()
         {
@@ -51,6 +51,7 @@ namespace ResourceServices.Model
             this.endDate = configuration.EndDate.Value.AddHours(7);
             this.duration = configuration.Duration;
             this.isActive = configuration.IsActive;
+            this.title = configuration.Title;
             this.catalogueInConfigurations = catalogueInConfiguration;
             this.ConfigurationRank = configurationRank;
         }

@@ -15,15 +15,18 @@ namespace AuthenServices.Service
         private static string Secret = "ERMN05OPLoDvbTTa/QkqLNMI7cPLguaRyHzyg7n5qNBVjQmtBhz4SzYh4NBVCXi3KJHlSXKP+oi2+bXr6CUYTR==";
         public static string GenerateToken(Account account)
         {
-            string accountInfo = account.Username + "_" + account.RoleId + "_" + account.Fullname;
             byte[] key = Convert.FromBase64String(Secret);
             SymmetricSecurityKey securityKey = new SymmetricSecurityKey(key);
             DateTime expires = DateTime.UtcNow.AddDays(7);
             SecurityTokenDescriptor descriptor = new SecurityTokenDescriptor
 
             {
-                Subject = new ClaimsIdentity(new[] {
-                      new Claim(ClaimTypes.Name, accountInfo)}),
+                Subject = new ClaimsIdentity(new[]
+                        {
+                            new Claim("AccountId",  account.AccountId.ToString()),
+                            new Claim("Roles", account.Role.Description),
+                            new Claim("Fullname", account.Fullname)
+                        }),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(securityKey,
                 SecurityAlgorithms.HmacSha256Signature)
