@@ -32,7 +32,7 @@ namespace ResourceServices.Service
                 cata.IsActive = catalogue.isActive;
                 context.Catalogue.Add(cata);
                 context.SaveChanges();
-                return "Creating catalogue success";
+                return Message.createCatalogueSucceed;
             }
 
         }
@@ -46,7 +46,7 @@ namespace ResourceServices.Service
                 cata.Name = catalogue.name;
                 cata.IsActive = catalogue.isActive;
                 context.SaveChanges();
-                return "UPdating catalogue success"; 
+                return Message.updateCatalogueSucceed; 
             }
 
         }
@@ -61,7 +61,7 @@ namespace ResourceServices.Service
                     cataDb.IsActive = false;
                     context.SaveChanges();
                 }
-                return "Removing catalog success";
+                return Message.removeCatalogueSucceed;
             }
         }
     }

@@ -25,7 +25,7 @@ namespace ResourceServices.Service
                 var configuration = from con in db.Configuration
                                     where con.IsActive == isActive
                                     select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList());
-                return configuration.ToList().OrderByDescending(x => x.ConfigId).ToList();
+                return configuration.ToList().OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -44,7 +44,7 @@ namespace ResourceServices.Service
                            select new AccountDTO(a);
                 if(emps.ToList().Count == 0)
                 {
-                    return "No available employee";
+                    return Message.noAvailableEmployee;
                 }
 
                 Configuration configuration = new Configuration();
@@ -60,7 +60,7 @@ namespace ResourceServices.Service
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
                 db.Configuration.Add(configuration);
                 db.SaveChanges();  
-                return "Create configuration success";
+                return Message.createConfigSucceed;
             }
         }
 
