@@ -1,5 +1,6 @@
 ﻿using AuthenServices.Model;
 using AuthenServices.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -495,6 +496,40 @@ namespace TestManagementServices.Service
                 cataloguePoints.Add(new CataloguePointDTO(cata.catalogueId, cataloguePoint));
             }
             return cataloguePoints;
+        }
+
+        /// <summary>
+        /// Lấy danh sách các bài test của user trong ngày
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="acccountId"></param>
+        /// <returns></returns>
+        public static List<ConfigurationDTO> GetAllConfigTestTodayByUsername(DeverateContext db, int? acccountId)
+        {
+            var result = from cf in db.Configuration
+                         join t in db.Test on cf.ConfigId equals t.ConfigId
+                         where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
+                         select new ConfigurationDTO(cf);
+            return result.ToList();
+        }
+
+        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, QueryTest queryTest)
+        {
+            Test test = db.Test.SingleOrDefault(c => c.AccountId == queryTest.accountId && c.ConfigId == queryTest.configId);
+            if (test.Code != queryTest.code)
+            {
+                return null;
+            }
+            var questionInTest = db.QuestionInTest
+                                 .Include(x => x.Question)
+                                 .ThenInclude(y => y.Answer)
+                                 .Where(t => t.TestId == test.TestId);
+            var result = new List<QuestionInTestDTO>();
+            foreach(QuestionInTest item in questionInTest.ToList())
+            {
+                result.Add(new QuestionInTestDTO(item.Qitid, item.TestId, item.Question.Answer.ToList(), item.AnswerId ,item.Question.Question1));
+            }
+            return result;
         }
     }
 }
