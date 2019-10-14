@@ -51,6 +51,7 @@ namespace ResourceServices.Model
             this.endDate = configuration.EndDate.Value.AddHours(7);
             this.duration = configuration.Duration;
             this.isActive = configuration.IsActive;
+            this.title = configuration.Title;
             this.catalogueInConfigurations = catalogueInConfiguration;
             this.ConfigurationRank = configurationRank;
         }
