@@ -8,19 +8,18 @@ using System.Net.Http;
 using ResourceServices.Model;
 using ResourceServices.Service;
 using System.Net;
+using Newtonsoft.Json;
 using ResourceServices.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ResourceServices.Controllers
 {
     [Route("api/[controller]")]
     public class QuestionController : Controller
     {
-        ResponseMessage _rm = new ResponseMessage();
-        DeverateContext context;
-
         [HttpGet]
         [Route("GetAllQuestion")]
-        public ActionResult GetAllCatelogue()
+        public ActionResult GetAllQuestion()
         {
             try
             {
@@ -33,13 +32,62 @@ namespace ResourceServices.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("GetQuestionByCatalogue")]
+        public ActionResult GetQuestionByCatalogueId(int id)
+        {
+            try
+            {
+                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(id);
+                return Ok(Questions);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Route("GetQuestionByStatus")]
+        public ActionResult GetQuestionByStatus(bool status,int id)
+        {
+            try
+            {
+                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByStatus(status,id);
+                return Ok(Questions);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPost]
+        [Route("CreateQuestionExcel")]
+        public ActionResult CreateQuestionExcel([FromBody] List<QuestionDTO> question)
+        {
+            try
+                    {
+                //List<QuestionDTO> question = JsonConvert.DeserializeObject<QuestionDTO>(quest);
+                var message = QuestionDAO.CreateQuestionExcel(question);
+                ////string message = "avc";
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
         [HttpPost]
         [Route("CreateQuestion")]
-        public ActionResult CreateQuestion(QuestionDTO ques)
+        public ActionResult CreateQuestion([FromBody] QuestionDTO question)
         {
             try
             {
-                string message = QuestionDAO.CreateQuestion(ques);
+                //List<QuestionDTO> question = JsonConvert.DeserializeObject<QuestionDTO>(quest);
+                var message = QuestionDAO.CreateQuestion(question);
+                ////string message = "avc";
                 return Ok(message);
             }
             catch (Exception)
@@ -49,13 +97,13 @@ namespace ResourceServices.Controllers
         }
 
 
-        [HttpPost]
+        [HttpPut]
         [Route("UpdateQuestion")]
-        public ActionResult UpdateQuestion(QuestionDTO ques)
+        public ActionResult UpdateQuestion([FromBody]QuestionDTO ques)
         {
             try
             {
-                string message = QuestionDAO.UpdateQuestion(ques);
+                var message = QuestionDAO.UpdateQuestion(ques);
                 return Ok(message);
             }
             catch (Exception)
@@ -64,13 +112,13 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("RemoveQuestion")]
-        public ActionResult RemoveQuestion(List<QuestionDTO> ques)
+        public ActionResult RemoveQuestion([FromBody] List<QuestionDTO> ques)
         {
             try
             {
-                string message = QuestionDAO.removeQuestion(ques);
+                var message = QuestionDAO.removeQuestion(ques);
                 return Ok(message);
             }
             catch (Exception)
@@ -78,5 +126,6 @@ namespace ResourceServices.Controllers
                 return BadRequest();
             }
         }
+
     }
 }
