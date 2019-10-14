@@ -54,11 +54,11 @@ namespace ResourceServices.Service
                 foreach (var ques in quest)
                 {
                     Question question = new Question();
-                    question.CatalogueId = ques.CatalogueId;
-                    question.Question1 = ques.Question1;
+                    question.CatalogueId = ques.catalogueId;
+                    question.Question1 = ques.question1;
                     question.IsActive = true;
-                    question.CreateBy = ques.CreateBy;
-                    question.Answer = ques.Answer;
+                    question.CreateBy = ques.createBy;
+                    question.Answer = ques.answer;
                     context.Question.Add(question);
                     context.SaveChanges();
                 }
@@ -90,12 +90,12 @@ namespace ResourceServices.Service
             {
                 using (DeverateContext context = new DeverateContext())
                 {
-                    Question question = context.Question.Include(x=>x.Answer).SingleOrDefault(x=>x.QuestionId == ques.QuestionId);
-                    question.Question1 = ques.Question1;
-                    question.IsActive = ques.IsActive;
-                    question.CreateBy = ques.CreateBy;
+                    Question question = context.Question.Include(x=>x.Answer).SingleOrDefault(x=>x.QuestionId == ques.questionId);
+                    question.Question1 = ques.question1;
+                    question.IsActive = ques.isActive;
+                    question.CreateBy = ques.createBy;
                     var answers = new List<Answer>();
-                    foreach(var item in ques.Answer)
+                    foreach(var item in ques.answer)
                     {
                         var answer = new Answer() { Answer1 = item.Answer1, Point = item.Point };
                         answers.Add(answer);
@@ -121,7 +121,7 @@ namespace ResourceServices.Service
             {
                 foreach (var ques in Question)
                 {
-                    Question questionDb = context.Question.SingleOrDefault(c => c.QuestionId == ques.QuestionId);
+                    Question questionDb = context.Question.SingleOrDefault(c => c.QuestionId == ques.questionId);
                     questionDb.IsActive = false;
                     foreach(var item in questionDb.Answer.ToList())
                     {
