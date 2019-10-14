@@ -1,7 +1,9 @@
 ﻿using AuthenServices.Models;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ResourceServices.Model;
 using ResourceServices.Models;
+using ResourceServices.RabbitMQ;
 using ResourceServices.Service;
 using System;
 using System.Collections.Generic;
@@ -74,8 +76,12 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                string message = CompanyDAO.CreateCompany(companyDataDTO);
-                return Ok(rm.Success(message));
+                var company = CompanyDAO.CreateCompany(companyDataDTO);
+                var account = companyDataDTO.AccountDTO;
+                var messageAccount = new MessageAccount(company.CompanyId, account.fullname, account.email, 2);
+                Producer producer = new Producer();
+                producer.PublishMessage(message: JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
+                return new JsonResult(rm.Success("Save success"));
             }
             catch (Exception)
             {
