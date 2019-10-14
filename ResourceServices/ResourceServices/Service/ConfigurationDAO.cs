@@ -31,7 +31,7 @@ namespace ResourceServices.Service
 
 
 
-        public static string CreateConfiguration(ConfigurationDTO configurationDTO)
+        public static ConfigurationDTO CreateConfiguration(ConfigurationDTO configurationDTO)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -44,23 +44,23 @@ namespace ResourceServices.Service
                            select new AccountDTO(a);
                 if(emps.ToList().Count == 0)
                 {
-                    return "No available employee";
+                    return null;
                 }
 
                 Configuration configuration = new Configuration();
-                configuration.ConfigId = configurationDTO.configId;
                 configuration.TestOwnerId = configurationDTO.testOwnerId;
                 configuration.TotalQuestion = configurationDTO.totalQuestion;
-                configuration.CreateDate = DateTime.Now;
+                configuration.CreateDate = configurationDTO.createDate;
                 configuration.StartDate = configurationDTO.startDate;
                 configuration.EndDate = configurationDTO.endDate;
                 configuration.Duration = configurationDTO.duration;
-                configuration.IsActive = true;
+                configuration.IsActive = configurationDTO.isActive;
                 configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
-                db.Configuration.Add(configuration);
-                db.SaveChanges();  
-                return "Create configuration success";
+                var configSave = db.Configuration.Add(configuration);
+                db.SaveChanges();
+                configurationDTO.configId = configSave.Entity.ConfigId;
+                return configurationDTO;
             }
         }
 
