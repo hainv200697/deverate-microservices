@@ -74,7 +74,7 @@ namespace ResourceServices.Controllers
             try
             {
                 var message = ConfigurationDAO.UpdateConfiguration(configuration);
-                return Ok(message);
+                return Ok(rm.Success(message));
             }
             catch (Exception)
             {
@@ -89,7 +89,7 @@ namespace ResourceServices.Controllers
             try
             {
                 var message = ConfigurationDAO.ChangeStatusConfiguration(configuration);
-                return Ok(message);
+                return Ok(rm.Success(message));
             }
             catch(Exception)
             {

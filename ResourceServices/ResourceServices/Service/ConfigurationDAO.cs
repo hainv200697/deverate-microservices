@@ -25,7 +25,7 @@ namespace ResourceServices.Service
                 var configuration = from con in db.Configuration
                                     where con.IsActive == isActive
                                     select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList());
-                return configuration.ToList().OrderByDescending(x => x.ConfigId).ToList();
+                return configuration.ToList().OrderByDescending(x => x.configId).ToList();
             }
         }
 
