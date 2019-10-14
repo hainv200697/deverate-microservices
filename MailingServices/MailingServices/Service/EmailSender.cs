@@ -20,10 +20,9 @@ namespace MailingServices.Service
 
         public static Task SendMailAsync(string receiver, string SUBJECT, string message)
         {
-            string myMail = "anhnhse62597@fpt.edu.vn";
             MailMessage mail = new MailMessage();
             SmtpClient smtp = new SmtpClient();
-            mail.From = new MailAddress(myMail);
+            mail.From = new MailAddress(AppConstrain.sender);
             mail.To.Add(new MailAddress(receiver));
             mail.Subject = SUBJECT;
             mail.IsBodyHtml = true;
@@ -32,7 +31,7 @@ namespace MailingServices.Service
             smtp.Host = "smtp.gmail.com"; //for gmail host  
             smtp.EnableSsl = true;
             smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential(myMail, "Darkknightst123");
+            smtp.Credentials = new NetworkCredential(AppConstrain.sender, AppConstrain.senderPass);
             smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
             return smtp.SendMailAsync(mail);
         }
