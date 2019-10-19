@@ -21,18 +21,6 @@ namespace TestManagementServices.Controllers
             this.context = context;
         }
 
-        [HttpPost("EvaluateRank")]
-        public ActionResult<IEnumerable<string>> PostEvaluateRank([FromBody]TestAnswerDTO answer)
-        {
-
-            RankPoint rp = SystemDAO.EvaluateRank(context, answer);
-            if (rp == null)
-            {
-                return new JsonResult(rm.Error(Message.evaluateFailed));
-            }
-            return new JsonResult(rm.Success(Message.evaluateSucceed, rp));
-        }
-
         [HttpGet("GenTest/{configId}")]
         public ActionResult<IEnumerable<string>> GenTest(int configId)
         {

@@ -9,6 +9,7 @@ namespace TestManagementServices.Models
         {
             CatalogueInConfiguration = new HashSet<CatalogueInConfiguration>();
             CompanyCatalogue = new HashSet<CompanyCatalogue>();
+            DetailStatistic = new HashSet<DetailStatistic>();
             Question = new HashSet<Question>();
         }
 
@@ -19,6 +20,7 @@ namespace TestManagementServices.Models
 
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
         public virtual ICollection<CompanyCatalogue> CompanyCatalogue { get; set; }
+        public virtual ICollection<DetailStatistic> DetailStatistic { get; set; }
         public virtual ICollection<Question> Question { get; set; }
     }
 }
