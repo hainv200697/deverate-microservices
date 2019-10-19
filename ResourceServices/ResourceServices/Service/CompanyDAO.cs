@@ -52,7 +52,7 @@ namespace ResourceServices.Service
             }
         }
 
-        public static string CreateCompany(CompanyDataDTO companyData)
+        public static Company CreateCompany(CompanyDataDTO companyData)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -63,17 +63,9 @@ namespace ResourceServices.Service
                 com.Fax = companyData.CompanyDTO.fax;
                 com.Phone = companyData.CompanyDTO.phone;
                 com.IsActive = companyData.CompanyDTO.isActive;
-                db.Company.Add(com);
+                var result = db.Company.Add(com);
                 db.SaveChanges();
-
-                Account account = new Account();
-                account.CompanyId = com.CompanyId;
-                account.Fullname = companyData.AccountDTO.fullname;
-                account.Email = companyData.AccountDTO.email;
-                account.IsActive = true;
-                db.Account.Add(account);
-                db.SaveChanges();
-                return null;
+                return result.Entity;
             }
         }
 
