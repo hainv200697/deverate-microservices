@@ -7,6 +7,7 @@ namespace TestManagementServices.Models
     {
         public Account()
         {
+            Configuration = new HashSet<Configuration>();
             Test = new HashSet<Test>();
         }
 
@@ -24,8 +25,7 @@ namespace TestManagementServices.Models
         public int RoleId { get; set; }
         public bool? IsActive { get; set; }
 
-        public virtual Company Company { get; set; }
-        public virtual Role Role { get; set; }
+        public virtual ICollection<Configuration> Configuration { get; set; }
         public virtual ICollection<Test> Test { get; set; }
     }
 }
