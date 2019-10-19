@@ -20,6 +20,7 @@ namespace ResourceServices.Model
         public int? duration { get; set; }
         public string title { get; set; }
         public bool? isActive { get; set; } = true;
+        public string TestOwnerName { get; set; }
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
         public List<ConfigurationRank> ConfigurationRank { get; set; }
 
@@ -41,7 +42,7 @@ namespace ResourceServices.Model
             this.isActive = configuration.IsActive;
         }
 
-        public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<ConfigurationRank> configurationRank)
+        public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<ConfigurationRank> configurationRank, string name)
         {
             this.configId = configuration.ConfigId;
             this.testOwnerId = configuration.TestOwnerId;
@@ -52,6 +53,7 @@ namespace ResourceServices.Model
             this.duration = configuration.Duration;
             this.isActive = configuration.IsActive;
             this.title = configuration.Title;
+            this.TestOwnerName = name;
             this.catalogueInConfigurations = catalogueInConfiguration;
             this.ConfigurationRank = configurationRank;
         }
