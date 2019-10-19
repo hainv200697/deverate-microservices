@@ -57,6 +57,7 @@ namespace ResourceServices.Service
                     question.CatalogueId = ques.CatalogueId;
                     question.Question1 = ques.Question1;
                     question.IsActive = true;
+                    question.MaxPoint = ques.MaxPoint;
                     question.CreateBy = ques.CreateBy;
                     question.Answer = ques.Answer;
                     context.Question.Add(question);
@@ -71,12 +72,12 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Question question = new Question();
-                question.CatalogueId = ques.catalogueId;
-                question.Question1 = ques.question1;
-                question.IsActive = ques.isActive;
-                question.MaxPoint = ques.maxPoint;
-                question.CreateBy = ques.createBy;
-                question.Answer = ques.answer;
+                question.CatalogueId = ques.CatalogueId;
+                question.Question1 = ques.Question1;
+                question.IsActive = ques.IsActive;
+                question.MaxPoint = ques.MaxPoint;
+                question.CreateBy = ques.CreateBy;
+                question.Answer = ques.Answer;
                 context.Question.Add(question);
                 context.SaveChanges();
                 return Message.createQuestionSucceed;
@@ -93,6 +94,7 @@ namespace ResourceServices.Service
                     Question question = context.Question.Include(x=>x.Answer).SingleOrDefault(x=>x.QuestionId == ques.QuestionId);
                     question.Question1 = ques.Question1;
                     question.IsActive = ques.IsActive;
+                    question.MaxPoint = ques.MaxPoint;
                     question.CreateBy = ques.CreateBy;
                     var answers = new List<Answer>();
                     foreach(var item in ques.Answer)
