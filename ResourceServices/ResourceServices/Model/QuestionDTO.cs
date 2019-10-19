@@ -22,7 +22,7 @@ namespace ResourceServices.Model
             this.catalogueId = ques.CatalogueId;
             this.question1 = ques.Question1;
             this.maxPoint = ques.MaxPoint;
-            this.creatAt = ques.CreatAt;
+            this.creatAt = ques.CreateAt;
             this.isActive = ques.IsActive;
             this.createBy = ques.CreateBy;
             this.answer = ans;
@@ -42,7 +42,7 @@ namespace ResourceServices.Model
             this.catalogueId = ques.CatalogueId;
             this.question1 = ques.Question1;
             this.maxPoint = ques.MaxPoint;
-            this.creatAt = ques.CreatAt;
+            this.creatAt = ques.CreateAt;
             this.isActive = ques.IsActive;
             this.createBy = ques.CreateBy;
             this.answer = ques.Answer;

@@ -57,6 +57,9 @@ namespace ResourceServices.Service
                     question.CatalogueId = ques.catalogueId;
                     question.Question1 = ques.question1;
                     question.IsActive = true;
+                    question.MaxPoint = ques.maxPoint;
+                    question.CreateBy = ques.createBy;
+                    question.Answer = ques.answer;
                     question.CreateBy = ques.createBy;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
