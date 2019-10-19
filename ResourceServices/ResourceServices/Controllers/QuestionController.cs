@@ -41,9 +41,10 @@ namespace ResourceServices.Controllers
                 List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(id);
                 return Ok(Questions);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest();
+                Console.WriteLine(ex);
+                return null;
             }
         }
 

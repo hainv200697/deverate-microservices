@@ -40,7 +40,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
 
             {
-                var question = context.Question.Where(ques => ques.CatalogueId == id).Select(ques => new QuestionDTO(ques, ques.Catalogue.Name, ques.Answer.ToList()));
+                var question = context.Question.Where(ques => ques.CatalogueId == id).Select(ques => new QuestionDTO(ques, ques.Catalogue.Name, ques.Answer.Where(ans=> ans.IsActive == true).ToList()));
 
                 return question.ToList();
             }
