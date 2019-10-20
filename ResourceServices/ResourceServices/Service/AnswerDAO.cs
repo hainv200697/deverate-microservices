@@ -20,7 +20,7 @@ namespace ResourceServices.Service
 
             {
                 var answer = context.Answer.Where(ans => ans.QuestionId == id && ans.IsActive == status).Select(ans => new AnswerDTO(ans));
-                UpdateMaxPoint(id);
+
                 return answer.ToList();
             }
 

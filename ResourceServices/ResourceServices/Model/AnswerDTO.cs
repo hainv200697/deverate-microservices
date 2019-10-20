@@ -19,19 +19,19 @@ namespace ResourceServices.Model
 
         public AnswerDTO(Answer ans)
         {
-            this.AnswerId = ans.AnswerId;
-            this.Answer = ans.Answer1;
-            this.Point = ans.Point;
-            this.QuestionId = ans.QuestionId;
-            this.IsActive = ans.IsActive;
+            this.answerId = ans.AnswerId;
+            this.answer = ans.Answer1;
+            this.point = ans.Point;
+            this.questionId = ans.QuestionId;
+            this.isActive = ans.IsActive;
         }
 
         [JsonProperty("AnswerId")]
-        public int AnswerId { get; set; }
-        public int? QuestionId { get; set; }
-        public string Answer { get; set; }
-        public int Point { get; set; }
-        public bool? IsActive { get; set; }
+        public int answerId { get; set; }
+        public int? questionId { get; set; }
+        public string answer { get; set; }
+        public int point { get; set; }
+        public bool? isActive { get; set; }
 
     }
 }

@@ -30,20 +30,6 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpGet]
-        [Route("GetCatalogueById")]
-        public ActionResult GetCatalogueById(int id)
-        {
-            try
-            {
-                CatalogueDTO catalogues = CatalogueDAO.GetCatalogueById(id);
-                return Ok(catalogues);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
 
 
         [HttpPost]

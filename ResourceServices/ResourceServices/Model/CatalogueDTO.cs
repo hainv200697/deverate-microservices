@@ -17,42 +17,41 @@ namespace ResourceServices.Model
         }
         public CatalogueDTO(Catalogue catalogue)
         {
-            this.CatalogueId = catalogue.CatalogueId;
-            this.Name = catalogue.Name;
-            this.IsActive = catalogue.IsActive;
-            this.Question = catalogue.Question;
+            this.catalogueId = catalogue.CatalogueId;
+            this.name = catalogue.Name;
+            this.isActive = catalogue.IsActive;
+            this.question = catalogue.Question;
             this.quescount = catalogue.Question.Count;
-            this.Description = catalogue.Description;
+            this.description = catalogue.Description;
         }
 
         public CatalogueDTO(Catalogue catalogue, int count)
         {
-            this.CatalogueId = catalogue.CatalogueId;
-            this.Name = catalogue.Name;
-            this.IsActive = catalogue.IsActive;
-            this.Question = catalogue.Question;
+            this.catalogueId = catalogue.CatalogueId;
+            this.name = catalogue.Name;
+            this.isActive = catalogue.IsActive;
+            this.question = catalogue.Question;
             this.quescount = count;
-            this.Description = catalogue.Description;
+            this.description = catalogue.Description;
         }
 
         public CatalogueDTO(Catalogue catalogue, List<Question> ques)
         {
-            this.CatalogueId = catalogue.CatalogueId;
-            this.Name = catalogue.Name;
-            this.IsActive = catalogue.IsActive;
-            this.Question = catalogue.Question;
-            this.Description = catalogue.Description;
-            this.Question = ques;   
+            this.catalogueId = catalogue.CatalogueId;
+            this.name = catalogue.Name;
+            this.isActive = catalogue.IsActive;
+            this.question = catalogue.Question;
+            this.description = catalogue.Description;
+            this.question = ques;   
 
         }
 
-        [JsonProperty("CatalogueId")]
-        public int CatalogueId { get; set; }
-        public string Name { get; set; }
-        public bool? IsActive { get; set; }
-        public string Description { get; set; }
+        public int catalogueId { get; set; }
+        public string name { get; set; }
+        public bool? isActive { get; set; }
+        public string description { get; set; }
         public int quescount { get; set; }
 
-        public virtual ICollection<Question> Question { get; set; }
+        public virtual ICollection<Question> question { get; set; }
     }
 }
