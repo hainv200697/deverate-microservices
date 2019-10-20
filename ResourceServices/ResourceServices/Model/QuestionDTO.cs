@@ -16,6 +16,7 @@ namespace ResourceServices.Model
         public QuestionDTO()
         {
         }
+
         public QuestionDTO(Question ques,string name, ICollection<Answer> ans)
         {
             this.questionId = ques.QuestionId;

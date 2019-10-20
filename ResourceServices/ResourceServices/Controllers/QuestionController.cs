@@ -34,11 +34,11 @@ namespace ResourceServices.Controllers
 
         [HttpGet]
         [Route("GetQuestionByCatalogue")]
-        public ActionResult GetQuestionByCatalogueId(int id)
+        public ActionResult GetQuestionByCatalogueId(int id,bool status)
         {
             try
             {
-                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(id);
+                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(id, status);
                 return Ok(Questions);
             }
             catch (Exception ex)
@@ -69,9 +69,7 @@ namespace ResourceServices.Controllers
         {
             try
                     {
-                //List<QuestionDTO> question = JsonConvert.DeserializeObject<QuestionDTO>(quest);
                 var message = QuestionDAO.CreateQuestionExcel(question);
-                ////string message = "avc";
                 return Ok(message);
             }
             catch (Exception)

@@ -12,24 +12,14 @@ namespace ResourceServices.Service
     public class AnswerDAO
     {
 
-        public static List<AnswerDTO> GetQuestionByStatus(bool status, int id)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                var answer = from ans in context.Answer
-                               where ans.IsActive == status && ans.QuestionId == id
-                               select new AnswerDTO(ans);
-                return answer.ToList();
-            }
+        
 
-        }
-
-        public static List<AnswerDTO> GetAnswerByQuestion(int id)
+        public static List<AnswerDTO> GetAnswerByQuestion(int id, bool status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                var answer = context.Answer.Where(ans => ans.QuestionId == id && ans.IsActive == true).Select(ans => new AnswerDTO(ans));
+                var answer = context.Answer.Where(ans => ans.QuestionId == id && ans.IsActive == status).Select(ans => new AnswerDTO(ans));
 
                 return answer.ToList();
             }
@@ -42,15 +32,26 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Answer answer = new Answer();
-                answer.Answer1 = ans.Answer;
-                answer.Point = ans.Point;
+                answer.Answer1 = ans.answer;
+                answer.Point = ans.point;
                 answer.IsActive = true;
-                answer.QuestionId = ans.QuestionId;
+                answer.QuestionId = ans.questionId;
                 context.Answer.Add(answer);
                 context.SaveChanges();
                 return Message.createAnswerSucceed;
             }
 
+        }
+
+        public static void UpdateMaxPoint(int? id)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                int maxPoint = context.Answer.Where(a => a.QuestionId == id && a.IsActive == true).Max(a => a.Point);
+                Question quesDb = context.Question.SingleOrDefault(ques => ques.QuestionId == id);
+                quesDb.MaxPoint = maxPoint;
+                context.SaveChanges();
+            }
         }
 
         public static string UpdateAnswer(AnswerDTO ans)
@@ -60,11 +61,11 @@ namespace ResourceServices.Service
                 using (DeverateContext context = new DeverateContext())
                 {
                     Answer answer = new Answer();
-                    answer.AnswerId = ans.AnswerId; 
-                    answer.Answer1 = ans.Answer;
-                    answer.Point = ans.Point;
+                    answer.AnswerId = ans.answerId; 
+                    answer.Answer1 = ans.answer;
+                    answer.Point = ans.point;
                     answer.IsActive = true;
-                    answer.QuestionId = ans.QuestionId;
+                    answer.QuestionId = ans.questionId;
                     context.Answer.Update(answer);
                     context.SaveChanges();
                     return Message.createAnswerSucceed;
@@ -84,8 +85,8 @@ namespace ResourceServices.Service
             {
                 foreach (var ans in answer)
                 {
-                    Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.AnswerId);
-                    AnswerDb.IsActive = false;
+                    Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.answerId);
+                    AnswerDb.IsActive = ans.isActive;
                     context.SaveChanges();
                 }
                 return Message.removeAnswerSucceed;
