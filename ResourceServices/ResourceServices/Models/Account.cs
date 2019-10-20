@@ -25,6 +25,7 @@ namespace ResourceServices.Models
         public int RoleId { get; set; }
         public bool? IsActive { get; set; }
 
+        public virtual Company Company { get; set; }
         public virtual ICollection<Configuration> Configuration { get; set; }
         public virtual ICollection<Test> Test { get; set; }
     }
