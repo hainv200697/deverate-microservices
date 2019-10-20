@@ -113,7 +113,7 @@ namespace ResourceServices.Service
                 {
                     if(catalogues.Any(o => o.ConfigId == configurationDTO.catalogueInConfigurations[i].ConfigId))
                     {
-                        catalogues.Find(o => o.ConfigId == configurationDTO.catalogueInConfigurations[i].ConfigId).IsActive = false;
+                        catalogues.Find(o => o.ConfigId == configurationDTO.catalogueInConfigurations[i].ConfigId).IsActive = configurationDTO.catalogueInConfigurations[i].IsActive;
                     }
                     else
                     {
