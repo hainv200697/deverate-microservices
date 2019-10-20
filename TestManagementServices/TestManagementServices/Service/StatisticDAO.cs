@@ -10,13 +10,14 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
-        public static ApplicantResultDTO GetStatisticByAccountId(int? accountId)
+        public static ApplicantResultDTO GetStatisticByAccountId(int? testId)
         {
             using(DeverateContext db = new DeverateContext())
             {
-                Test test = db.Test.Include(o => o.Config).Include(o => o.Statistic).
-                    OrderByDescending(o => o.StartTime).FirstOrDefault(o => o.AccountId == accountId);
-                Statistic statistic = db.Statistic.Include(o => o.Rank).FirstOrDefault(o => o.StatisticId == test.Statistic.First().StatisticId);
+                Test test = db.Test.Include(o => o.Config).Include(o => o.Statistic).Where(o => o.TestId == testId).First();
+                //Test test = result.ToList().Where(o => o.TestId == testId).First();
+                Statistic statistic = db.Statistic.Include(o => o.Rank).Last(o => o.TestId == test.TestId);
+
                 var cas = from con in db.Configuration
                           join cr in db.ConfigurationRank on con.ConfigId equals cr.ConfigId
                           join cir in db.CatalogueInRank on cr.ConfigurationRankId equals cir.ConfigurationRankId
@@ -25,7 +26,7 @@ namespace TestManagementServices.Service
                           select new CatalogueDTO(c.CatalogueId, c.Name, null, cir.WeightPoint);
                 List<CatalogueDTO> catalogues = cas.ToList();
                 List<DetailStatisticDTO> details = (from ds in db.DetailStatistic
-                                                   where ds.StatisticId == test.Statistic.First().StatisticId
+                                                   where ds.StatisticId == statistic.StatisticId
                                                    select new DetailStatisticDTO(ds)).ToList();
                 for(int i = 0; i < details.Count; i++)
                 {
