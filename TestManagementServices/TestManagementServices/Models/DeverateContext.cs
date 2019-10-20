@@ -19,6 +19,7 @@ namespace TestManagementServices.Models
         public virtual DbSet<Answer> Answer { get; set; }
         public virtual DbSet<Catalogue> Catalogue { get; set; }
         public virtual DbSet<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
+        public virtual DbSet<CatalogueInRank> CatalogueInRank { get; set; }
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<CompanyCatalogue> CompanyCatalogue { get; set; }
         public virtual DbSet<Configuration> Configuration { get; set; }
@@ -61,6 +62,11 @@ namespace TestManagementServices.Models
                 entity.Property(e => e.Phone).HasMaxLength(250);
 
                 entity.Property(e => e.Username).HasMaxLength(250);
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.Account)
+                    .HasForeignKey(d => d.CompanyId)
+                    .HasConstraintName("FK_Account_Company");
             });
 
             modelBuilder.Entity<Answer>(entity =>
@@ -99,6 +105,23 @@ namespace TestManagementServices.Models
                     .HasForeignKey(d => d.ConfigId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CatalogueInConfiguration_Configuration1");
+            });
+
+            modelBuilder.Entity<CatalogueInRank>(entity =>
+            {
+                entity.HasKey(e => e.Cirid);
+
+                entity.Property(e => e.Cirid).HasColumnName("CIRId");
+
+                entity.HasOne(d => d.Catalogue)
+                    .WithMany(p => p.CatalogueInRank)
+                    .HasForeignKey(d => d.CatalogueId)
+                    .HasConstraintName("FK_CatalogueInRank_Catalogue");
+
+                entity.HasOne(d => d.ConfigurationRank)
+                    .WithMany(p => p.CatalogueInRank)
+                    .HasForeignKey(d => d.ConfigurationRankId)
+                    .HasConstraintName("FK_CatalogueInRank_ConfigurationRank");
             });
 
             modelBuilder.Entity<Company>(entity =>
@@ -156,7 +179,7 @@ namespace TestManagementServices.Models
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.ConfigId)
-                    .HasConstraintName("FK_ConfigurationRank_Configuration");
+                    .HasConstraintName("FK_ConfigurationRank_Configuration1");
 
                 entity.HasOne(d => d.Rank)
                     .WithMany(p => p.ConfigurationRank)

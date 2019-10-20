@@ -1,6 +1,7 @@
 ﻿using AuthenServices.Model;
 using AuthenServices.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,11 +9,49 @@ using System.Linq;
 using System.Threading.Tasks;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
+using TestManagementServices.RabbitMQ;
 
 namespace TestManagementServices.Service
 {
     public class SystemDAO
     {
+
+        /// <summary>
+        /// Gửi mail thông tin bài test đến người dùng
+        /// </summary>
+        /// <param name="configId"></param>
+        /// <param name="isUpdate"> true: chỉ cập nhật lại config -> gửi mail thay đổi ngày giờ
+        /// false: tạo mới config gửi full thông tin
+        /// </param>
+        /// <returns></returns>
+        public static string SendTestMail(int? configId, bool isUpdate)
+        {
+            using(DeverateContext db = new DeverateContext())
+            {
+                try
+                {
+                    var result = from c in db.Configuration
+                                 join t in db.Test on c.ConfigId equals t.ConfigId
+                                 join a in db.Account on t.AccountId equals a.AccountId
+                                 where c.ConfigId == configId && c.IsActive == true
+                                 select new TestMailDTO(a.Email, a.Fullname, null, c.StartDate, c.EndDate,
+                                 isUpdate == false ? t.Code: null);
+                    if(result.ToList().Count == 0)
+                    {
+                        return null;
+                    }
+                    List<TestMailDTO> mails = result.ToList();
+                    string message = JsonConvert.SerializeObject(mails);
+                    Producer.PublishMessage(message, AppConstrain.test_mail);
+                }
+                catch(Exception e)
+                {
+                    File.WriteAllText(AppConstrain.logFile, e.Message);
+                }
+                return Message.sendMailSucceed;
+            }
+        }
+
         /// <summary>
         /// Trộn danh sách câu hỏi
         /// </summary>
@@ -73,7 +112,7 @@ namespace TestManagementServices.Service
                     }
                     for (int i = 0; i < accounts.Count; i++)
                     {
-                        GenerateQuestion(context, accounts[i].AccountId, con);
+                        GenerateQuestion(context, accounts[i].accountId, con);
                     }
                 }
                 catch (Exception e)
@@ -157,6 +196,7 @@ namespace TestManagementServices.Service
                         }
                     }
                     quesRe.unchoosedQues = unchoosedQues;
+                    quesRe.weightPoint = catalogues[i].weightPoint;
                     remainQues.Add(quesRe);
                 }
                 questions = fillQues(remainQues, totalOfQues, questions);
@@ -215,7 +255,9 @@ namespace TestManagementServices.Service
                 }
                 else
                 {
-                    int difQues = remainNumbQues > remains[i].curNumbQues ? remains[i].curNumbQues.Value : remainNumbQues;
+                    int difQues = remainNumbQues > remains[i].curNumbQues - remains[i].numbCataQues ? remains[i].curNumbQues.Value - remains[i].numbCataQues.Value : remainNumbQues;
+                    difQues = Convert.ToInt32(difQues * remains[i].weightPoint);
+                    difQues = remainNumbQues > difQues ? difQues : remainNumbQues;
                     for (int j = 0; j < difQues; j++)
                     {
                         int rQues = rand.Next(0, difQues);

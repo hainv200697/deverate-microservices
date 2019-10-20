@@ -8,6 +8,7 @@ namespace TestManagementServices.Models
         public Catalogue()
         {
             CatalogueInConfiguration = new HashSet<CatalogueInConfiguration>();
+            CatalogueInRank = new HashSet<CatalogueInRank>();
             CompanyCatalogue = new HashSet<CompanyCatalogue>();
             DetailStatistic = new HashSet<DetailStatistic>();
             Question = new HashSet<Question>();
@@ -19,6 +20,7 @@ namespace TestManagementServices.Models
         public bool? IsActive { get; set; }
 
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
+        public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
         public virtual ICollection<CompanyCatalogue> CompanyCatalogue { get; set; }
         public virtual ICollection<DetailStatistic> DetailStatistic { get; set; }
         public virtual ICollection<Question> Question { get; set; }

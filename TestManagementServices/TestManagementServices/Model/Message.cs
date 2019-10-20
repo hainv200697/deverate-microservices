@@ -15,5 +15,7 @@ namespace TestManagementServices.Model
         public const string noCatalogueException = "Can't generate test because there's no catalogue chose";
         public const string numberQuestionExceptopn = "Number of questions equal or greater than number of catalogue";
         public const string noEmployeeException = "There'is no available employee";
+
+        public const string sendMailSucceed = "Send test mail succeed";
     }
 }
