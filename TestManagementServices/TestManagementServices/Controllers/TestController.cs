@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthenServices.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
@@ -61,7 +62,21 @@ namespace TestManagementServices.Controllers
         [HttpPost("AutoSave")]
         public IActionResult AutoSave([FromBody] UserTest userTest)
         {
-            return Ok("{\"message\" : \"Auto Save Success\"}");
+            try
+            {
+                bool save = SystemDAO.AutoSaveAnswer(context, userTest);
+                if (save)
+                {
+                   return Ok("{\"message\" : \"Auto Save Success\"}");
+                } else
+                {
+                    return BadRequest("{\"message\" : \"Code invalid, Auto Save\"}");
+                }
+            } catch(Exception ex)
+            {
+                return StatusCode(500);
+            }
+            
         }
     }
 }

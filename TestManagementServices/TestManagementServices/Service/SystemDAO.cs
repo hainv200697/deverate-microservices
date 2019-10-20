@@ -407,7 +407,7 @@ namespace TestManagementServices.Service
         /// Đánh giá rank dựa trên bài test
         /// </summary>
         /// <param name="db"></param>
-        /// <param name="answers"></param>
+        /// <param name="userTest"></param>
         /// <returns></returns>
         public static RankPoint EvaluateRank(DeverateContext db, UserTest userTest)
         {
@@ -423,12 +423,18 @@ namespace TestManagementServices.Service
                 {
                     continue;
                 }
-                var answerEn = db.Answer.SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
+                var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
+                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == userTest.testId && o.QuestionId == answerEn.QuestionId);
+                SaveAnswer(userTest.testId, answerEn.QuestionId, answerEn.AnswerId);
                 answers.Add(new AnswerDTO(answerEn));
             }
             TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-       
-            double? totalPoint = CalculateResultPoint(db, testAnswer);
+            Statistic statistic = new Statistic();
+            statistic.TestId = userTest.testId;
+            statistic.IsActive = true;
+            db.Statistic.Add(statistic);
+            db.SaveChanges();
+            double? totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId);
             List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
             configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
             ConfigurationRankDTO tmp = new ConfigurationRankDTO();
@@ -436,7 +442,7 @@ namespace TestManagementServices.Service
             tmp.point = configurationRanks[0].point;
             foreach (ConfigurationRankDTO cr in configurationRanks)
             {
-                if (tmp.point < cr.point)
+                if (totalPoint > cr.point)
                 {
                     tmp = cr;
                 }
@@ -446,8 +452,41 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
-            return new RankPoint(rank, tmp.point);
+            statistic.RankId = tmp.rankId;
+            statistic.Point = totalPoint;
+            db.SaveChanges();
+            return new RankPoint(rank, totalPoint);
 
+        }
+
+        public static bool AutoSaveAnswer(DeverateContext db, UserTest userTest)
+        {
+            Test test = db.Test.SingleOrDefault(c => c.TestId == userTest.testId);
+            if (test.Code != userTest.code)
+            {
+                return false;
+            }
+            for (int i = 0; i < userTest.questionInTest.Count; i++)
+            {
+                if (userTest.questionInTest[i].answerId == null)
+                {
+                    continue;
+                }
+                var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
+                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == userTest.testId && o.QuestionId == answerEn.QuestionId);
+                SaveAnswer(userTest.testId, answerEn.QuestionId, answerEn.AnswerId);
+            }
+            return true;
+        }
+
+        public static void SaveAnswer(int? testId, int? questionId, int? answerId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == testId && o.QuestionId == questionId);
+                question.AnswerId = answerId;
+                db.SaveChanges();
+            }
         }
 
         /// <summary>
@@ -476,7 +515,7 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public static double? CalculateResultPoint(DeverateContext db, TestAnswerDTO answers)
+        public static double? CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, int? statisticId)
         {
             double? totalPoint = 0;
             List<CataloguePointDTO> cataloguePoints = CalculateCataloguePoints(db, answers);
@@ -487,7 +526,14 @@ namespace TestManagementServices.Service
             List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(db, answers.testId);
             for (int i = 0; i < cataloguePoints.Count; i++)
             {
-                totalPoint += (cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint);
+                DetailStatistic detail = new DetailStatistic();
+                detail.StatisticId = statisticId;
+                detail.CatalogueId = cataloguePoints[i].catalogueId;
+                double? point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint;
+                detail.Point = cataloguePoints[i].cataloguePoint;
+                db.DetailStatistic.Add(detail);
+                db.SaveChanges();
+                totalPoint += point;
             }
             return totalPoint;
         }
