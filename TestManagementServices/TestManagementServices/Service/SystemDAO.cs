@@ -409,22 +409,27 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public static RankPoint EvaluateRank(DeverateContext db, List<QuestionInTestDTO> questionInTestDTO)
+        public static RankPoint EvaluateRank(DeverateContext db, UserTest userTest)
         {
-            List<AnswerDTO> answers = new List<AnswerDTO>();
-            for (int i = 0; i < questionInTestDTO.Count; i++)
+            Test test = db.Test.SingleOrDefault(c => c.TestId == userTest.testId);
+            if (test.Code != userTest.code)
             {
-                if (questionInTestDTO[i].answerId == null)
+                return null;
+            }
+            List<AnswerDTO> answers = new List<AnswerDTO>();
+            for (int i = 0; i < userTest.questionInTest.Count; i++)
+            {
+                if (userTest.questionInTest[i].answerId == null)
                 {
                     continue;
                 }
-                var answerEn = db.Answer.SingleOrDefault(an => an.AnswerId == questionInTestDTO[i].answerId);
+                var answerEn = db.Answer.SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
                 answers.Add(new AnswerDTO(answerEn));
             }
-            TestAnswerDTO test = new TestAnswerDTO(answers, questionInTestDTO[0].testId);
+            TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
        
-            double? totalPoint = CalculateResultPoint(db, test);
-            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, test);
+            double? totalPoint = CalculateResultPoint(db, testAnswer);
+            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
             configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
             ConfigurationRankDTO tmp = new ConfigurationRankDTO();
             tmp.rankId = configurationRanks[0].rankId.Value;
@@ -589,7 +594,7 @@ namespace TestManagementServices.Service
             var result = new List<QuestionInTestDTO>();
             foreach (QuestionInTest item in questionInTest.ToList())
             {
-                result.Add(new QuestionInTestDTO(item.Qitid, item.TestId, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
+                result.Add(new QuestionInTestDTO(item.Qitid, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
             }
             return result;
         }

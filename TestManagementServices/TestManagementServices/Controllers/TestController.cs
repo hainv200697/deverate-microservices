@@ -48,10 +48,20 @@ namespace TestManagementServices.Controllers
         }
 
         [HttpPost("SubmitTest")]
-        public IActionResult SubmitTest([FromBody] List<QuestionInTestDTO> questionInTest)
+        public IActionResult SubmitTest([FromBody] UserTest userTest)
         {
-            RankPoint rp = SystemDAO.EvaluateRank(context, questionInTest);
+            RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
+            if (rp == null)
+            {
+                return BadRequest("Code invalid, Submit fail");
+            }
             return Ok(rp);
+        }
+
+        [HttpPost("AutoSave")]
+        public IActionResult AutoSave([FromBody] UserTest userTest)
+        {
+            return Ok("{\"message\" : \"Auto Save Success\"}");
         }
     }
 }
