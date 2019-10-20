@@ -23,8 +23,9 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 var configuration = from con in db.Configuration
+                                    join acc in db.Account on con.TestOwnerId equals acc.AccountId
                                     where con.IsActive == isActive
-                                    select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList());
+                                    select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList(), acc.Fullname);
                 return configuration.ToList().OrderByDescending(x => x.configId).ToList();
             }
         }
@@ -49,16 +50,19 @@ namespace ResourceServices.Service
 
                 Configuration configuration = new Configuration();
                 configuration.TestOwnerId = configurationDTO.testOwnerId;
+                configuration.Title = configurationDTO.title;
                 configuration.TotalQuestion = configurationDTO.totalQuestion;
                 configuration.CreateDate = configurationDTO.createDate;
                 configuration.StartDate = configurationDTO.startDate;
                 configuration.EndDate = configurationDTO.endDate;
                 configuration.Duration = configurationDTO.duration;
-                configuration.IsActive = configurationDTO.isActive;
+                configuration.Title = configurationDTO.title;
+                configuration.IsActive = true;
                 configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
-                db.Configuration.Add(configuration);
-                db.SaveChanges();  
+                var configSave = db.Configuration.Add(configuration);
+                db.SaveChanges();
+                configurationDTO.configId = configSave.Entity.ConfigId;
                 return configurationDTO;
             }
         }
@@ -69,7 +73,8 @@ namespace ResourceServices.Service
             {
                 var configuration = from con in db.Configuration
                                     where con.ConfigId == id
-                                    select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList());
+                                    join acc in db.Account on con.TestOwnerId equals acc.AccountId
+                                    select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList(), acc.Fullname);
                 return configuration.FirstOrDefault();
             }
         }
@@ -79,8 +84,8 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == configurationDTO.configId);
-                configuration.ConfigId = configurationDTO.configId;
                 configuration.TestOwnerId = configurationDTO.testOwnerId;
+                configuration.Title = configurationDTO.title;
                 configuration.TotalQuestion = configurationDTO.totalQuestion;
                 configuration.CreateDate = DateTime.Now;
                 configuration.StartDate = configurationDTO.startDate;

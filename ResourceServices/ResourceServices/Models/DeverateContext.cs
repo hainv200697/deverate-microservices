@@ -16,19 +16,20 @@ namespace ResourceServices.Models
         }
 
         public virtual DbSet<Account> Account { get; set; }
-        public virtual DbSet<AccountInTest> AccountInTest { get; set; }
         public virtual DbSet<Answer> Answer { get; set; }
         public virtual DbSet<Catalogue> Catalogue { get; set; }
         public virtual DbSet<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
+        public virtual DbSet<CatalogueInRank> CatalogueInRank { get; set; }
         public virtual DbSet<Company> Company { get; set; }
         public virtual DbSet<CompanyCatalogue> CompanyCatalogue { get; set; }
         public virtual DbSet<Configuration> Configuration { get; set; }
         public virtual DbSet<ConfigurationRank> ConfigurationRank { get; set; }
-        public virtual DbSet<DetailedStatistic> DetailedStatistic { get; set; }
+        public virtual DbSet<DetailStatistic> DetailStatistic { get; set; }
         public virtual DbSet<Question> Question { get; set; }
         public virtual DbSet<QuestionInTest> QuestionInTest { get; set; }
         public virtual DbSet<Rank> Rank { get; set; }
         public virtual DbSet<Role> Role { get; set; }
+        public virtual DbSet<Statistic> Statistic { get; set; }
         public virtual DbSet<Test> Test { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -61,38 +62,6 @@ namespace ResourceServices.Models
                 entity.Property(e => e.Phone).HasMaxLength(250);
 
                 entity.Property(e => e.Username).HasMaxLength(250);
-
-                entity.HasOne(d => d.Company)
-                    .WithMany(p => p.Account)
-                    .HasForeignKey(d => d.CompanyId)
-                    .HasConstraintName("FK_Account_Company");
-
-                entity.HasOne(d => d.Role)
-                    .WithMany(p => p.Account)
-                    .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Account_Role");
-            });
-
-            modelBuilder.Entity<AccountInTest>(entity =>
-            {
-                entity.HasKey(e => e.Aitid);
-
-                entity.Property(e => e.Aitid)
-                    .HasColumnName("AITId")
-                    .ValueGeneratedNever();
-
-                entity.Property(e => e.Code).HasMaxLength(250);
-
-                entity.HasOne(d => d.Account)
-                    .WithMany(p => p.AccountInTest)
-                    .HasForeignKey(d => d.AccountId)
-                    .HasConstraintName("FK_AccountInTest_Account");
-
-                entity.HasOne(d => d.Test)
-                    .WithMany(p => p.AccountInTest)
-                    .HasForeignKey(d => d.TestId)
-                    .HasConstraintName("FK_AccountInTest_Test");
             });
 
             modelBuilder.Entity<Answer>(entity =>
@@ -124,13 +93,32 @@ namespace ResourceServices.Models
                     .WithMany(p => p.CatalogueInConfiguration)
                     .HasForeignKey(d => d.CatalogueId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CatalogueInConfiguration_Catalogue");
+                    .HasConstraintName("FK_CatalogueInConfiguration_Catalogue1");
 
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.CatalogueInConfiguration)
                     .HasForeignKey(d => d.ConfigId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CatalogueInConfiguration_Configuration");
+                    .HasConstraintName("FK_CatalogueInConfiguration_Configuration1");
+            });
+
+            modelBuilder.Entity<CatalogueInRank>(entity =>
+            {
+                entity.HasKey(e => e.Cirid);
+
+                entity.Property(e => e.Cirid)
+                    .HasColumnName("CIRId")
+                    .ValueGeneratedNever();
+
+                entity.HasOne(d => d.Catalogue)
+                    .WithMany(p => p.CatalogueInRank)
+                    .HasForeignKey(d => d.CatalogueId)
+                    .HasConstraintName("FK_CatalogueInRank_Catalogue");
+
+                entity.HasOne(d => d.ConfigurationRank)
+                    .WithMany(p => p.CatalogueInRank)
+                    .HasForeignKey(d => d.ConfigurationRankId)
+                    .HasConstraintName("FK_CatalogueInRank_ConfigurationRank");
             });
 
             modelBuilder.Entity<Company>(entity =>
@@ -174,6 +162,13 @@ namespace ResourceServices.Models
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Title).HasMaxLength(250);
+
+                entity.HasOne(d => d.TestOwner)
+                    .WithMany(p => p.Configuration)
+                    .HasForeignKey(d => d.TestOwnerId)
+                    .HasConstraintName("FK_Configuration_Account");
             });
 
             modelBuilder.Entity<ConfigurationRank>(entity =>
@@ -181,7 +176,7 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.ConfigId)
-                    .HasConstraintName("FK_ConfigurationRank_Configuration");
+                    .HasConstraintName("FK_ConfigurationRank_Configuration1");
 
                 entity.HasOne(d => d.Rank)
                     .WithMany(p => p.ConfigurationRank)
@@ -189,29 +184,28 @@ namespace ResourceServices.Models
                     .HasConstraintName("FK_ConfigurationRank_Rank");
             });
 
-            modelBuilder.Entity<DetailedStatistic>(entity =>
+            modelBuilder.Entity<DetailStatistic>(entity =>
             {
-                entity.HasKey(e => e.StatisticId);
+                entity.HasKey(e => e.DetailId);
 
-                entity.Property(e => e.StatisticId).ValueGeneratedNever();
+                entity.HasOne(d => d.Catalogue)
+                    .WithMany(p => p.DetailStatistic)
+                    .HasForeignKey(d => d.CatalogueId)
+                    .HasConstraintName("FK_DetailStatistic_Catalogue");
 
-                entity.Property(e => e.Aitid).HasColumnName("AITId");
-
-                entity.Property(e => e.RankId).HasMaxLength(250);
-
-                entity.HasOne(d => d.Ait)
-                    .WithMany(p => p.DetailedStatistic)
-                    .HasForeignKey(d => d.Aitid)
-                    .HasConstraintName("FK_DetailedStatistic_AccountInTest");
+                entity.HasOne(d => d.Statistic)
+                    .WithMany(p => p.DetailStatistic)
+                    .HasForeignKey(d => d.StatisticId)
+                    .HasConstraintName("FK_DetailStatistic_Statistic");
             });
 
             modelBuilder.Entity<Question>(entity =>
             {
-                entity.Property(e => e.CreatAt)
-                    .HasColumnName("creat_at")
+                entity.Property(e => e.CreateAt)
+                    .HasColumnName("Create_at")
                     .HasColumnType("date");
 
-                entity.Property(e => e.CreateBy).HasColumnName("create_by");
+                entity.Property(e => e.CreateBy).HasColumnName("Create_by");
 
                 entity.Property(e => e.Question1)
                     .HasColumnName("Question")
@@ -227,9 +221,7 @@ namespace ResourceServices.Models
             {
                 entity.HasKey(e => e.Qitid);
 
-                entity.Property(e => e.Qitid)
-                    .HasColumnName("QITId")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Qitid).HasColumnName("QITId");
 
                 entity.HasOne(d => d.Answer)
                     .WithMany(p => p.QuestionInTest)
@@ -250,15 +242,13 @@ namespace ResourceServices.Models
             modelBuilder.Entity<Rank>(entity =>
             {
                 entity.Property(e => e.CreateAt)
-                    .HasColumnName("create_at")
+                    .HasColumnName("Create_at")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.Name)
-                    .HasColumnName("name")
-                    .HasMaxLength(50);
+                entity.Property(e => e.Name).HasMaxLength(250);
 
                 entity.Property(e => e.UpdateAt)
-                    .HasColumnName("update_at")
+                    .HasColumnName("Update_at")
                     .HasColumnType("datetime");
             });
 
@@ -267,19 +257,36 @@ namespace ResourceServices.Models
                 entity.Property(e => e.Description).HasMaxLength(350);
             });
 
+            modelBuilder.Entity<Statistic>(entity =>
+            {
+                entity.HasOne(d => d.Rank)
+                    .WithMany(p => p.Statistic)
+                    .HasForeignKey(d => d.RankId)
+                    .HasConstraintName("FK_Statistic_Rank");
+
+                entity.HasOne(d => d.Test)
+                    .WithMany(p => p.Statistic)
+                    .HasForeignKey(d => d.TestId)
+                    .HasConstraintName("FK_DetailedStatistic_Test");
+            });
+
             modelBuilder.Entity<Test>(entity =>
             {
-                entity.Property(e => e.TestId).ValueGeneratedNever();
-
                 entity.Property(e => e.Code).HasMaxLength(250);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Test)
+                    .HasForeignKey(d => d.AccountId)
+                    .HasConstraintName("FK_Test_Account");
+
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.Test)
                     .HasForeignKey(d => d.ConfigId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Test_Configuration");
             });
         }

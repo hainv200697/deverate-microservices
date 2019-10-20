@@ -10,14 +10,14 @@ namespace TestManagementServices.Models
         public int? qitid { get; set; }
         public int? testId { get; set; }
         public List<AnwserTestDTO> answers { get; set; } = new List<AnwserTestDTO>();
-        public int? answersId { get; set; }
+        public int? answerId { get; set; }
         public string question { get; set; }
 
-        public QuestionInTestDTO(int? qitid, int? testId, List<Answer> answers, int? answersId, string question)
+        public QuestionInTestDTO(int? qitid, int? testId, List<Answer> answers, int? answerId, string question)
         {
             this.qitid = qitid;
             this.testId = testId;
-            this.answersId = answersId;
+            this.answerId = answerId;
             this.question = question;
             foreach(Answer item in answers)
             {

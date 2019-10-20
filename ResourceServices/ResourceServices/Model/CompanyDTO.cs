@@ -27,17 +27,6 @@ namespace ResourceServices.Model
             this.isActive = company.IsActive;
             this.managerName = name;
         }
-        public CompanyDTO(Account account)
-        {
-            this.companyId = account.Company.CompanyId;
-            this.name = account.Company.Name;
-            this.address = account.Company.Address;
-            this.create_At = account.Company.CreateAt;
-            this.fax = account.Company.Fax;
-            this.phone = account.Company.Phone;
-            this.isActive = account.Company.IsActive;
-            this.managerName = account.Fullname;
-        }
 
         public CompanyDTO(Company company)
         {

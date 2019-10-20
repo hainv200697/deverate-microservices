@@ -19,5 +19,9 @@ namespace ResourceServices.Model
         public const string createQuestionSucceed = "Creating question success";
         public const string updateQuestionSucceed = "Updating question success";
         public const string removeQuestionSucceed = "Removed question success";
+
+        public const string createAnswerSucceed = "Creating answer success";
+        public const string updateAnswerSucceed = "Updating answer success";
+        public const string removeAnswerSucceed = "Removed answer success";
     }
 }

@@ -22,22 +22,36 @@ namespace TestManagementServices.Controllers
         {
             this.context = context;
         }
-        [HttpGet("MyConfigTest/{accountId}")]
-        public ActionResult<IEnumerable<string>> GetAllConfigTestInfoToday(int accountId)
+        [HttpGet("AllMyTestToday/{accountId}")]
+        public IActionResult GetAllTestInfoToday(int accountId)
         {
-            List<ConfigurationDTO> com = SystemDAO.GetAllConfigTestTodayByUsername(context, accountId);
-            return new JsonResult(rm.Success(com));
+            List<TestInfoDTO> con = SystemDAO.GetAllTestTodayByUsername(context, accountId);
+            return Ok(con);
+        }
+
+        [HttpGet("GetConfig/{testId}")]
+        public IActionResult GetConfig(int testId)
+        {
+            ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
+            return Ok(con);
         }
 
         [HttpPost("MyTest")]
-        public IActionResult QueryQuestionInMyTest([FromBody]QueryTest queryTest) 
+        public IActionResult QueryQuestionInMyTest([FromBody]TestInfoDTO testInfo) 
         {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, queryTest);
+            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo);
             if (listQuestion == null)
             {
                 return BadRequest("Code invalid");
             }
             return Ok(listQuestion);
+        }
+
+        [HttpPost("SubmitTest")]
+        public IActionResult SubmitTest([FromBody] List<QuestionInTestDTO> questionInTest)
+        {
+            RankPoint rp = SystemDAO.EvaluateRank(context, questionInTest);
+            return Ok(rp);
         }
     }
 }
