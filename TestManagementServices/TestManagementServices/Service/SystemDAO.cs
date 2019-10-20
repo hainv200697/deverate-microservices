@@ -407,30 +407,35 @@ namespace TestManagementServices.Service
         /// Đánh giá rank dựa trên bài test
         /// </summary>
         /// <param name="db"></param>
-        /// <param name="answers"></param>
+        /// <param name="userTest"></param>
         /// <returns></returns>
-        public static RankPoint EvaluateRank(DeverateContext db, List<QuestionInTestDTO> questionInTestDTO)
+        public static RankPoint EvaluateRank(DeverateContext db, UserTest userTest)
         {
-            List<AnswerDTO> answers = new List<AnswerDTO>();
-            for (int i = 0; i < questionInTestDTO.Count; i++)
+            Test test = db.Test.SingleOrDefault(c => c.TestId == userTest.testId);
+            if (test.Code != userTest.code)
             {
-                if (questionInTestDTO[i].answerId == null)
+                return null;
+            }
+            List<AnswerDTO> answers = new List<AnswerDTO>();
+            for (int i = 0; i < userTest.questionInTest.Count; i++)
+            {
+                if (userTest.questionInTest[i].answerId == null)
                 {
                     continue;
                 }
-                var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == questionInTestDTO[i].answerId);
-                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == questionInTestDTO[i].testId && o.QuestionId == answerEn.QuestionId);
-                SaveAnswer(questionInTestDTO[i].testId, answerEn.QuestionId, answerEn.AnswerId);
+                var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
+                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == userTest.testId && o.QuestionId == answerEn.QuestionId);
+                SaveAnswer(userTest.testId, answerEn.QuestionId, answerEn.AnswerId);
                 answers.Add(new AnswerDTO(answerEn));
             }
-            TestAnswerDTO test = new TestAnswerDTO(answers, questionInTestDTO[0].testId);
+            TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
             Statistic statistic = new Statistic();
-            statistic.TestId = questionInTestDTO[0].testId;
+            statistic.TestId = userTest.testId;
             statistic.IsActive = true;
             db.Statistic.Add(statistic);
             db.SaveChanges();
-            double? totalPoint = CalculateResultPoint(db, test, statistic.StatisticId);
-            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, test);
+            double? totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId);
+            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
             configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
             ConfigurationRankDTO tmp = new ConfigurationRankDTO();
             tmp.rankId = configurationRanks[0].rankId.Value;
@@ -452,6 +457,26 @@ namespace TestManagementServices.Service
             db.SaveChanges();
             return new RankPoint(rank, totalPoint);
 
+        }
+
+        public static bool AutoSaveAnswer(DeverateContext db, UserTest userTest)
+        {
+            Test test = db.Test.SingleOrDefault(c => c.TestId == userTest.testId);
+            if (test.Code != userTest.code)
+            {
+                return false;
+            }
+            for (int i = 0; i < userTest.questionInTest.Count; i++)
+            {
+                if (userTest.questionInTest[i].answerId == null)
+                {
+                    continue;
+                }
+                var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
+                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == userTest.testId && o.QuestionId == answerEn.QuestionId);
+                SaveAnswer(userTest.testId, answerEn.QuestionId, answerEn.AnswerId);
+            }
+            return true;
         }
 
         public static void SaveAnswer(int? testId, int? questionId, int? answerId)
@@ -615,7 +640,7 @@ namespace TestManagementServices.Service
             var result = new List<QuestionInTestDTO>();
             foreach (QuestionInTest item in questionInTest.ToList())
             {
-                result.Add(new QuestionInTestDTO(item.Qitid, item.TestId, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
+                result.Add(new QuestionInTestDTO(item.Qitid, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
             }
             return result;
         }

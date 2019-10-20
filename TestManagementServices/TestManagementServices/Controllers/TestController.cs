@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthenServices.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
@@ -48,10 +49,34 @@ namespace TestManagementServices.Controllers
         }
 
         [HttpPost("SubmitTest")]
-        public IActionResult SubmitTest([FromBody] List<QuestionInTestDTO> questionInTest)
+        public IActionResult SubmitTest([FromBody] UserTest userTest)
         {
-            RankPoint rp = SystemDAO.EvaluateRank(context, questionInTest);
+            RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
+            if (rp == null)
+            {
+                return BadRequest("Code invalid, Submit fail");
+            }
             return Ok(rp);
+        }
+
+        [HttpPost("AutoSave")]
+        public IActionResult AutoSave([FromBody] UserTest userTest)
+        {
+            try
+            {
+                bool save = SystemDAO.AutoSaveAnswer(context, userTest);
+                if (save)
+                {
+                   return Ok("{\"message\" : \"Auto Save Success\"}");
+                } else
+                {
+                    return BadRequest("{\"message\" : \"Code invalid, Auto Save\"}");
+                }
+            } catch(Exception ex)
+            {
+                return StatusCode(500);
+            }
+            
         }
     }
 }
