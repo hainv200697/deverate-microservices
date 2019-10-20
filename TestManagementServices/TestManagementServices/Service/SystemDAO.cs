@@ -1,6 +1,7 @@
 ﻿using AuthenServices.Model;
 using AuthenServices.Models;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,11 +9,49 @@ using System.Linq;
 using System.Threading.Tasks;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
+using TestManagementServices.RabbitMQ;
 
 namespace TestManagementServices.Service
 {
     public class SystemDAO
     {
+
+        /// <summary>
+        /// Gửi mail thông tin bài test đến người dùng
+        /// </summary>
+        /// <param name="configId"></param>
+        /// <param name="isUpdate"> true: chỉ cập nhật lại config -> gửi mail thay đổi ngày giờ
+        /// false: tạo mới config gửi full thông tin
+        /// </param>
+        /// <returns></returns>
+        public static string SendTestMail(int? configId, bool isUpdate)
+        {
+            using(DeverateContext db = new DeverateContext())
+            {
+                try
+                {
+                    var result = from c in db.Configuration
+                                 join t in db.Test on c.ConfigId equals t.ConfigId
+                                 join a in db.Account on t.AccountId equals a.AccountId
+                                 where c.ConfigId == configId && c.IsActive == true
+                                 select new TestMailDTO(a.Email, a.Fullname, null, c.StartDate, c.EndDate,
+                                 isUpdate == false ? t.Code: null);
+                    if(result.ToList().Count == 0)
+                    {
+                        return null;
+                    }
+                    List<TestMailDTO> mails = result.ToList();
+                    string message = JsonConvert.SerializeObject(mails);
+                    Producer.PublishMessage(message, AppConstrain.test_mail);
+                }
+                catch(Exception e)
+                {
+                    File.WriteAllText(AppConstrain.logFile, e.Message);
+                }
+                return Message.sendMailSucceed;
+            }
+        }
+
         /// <summary>
         /// Trộn danh sách câu hỏi
         /// </summary>
@@ -73,7 +112,7 @@ namespace TestManagementServices.Service
                     }
                     for (int i = 0; i < accounts.Count; i++)
                     {
-                        GenerateQuestion(context, accounts[i].AccountId, con);
+                        GenerateQuestion(context, accounts[i].accountId, con);
                     }
                 }
                 catch (Exception e)
@@ -157,6 +196,7 @@ namespace TestManagementServices.Service
                         }
                     }
                     quesRe.unchoosedQues = unchoosedQues;
+                    quesRe.weightPoint = catalogues[i].weightPoint;
                     remainQues.Add(quesRe);
                 }
                 questions = fillQues(remainQues, totalOfQues, questions);
@@ -215,7 +255,9 @@ namespace TestManagementServices.Service
                 }
                 else
                 {
-                    int difQues = remainNumbQues > remains[i].curNumbQues ? remains[i].curNumbQues.Value : remainNumbQues;
+                    int difQues = remainNumbQues > remains[i].curNumbQues - remains[i].numbCataQues ? remains[i].curNumbQues.Value - remains[i].numbCataQues.Value : remainNumbQues;
+                    difQues = Convert.ToInt32(difQues * remains[i].weightPoint);
+                    difQues = remainNumbQues > difQues ? difQues : remainNumbQues;
                     for (int j = 0; j < difQues; j++)
                     {
                         int rQues = rand.Next(0, difQues);
@@ -367,18 +409,29 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public static RankPoint EvaluateRank(DeverateContext db, TestAnswerDTO answers)
+        public static RankPoint EvaluateRank(DeverateContext db, List<QuestionInTestDTO> questionInTestDTO)
         {
-
-            double? totalPoint = CalculateResultPoint(db, answers);
-            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, answers);
+            List<AnswerDTO> answers = new List<AnswerDTO>();
+            for (int i = 0; i < questionInTestDTO.Count; i++)
+            {
+                if (questionInTestDTO[i].answerId == null)
+                {
+                    continue;
+                }
+                var answerEn = db.Answer.SingleOrDefault(an => an.AnswerId == questionInTestDTO[i].answerId);
+                answers.Add(new AnswerDTO(answerEn));
+            }
+            TestAnswerDTO test = new TestAnswerDTO(answers, questionInTestDTO[0].testId);
+       
+            double? totalPoint = CalculateResultPoint(db, test);
+            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, test);
             configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
             ConfigurationRankDTO tmp = new ConfigurationRankDTO();
             tmp.rankId = configurationRanks[0].rankId.Value;
             tmp.point = configurationRanks[0].point;
             foreach (ConfigurationRankDTO cr in configurationRanks)
             {
-                if (tmp.point > cr.point)
+                if (tmp.point < cr.point)
                 {
                     tmp = cr;
                 }
@@ -429,7 +482,7 @@ namespace TestManagementServices.Service
             List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(db, answers.testId);
             for (int i = 0; i < cataloguePoints.Count; i++)
             {
-                totalPoint += (cataloguePoints[i].cataloguePoint / catalogueWeightPoints[i].weightPoint);
+                totalPoint += (cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint);
             }
             return totalPoint;
         }
@@ -467,35 +520,36 @@ namespace TestManagementServices.Service
                 return null;
             }
 
-            var catas = from t in db.Test
-                        join cf in db.Configuration on t.ConfigId equals cf.ConfigId
-                        join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
-                        join c in db.Catalogue on cif.CatalogueId equals c.CatalogueId
-                        where t.TestId == answers.testId
-                        select new CatalogueDTO(c);
+            //var catas = from t in db.Test
+            //            join cf in db.Configuration on t.ConfigId equals cf.ConfigId
+            //            join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
+            //            join c in db.Catalogue on cif.CatalogueId equals c.CatalogueId
+            //            where t.TestId == answers.testId
+            //            select new CatalogueDTO(c);
+            var test = db.Test.SingleOrDefault(t => t.TestId == answers.testId);
+            var catalogues = db.Catalogue.Where(c => c.CatalogueInConfiguration.Any(cif => cif.ConfigId == test.ConfigId)).ToList();
 
-
-            List<CatalogueDTO> catalogues = catas.ToList();
+            //List<CatalogueDTO> catalogues = catas.ToList();
             List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
-            foreach (CatalogueDTO cata in catalogues)
+            foreach (Catalogue cata in catalogues)
             {
                 float? point = 0;
                 float? maxPoint = 0;
                 foreach (AnswerDTO answer in answers.answers)
                 {
-                    Answer ans = db.Answer.SingleOrDefault(an => an.AnswerId == answer.AnswerId);
+                    Answer ans = db.Answer.Include(a => a.Question).SingleOrDefault(an => an.AnswerId == answer.AnswerId);
                     if (ans == null)
                     {
                         continue;
                     }
-                    if (ans.Question.CatalogueId == cata.catalogueId)
+                    if (ans.Question.CatalogueId == cata.CatalogueId)
                     {
                         maxPoint += ans.Question.MaxPoint;
                         point += ans.Point;
                     }
                 }
                 float? cataloguePoint = (point / maxPoint);
-                cataloguePoints.Add(new CataloguePointDTO(cata.catalogueId, cataloguePoint));
+                cataloguePoints.Add(new CataloguePointDTO(cata.CatalogueId  , cataloguePoint));
             }
             return cataloguePoints;
         }
@@ -506,19 +560,25 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="acccountId"></param>
         /// <returns></returns>
-        public static List<ConfigurationDTO> GetAllConfigTestTodayByUsername(DeverateContext db, int? acccountId)
+        public static List<TestInfoDTO> GetAllTestTodayByUsername(DeverateContext db, int? acccountId)
         {
             var result = from cf in db.Configuration
                          join t in db.Test on cf.ConfigId equals t.ConfigId
                          where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
-                         select new ConfigurationDTO(cf);
+                         select new TestInfoDTO(cf.ConfigId, acccountId, t.TestId, cf.Title , null);
             return result.ToList();
         }
 
-        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, QueryTest queryTest)
+        public static ConfigurationDTO GetConfig(DeverateContext db, int testId)
         {
-            Test test = db.Test.SingleOrDefault(c => c.AccountId == queryTest.accountId && c.ConfigId == queryTest.configId);
-            if (test.Code != queryTest.code)
+            var config = db.Configuration.Include(z=>z.Test).Where(c => c.Test.Any(x=>x.TestId == testId)).FirstOrDefault()   ;
+            return new ConfigurationDTO(config);
+        }
+
+        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo)
+        {
+            Test test = db.Test.SingleOrDefault(c => c.AccountId == testInfo.accountId && c.ConfigId == testInfo.configId);
+            if (test.Code != testInfo.code)
             {
                 return null;
             }

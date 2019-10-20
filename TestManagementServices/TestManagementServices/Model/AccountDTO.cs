@@ -12,38 +12,38 @@ namespace AuthenServices.Model
     public class AccountDTO
     {
         [JsonProperty("AccountId")]
-        public int? AccountId { get; set; }
-        public string Username { get; set; }
-        public string Password { get; set; }
-        public string Fullname { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
-        public string Address { get; set; }
-        public bool? Gender { get; set; }
-        public string Avatar { get; set; }
+        public int? accountId { get; set; }
+        public string username { get; set; }
+        public string password { get; set; }
+        public string fullname { get; set; }
+        public string phone { get; set; }
+        public string email { get; set; }
+        public string address { get; set; }
+        public bool? gender { get; set; }
+        public string avatar { get; set; }
         public int? companyId { get; set; }
-        public DateTime? JoinDate { get; set; }
-        public int? RoleId { get; set; }
-        public bool? IsActive { get; set; }
+        public DateTime? joinDate { get; set; }
+        public int? roleId { get; set; }
+        public bool? isActive { get; set; }
 
         public AccountDTO()
         {
         }
         public AccountDTO(Account account)
         {
-            this.AccountId = account.AccountId;
-            this.Username = account.Username;
-            this.Password = account.Password;
-            this.Fullname = account.Fullname;
-            this.Phone = account.Phone;
-            this.Email = account.Email;
-            this.Address = account.Address;
-            this.Gender = account.Gender;
-            this.Avatar = account.Avatar;
-            this.JoinDate = account.JoinDate;
-            this.RoleId = account.RoleId;
+            this.accountId = account.AccountId;
+            this.username = account.Username;
+            this.password = account.Password;
+            this.fullname = account.Fullname;
+            this.phone = account.Phone;
+            this.email = account.Email;
+            this.address = account.Address;
+            this.gender = account.Gender;
+            this.avatar = account.Avatar;
+            this.joinDate = account.JoinDate;
+            this.roleId = account.RoleId;
             this.companyId = account.CompanyId;
-            this.IsActive = account.IsActive;
+            this.isActive = account.IsActive;
         }
     }
 }

@@ -40,7 +40,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
 
             {
-                var question = context.Question.Where(ques => ques.CatalogueId == id).Select(ques => new QuestionDTO(ques, ques.Catalogue.Name, ques.Answer.ToList()));
+                var question = context.Question.Where(ques => ques.CatalogueId == id).Select(ques => new QuestionDTO(ques, ques.Catalogue.Name, ques.Answer.Where(ans=> ans.IsActive == true).ToList()));
 
                 return question.ToList();
             }
@@ -57,6 +57,9 @@ namespace ResourceServices.Service
                     question.CatalogueId = ques.catalogueId;
                     question.Question1 = ques.question1;
                     question.IsActive = true;
+                    question.MaxPoint = ques.maxPoint;
+                    question.CreateBy = ques.createBy;
+                    question.Answer = ques.answer;
                     question.CreateBy = ques.createBy;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
