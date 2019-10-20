@@ -23,6 +23,7 @@ namespace ResourceServices.Model
             this.Answer = ans.Answer1;
             this.Point = ans.Point;
             this.QuestionId = ans.QuestionId;
+            this.IsActive = ans.IsActive;
         }
 
         [JsonProperty("AnswerId")]
@@ -30,7 +31,7 @@ namespace ResourceServices.Model
         public int? QuestionId { get; set; }
         public string Answer { get; set; }
         public int Point { get; set; }
-        public int? IsActive { get; set; }
+        public bool? IsActive { get; set; }
 
     }
 }

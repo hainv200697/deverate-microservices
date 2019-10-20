@@ -10,12 +10,12 @@ namespace ResourceServices.Service
 {
     public class CatalogueDAO
     {
-        public static List<CatalogueDTO> GetAllCatalogue()
+        public static List<CatalogueDTO> GetAllCatalogue(bool status)
         {
             using (DeverateContext context = new DeverateContext())
             {
                 var catalogue = from cata in context.Catalogue
-                                where cata.IsActive == true
+                                where cata.IsActive == status
                                 select new CatalogueDTO(cata,cata.Question.Count(ques => ques.IsActive == true));
                 return catalogue.ToList();
             }
@@ -69,11 +69,7 @@ namespace ResourceServices.Service
                 foreach (var cata in catalogue)
                 {
                     Catalogue cataDb = context.Catalogue.SingleOrDefault(c => c.CatalogueId == cata.CatalogueId);
-                    cataDb.IsActive = false;
-                    foreach (var item in cataDb.Question.ToList())
-                    {
-                        item.IsActive = false;
-                    }
+                    cataDb.IsActive = cata.IsActive;
                     context.SaveChanges();
                 }
                 return Message.removeCatalogueSucceed;

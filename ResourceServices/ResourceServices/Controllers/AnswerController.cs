@@ -21,11 +21,11 @@ namespace ResourceServices.Controllers
 
         [HttpGet]
         [Route("GetAnswerByQuestion")]
-        public ActionResult GetAnswerByCatalogueId(int id)
+        public ActionResult GetAnswerByCatalogueId(int id ,bool status)
         {
             try
             {
-                List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(id);
+                List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(id, status);
                 return Ok(Answers);
             }
             catch (Exception ex)
@@ -41,11 +41,11 @@ namespace ResourceServices.Controllers
 
         [HttpPost]
         [Route("CreateAnswer")]
-        public ActionResult CreateAnswer([FromBody] AnswerDTO Answer)
+        public ActionResult CreateAnswer([FromBody] AnswerDTO answer)
         {
             try
             {
-                var message = AnswerDAO.CreateAnswer(Answer);
+                var message = AnswerDAO.CreateAnswer(answer);
                 return Ok(message);
             }
             catch (Exception)

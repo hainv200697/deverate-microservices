@@ -35,12 +35,12 @@ namespace ResourceServices.Service
 
         }
 
-        public static List<QuestionDTO> GetQuestionByCatalogue(int id)
+        public static List<QuestionDTO> GetQuestionByCatalogue(int id, bool status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                var question = context.Question.Where(ques => ques.CatalogueId == id).Select(ques => new QuestionDTO(ques, ques.Catalogue.Name, ques.Answer.Where(ans=> ans.IsActive == true).ToList()));
+                var question = context.Question.Where(ques => ques.CatalogueId == id && ques.IsActive == status).Select(ques => new QuestionDTO(ques, ques.Catalogue.Name, ques.Answer.Where(ans=> ans.IsActive == true).ToList()));
 
                 return question.ToList();
             }
@@ -93,18 +93,10 @@ namespace ResourceServices.Service
             {
                 using (DeverateContext context = new DeverateContext())
                 {
-                    Question question = context.Question.Include(x=>x.Answer).SingleOrDefault(x=>x.QuestionId == ques.questionId);
+                    Question question = context.Question.SingleOrDefault(x=>x.QuestionId == ques.questionId);
                     question.Question1 = ques.question1;
-                    question.IsActive = ques.isActive;
-                    question.CreateBy = ques.createBy;
-                    var answers = new List<Answer>();
-                    foreach(var item in ques.answer)
-                    {
-                        var answer = new Answer() { Answer1 = item.Answer1, Point = item.Point };
-                        answers.Add(answer);
-                    }
-                    context.Answer.RemoveRange(question.Answer);
-                    question.Answer = answers;
+                    int maxPoint = context.Answer.Where(ans => ans.QuestionId == question.QuestionId).Max(ans => ans.Point);
+                    question.MaxPoint = maxPoint;
                     context.Question.Update(question);
                     context.SaveChanges();
                     return Message.updateQuestionSucceed; 
@@ -125,17 +117,20 @@ namespace ResourceServices.Service
                 foreach (var ques in Question)
                 {
                     Question questionDb = context.Question.SingleOrDefault(c => c.QuestionId == ques.questionId);
-                    questionDb.IsActive = false;
-                    foreach(var item in questionDb.Answer.ToList())
-                    {
-                        item.IsActive = false;
+                    questionDb.IsActive = ques.isActive;
+                    if(ques.isActive == false) { 
+                        List<AnswerDTO> answers = context.Answer.Where(answer => answer.QuestionId == questionDb.QuestionId).Select(answer => new AnswerDTO(answer)).ToList();
+                        foreach(var item in answers)
+                        {
+                            Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == item.AnswerId);
+                            AnswerDb.IsActive = false;
+                            context.SaveChanges();
+                        }
                     }
                     context.SaveChanges();
                 }
                 return Message.removeQuestionSucceed;
             }
         }
-
-
     }
 }

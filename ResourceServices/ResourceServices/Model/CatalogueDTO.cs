@@ -35,6 +35,16 @@ namespace ResourceServices.Model
             this.Description = catalogue.Description;
         }
 
+        public CatalogueDTO(Catalogue catalogue, List<Question> ques)
+        {
+            this.CatalogueId = catalogue.CatalogueId;
+            this.Name = catalogue.Name;
+            this.IsActive = catalogue.IsActive;
+            this.Question = catalogue.Question;
+            this.Description = catalogue.Description;
+            this.Question = ques;   
+
+        }
 
         [JsonProperty("CatalogueId")]
         public int CatalogueId { get; set; }
