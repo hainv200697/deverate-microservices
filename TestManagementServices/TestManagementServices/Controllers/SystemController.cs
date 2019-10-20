@@ -41,5 +41,13 @@ namespace TestManagementServices.Controllers
             
             return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByAccountId(testId)));
         }
+
+        [HttpGet("Gen/")]
+        public ActionResult<IEnumerable<string>> GenTest(string configId)
+        {
+            SystemDAO.GenerateTest(configId);
+
+            return new JsonResult(rm.Success(Message.createSucceed));
+        }
     }
 }
