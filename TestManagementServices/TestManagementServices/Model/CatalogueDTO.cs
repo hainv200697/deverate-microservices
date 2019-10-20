@@ -34,11 +34,20 @@ namespace TestManagementServices.Model
             this.isActive = isActive;
         }
 
+        public CatalogueDTO(int? catalogueId, string name, double? overallPoint, double? thresholdPoint)
+        {
+            this.catalogueId = catalogueId;
+            this.name = name;
+            this.overallPoint = overallPoint;
+            this.thresholdPoint = thresholdPoint;
+        }
         [JsonProperty("CatalogueId")]
         public int? catalogueId { get; set; }
         public string name { get; set; }
         public int? numberOfQuestion { get; set; }
+        public double? overallPoint { get; set; }
         public double? weightPoint { get; set; }
+        public double? thresholdPoint { get; set; }
         public List<QuestionDTO> questions { get; set; }
         public bool? isActive { get; set; }
     }

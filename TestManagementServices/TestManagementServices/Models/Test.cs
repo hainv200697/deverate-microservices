@@ -7,8 +7,8 @@ namespace TestManagementServices.Models
     {
         public Test()
         {
-            DetailedStatistic = new HashSet<DetailedStatistic>();
             QuestionInTest = new HashSet<QuestionInTest>();
+            Statistic = new HashSet<Statistic>();
         }
 
         public int TestId { get; set; }
@@ -22,7 +22,7 @@ namespace TestManagementServices.Models
 
         public virtual Account Account { get; set; }
         public virtual Configuration Config { get; set; }
-        public virtual ICollection<DetailedStatistic> DetailedStatistic { get; set; }
         public virtual ICollection<QuestionInTest> QuestionInTest { get; set; }
+        public virtual ICollection<Statistic> Statistic { get; set; }
     }
 }
