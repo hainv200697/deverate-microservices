@@ -80,7 +80,7 @@ namespace ResourceServices.Controllers
                 var account = companyDataDTO.AccountDTO;
                 var messageAccount = new MessageAccount(company.CompanyId, account.fullname, account.email, 2);
                 Producer producer = new Producer();
-                producer.PublishMessage(message: JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
+                
                 return new JsonResult(rm.Success("Save success"));
             }
             catch (Exception)

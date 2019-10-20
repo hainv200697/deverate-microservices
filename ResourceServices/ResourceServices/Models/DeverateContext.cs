@@ -62,6 +62,11 @@ namespace ResourceServices.Models
                 entity.Property(e => e.Phone).HasMaxLength(250);
 
                 entity.Property(e => e.Username).HasMaxLength(250);
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.Account)
+                    .HasForeignKey(d => d.CompanyId)
+                    .HasConstraintName("FK_Account_Company");
             });
 
             modelBuilder.Entity<Answer>(entity =>
@@ -106,9 +111,7 @@ namespace ResourceServices.Models
             {
                 entity.HasKey(e => e.Cirid);
 
-                entity.Property(e => e.Cirid)
-                    .HasColumnName("CIRId")
-                    .ValueGeneratedNever();
+                entity.Property(e => e.Cirid).HasColumnName("CIRId");
 
                 entity.HasOne(d => d.Catalogue)
                     .WithMany(p => p.CatalogueInRank)

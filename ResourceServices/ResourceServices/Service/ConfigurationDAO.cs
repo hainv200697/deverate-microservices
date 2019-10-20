@@ -62,6 +62,16 @@ namespace ResourceServices.Service
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
                 var configSave = db.Configuration.Add(configuration);
                 db.SaveChanges();
+
+                foreach (var item in configurationDTO.ConfigurationRank)
+                {
+                    CatalogueInRank catalogueInRank = new CatalogueInRank();
+                    catalogueInRank.ConfigurationRankId = item.ConfigurationRankId;
+                    catalogueInRank.CatalogueId = item.CatalogueInRank.ToList()[0].CatalogueId;
+                    catalogueInRank.WeightPoint = item.CatalogueInRank.ToList()[0].WeightPoint;
+                    catalogueInRank.IsActive = true;
+                    db.SaveChanges();
+                }
                 configurationDTO.configId = configSave.Entity.ConfigId;
                 return configurationDTO;
             }
