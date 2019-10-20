@@ -122,7 +122,7 @@ namespace ResourceServices.Service
                         List<AnswerDTO> answers = context.Answer.Where(answer => answer.QuestionId == questionDb.QuestionId).Select(answer => new AnswerDTO(answer)).ToList();
                         foreach(var item in answers)
                         {
-                            Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == item.AnswerId);
+                            Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == item.answerId);
                             AnswerDb.IsActive = false;
                             context.SaveChanges();
                         }

@@ -32,10 +32,10 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Answer answer = new Answer();
-                answer.Answer1 = ans.Answer;
-                answer.Point = ans.Point;
+                answer.Answer1 = ans.answer;
+                answer.Point = ans.point;
                 answer.IsActive = true;
-                answer.QuestionId = ans.QuestionId;
+                answer.QuestionId = ans.questionId;
                 context.Answer.Add(answer);
                 context.SaveChanges();
                 return Message.createAnswerSucceed;
@@ -61,11 +61,11 @@ namespace ResourceServices.Service
                 using (DeverateContext context = new DeverateContext())
                 {
                     Answer answer = new Answer();
-                    answer.AnswerId = ans.AnswerId; 
-                    answer.Answer1 = ans.Answer;
-                    answer.Point = ans.Point;
+                    answer.AnswerId = ans.answerId; 
+                    answer.Answer1 = ans.answer;
+                    answer.Point = ans.point;
                     answer.IsActive = true;
-                    answer.QuestionId = ans.QuestionId;
+                    answer.QuestionId = ans.questionId;
                     context.Answer.Update(answer);
                     context.SaveChanges();
                     return Message.createAnswerSucceed;
@@ -85,8 +85,8 @@ namespace ResourceServices.Service
             {
                 foreach (var ans in answer)
                 {
-                    Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.AnswerId);
-                    AnswerDb.IsActive = ans.IsActive;
+                    Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.answerId);
+                    AnswerDb.IsActive = ans.isActive;
                     context.SaveChanges();
                 }
                 return Message.removeAnswerSucceed;

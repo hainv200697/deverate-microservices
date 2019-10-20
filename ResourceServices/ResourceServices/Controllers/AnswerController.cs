@@ -46,6 +46,7 @@ namespace ResourceServices.Controllers
             try
             {
                 var message = AnswerDAO.CreateAnswer(answer);
+                AnswerDAO.UpdateMaxPoint(answer.questionId);
                 return Ok(message);
             }
             catch (Exception)
@@ -62,6 +63,7 @@ namespace ResourceServices.Controllers
             try
             {
                 var message = AnswerDAO.UpdateAnswer(ans);
+                AnswerDAO.UpdateMaxPoint(ans.questionId);
                 return Ok(message);
             }
             catch (Exception)
