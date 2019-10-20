@@ -78,7 +78,9 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                int? id = ans[0].questionId;
                 var message = AnswerDAO.removeAnswer(ans);
+                AnswerDAO.UpdateMaxPoint(id);
                 return Ok(message);
             }
             catch (Exception)
