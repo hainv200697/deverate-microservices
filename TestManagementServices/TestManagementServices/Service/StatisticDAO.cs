@@ -23,7 +23,7 @@ namespace TestManagementServices.Service
                           join cir in db.CatalogueInRank on cr.ConfigurationRankId equals cir.ConfigurationRankId
                           join c in db.Catalogue on cir.CatalogueId equals c.CatalogueId
                           where con.ConfigId == test.ConfigId && cr.RankId == statistic.RankId
-                          select new CatalogueDTO(c.CatalogueId, c.Name, null, cir.WeightPoint);
+                          select new CatalogueDTO(c.CatalogueId, c.Name, null, RoundDownNumber(cir.WeightPoint.Value));
                 List<CatalogueDTO> catalogues = cas.ToList();
                 List<DetailStatisticDTO> details = (from ds in db.DetailStatistic
                                                    where ds.StatisticId == statistic.StatisticId
@@ -34,14 +34,19 @@ namespace TestManagementServices.Service
                     {
                         if(details[i].catalogueId == catalogues[j].catalogueId)
                         {
-                            catalogues[j].overallPoint = details[i].point;
+                            catalogues[j].overallPoint = RoundDownNumber(details[i].point.Value);
                             break;
                         }
                     }
                 }
-
-                return new ApplicantResultDTO(test.AccountId, catalogues, statistic.Point, statistic.Rank.Name);
+                statistic.Point = Math.Round(statistic.Point.Value, 2);
+                return new ApplicantResultDTO(test.AccountId, catalogues, RoundDownNumber(statistic.Point.Value), statistic.Rank.Name);
             }
+        }
+
+        public static double RoundDownNumber(double value)
+        {
+            return (Math.Floor(value * 100) / 100);
         }
     }
 }
