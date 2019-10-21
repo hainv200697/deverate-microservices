@@ -744,7 +744,7 @@ namespace TestManagementServices.Service
 
         public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo)
         {
-            Test test = db.Test.SingleOrDefault(c => c.AccountId == testInfo.accountId && c.ConfigId == testInfo.configId);
+            Test test = db.Test.SingleOrDefault(c => c.AccountId == testInfo.accountId && c.ConfigId == testInfo.configId && c.Code == testInfo.code);
             if (test.Code != testInfo.code)
             {
                 return null;
