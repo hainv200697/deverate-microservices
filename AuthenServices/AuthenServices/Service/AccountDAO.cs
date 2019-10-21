@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthenServices.Service
 {
@@ -15,7 +15,7 @@ namespace AuthenServices.Service
         public static string CheckLogin(DeverateContext context, string username, string password)
         {
             username = username.ToUpper();
-            Account account = context.Account.Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
+            Account account = context.Account.Include(a => a.Role).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
             if(account == null)
             {
                 return null;
@@ -50,7 +50,13 @@ namespace AuthenServices.Service
                 username += items[i].ElementAt(0);
             }
             List<Account> accounts = context.Account.ToList();
-            username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
+            if (accounts.Count == 0)
+            {
+                username = username.ToUpper() + "1";
+            } else
+            {
+                username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
+            }
             username = RemoveVietnameseTone(username);
             bool includeLowercase = true;
             bool includeUppercase = true;
