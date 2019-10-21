@@ -541,10 +541,10 @@ namespace TestManagementServices.Service
                 }
                 var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
                 var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == userTest.testId && o.QuestionId == answerEn.QuestionId);
-                SaveAnswer(userTest.testId, answerEn.QuestionId, answerEn.AnswerId);
+                SaveAnswer(userTest.questionInTest[i].qitid, userTest.questionInTest[i].answerId);
                 answers.Add(new AnswerDTO(answerEn));
             }
-            TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
+           TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
             Statistic statistic = new Statistic();
             statistic.TestId = userTest.testId;
             statistic.IsActive = true;
@@ -588,18 +588,16 @@ namespace TestManagementServices.Service
                 {
                     continue;
                 }
-                var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
-                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == userTest.testId && o.QuestionId == answerEn.QuestionId);
-                SaveAnswer(userTest.testId, answerEn.QuestionId, answerEn.AnswerId);
+                SaveAnswer(userTest.questionInTest[i].qitid, userTest.questionInTest[i].answerId);
             }
             return true;
         }
 
-        public static void SaveAnswer(int? testId, int? questionId, int? answerId)
+        public static void SaveAnswer(int? QITId, int? answerId)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == testId && o.QuestionId == questionId);
+                var question = db.QuestionInTest.SingleOrDefault(o => o.Qitid == QITId);
                 question.AnswerId = answerId;
                 db.SaveChanges();
             }
@@ -698,23 +696,40 @@ namespace TestManagementServices.Service
 
             //List<CatalogueDTO> catalogues = catas.ToList();
             List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
+            List<AnswerDTO> anss = new List<AnswerDTO>(answers.answers);
             foreach (Catalogue cata in catalogues)
             {
                 float? point = 0;
                 float? maxPoint = 0;
-                foreach (AnswerDTO answer in answers.answers)
+                
+                for(int i = 0; i < anss.Count; i++)
                 {
-                    Answer ans = db.Answer.Include(a => a.Question).SingleOrDefault(an => an.AnswerId == answer.AnswerId);
-                    if (ans == null)
+                    Answer ans = db.Answer.Include(a => a.Question).SingleOrDefault(an => an.AnswerId == anss[i].AnswerId);
+                    if(ans == null)
                     {
                         continue;
                     }
-                    if (ans.Question.CatalogueId == cata.CatalogueId)
+                    if(ans.Question.CatalogueId == cata.CatalogueId)
                     {
                         maxPoint += ans.Question.MaxPoint;
                         point += ans.Point;
+                        anss.RemoveAt(i);
+                        i--;
                     }
                 }
+                //foreach (AnswerDTO answer in answers.answers)
+                //{
+                //    Answer ans = db.Answer.Include(a => a.Question).SingleOrDefault(an => an.AnswerId == answer.AnswerId);
+                //    if (ans == null)
+                //    {
+                //        continue;
+                //    }
+                //    if (ans.Question.CatalogueId == cata.CatalogueId)
+                //    {
+                //        maxPoint += ans.Question.MaxPoint;
+                //        point += ans.Point;
+                //    }
+                //}
                 float? cataloguePoint = (point / maxPoint);
                 cataloguePoints.Add(new CataloguePointDTO(cata.CatalogueId  , cataloguePoint));
             }
