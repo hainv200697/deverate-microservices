@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using AuthenServices.Models;
+using AuthenServices.Service;
+using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
@@ -15,13 +18,15 @@ namespace AuthenServices.RabbitMQ
         private IConnection connection;
         private IModel channel;
         private string queueName;
-        public Consumer(string exch)
+        DeverateContext context;
+        public Consumer(DeverateContext context, string exch)
         {
             InitRabbitMQ(exch);
+            this.context = context;
         }
         private void InitRabbitMQ(string exch)
         {
-            var factory = new ConnectionFactory() { HostName = "35.240.253.45" }; ;
+            var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
@@ -41,7 +46,11 @@ namespace AuthenServices.RabbitMQ
             {
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
-                Console.WriteLine(" [x] Receive {0}", message);
+                var messageAccount = JsonConvert.DeserializeObject<MessageAccount>(message);
+                var result = AccountDAO.GenerateCompanyAccount(context, messageAccount).Split('_');
+                Producer producer = new Producer();
+                MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], messageAccount.Email);
+                producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
             };
             channel.BasicConsume(queue: queueName,
                                  autoAck: false,

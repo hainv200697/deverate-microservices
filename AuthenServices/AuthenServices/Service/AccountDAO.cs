@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace AuthenServices.Service
 {
@@ -15,8 +15,8 @@ namespace AuthenServices.Service
         public static string CheckLogin(DeverateContext context, string username, string password)
         {
             username = username.ToUpper();
-            Account account = context.Account.Include(a => a.Role).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
-            if(account == null)
+            Account account = context.Account.Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
+            if (account == null)
             {
                 return null;
             }
@@ -29,8 +29,8 @@ namespace AuthenServices.Service
             {
                 return null;
             }
-            
-            if(result.Value == false)
+
+            if (result.Value == false)
             {
                 return null;
             }
@@ -40,23 +40,17 @@ namespace AuthenServices.Service
             }
         }
 
-        public static string CreateCompanyAccount(DeverateContext context, CompanyManagerDTO cm)
+        public static string GenerateCompanyAccount(DeverateContext context, MessageAccount ms)
         {
             Account account = new Account();
-            var items = cm.fullName.Split(' ');
+            var items = ms.Fullname.Split(' ');
             string username = items[items.Length - 1];
-            for(int i = 0; i < items.Length  - 1; i++)
+            for (int i = 0; i < items.Length - 1; i++)
             {
                 username += items[i].ElementAt(0);
             }
             List<Account> accounts = context.Account.ToList();
-            if (accounts.Count == 0)
-            {
-                username = username.ToUpper() + "1";
-            } else
-            {
-                username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
-            }
+            username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
             username = RemoveVietnameseTone(username);
             bool includeLowercase = true;
             bool includeUppercase = true;
@@ -76,11 +70,11 @@ namespace AuthenServices.Service
 
             account.Username = username.ToUpper();
             account.Password = encodedPassword;
-            account.Fullname = cm.fullName;
+            account.Fullname = ms.Fullname;
             account.Gender = false;
             account.JoinDate = DateTime.Now;
-            account.RoleId = 2;
-            account.CompanyId = cm.companyId;
+            account.RoleId = ms.Role;
+            account.CompanyId = ms.CompanyId;
             account.IsActive = true;
             context.Account.Add(account);
             context.SaveChanges();
@@ -88,7 +82,7 @@ namespace AuthenServices.Service
 
 
         }
-        
+
 
         public static string RemoveVietnameseTone(string text)
         {

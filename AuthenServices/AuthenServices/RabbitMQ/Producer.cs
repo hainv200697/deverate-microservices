@@ -9,13 +9,13 @@ namespace AuthenServices.RabbitMQ
 {
     public class Producer
     {
-        public static void PublishMessage(string message, string exch)
+        public void PublishMessage(string message, string exch)
         {
             var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.ExchangeDeclare(exchange: "logs", type: ExchangeType.Fanout);
+                channel.ExchangeDeclare(exchange: exch, type: ExchangeType.Fanout);
                 var body = Encoding.UTF8.GetBytes(message);
                 channel.BasicPublish(exchange: exch,
                                      routingKey: "",
