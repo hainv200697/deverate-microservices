@@ -17,12 +17,12 @@ hystrix:
         isolation:
           strategy: THREAD  
           thread:
-            timeoutInMilliseconds: 30000
+            timeoutInMilliseconds: 300000
 
 
 ribbon:
-  ReadTimeout: 60000
-  connection-timeout: 3000
+  ReadTimeout: 300000
+  connection-timeout: 300000
   eureka:
     enabled: true
 

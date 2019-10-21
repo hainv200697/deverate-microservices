@@ -1,4 +1,5 @@
 ﻿using AuthenServices.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +16,7 @@ namespace AuthenServices.Service
         public static string CheckLogin(DeverateContext context, string username, string password)
         {
             username = username.ToUpper();
-            Account account = context.Account.Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
+            Account account = context.Account.Include(a => a.Role).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
             if (account == null)
             {
                 return null;

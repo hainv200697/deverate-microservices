@@ -527,8 +527,8 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static RankPoint EvaluateRank(DeverateContext db, UserTest userTest)
         {
-            Test test = db.Test.SingleOrDefault(c => c.TestId == userTest.testId);
-            if (test.Code != userTest.code)
+            Test test = db.Test.SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
+            if (test == null)
             {
                 return null;
             }
@@ -759,8 +759,8 @@ namespace TestManagementServices.Service
 
         public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo)
         {
-            Test test = db.Test.SingleOrDefault(c => c.AccountId == testInfo.accountId && c.ConfigId == testInfo.configId);
-            if (test.Code != testInfo.code)
+            Test test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+            if (test == null)
             {
                 return null;
             }
