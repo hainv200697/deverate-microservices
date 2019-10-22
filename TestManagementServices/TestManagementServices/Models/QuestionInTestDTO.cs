@@ -17,10 +17,14 @@ namespace TestManagementServices.Models
             this.qitid = qitid;
             this.answerId = answerId;
             this.question = question;
-            foreach(Answer item in answers)
+            if(answers != null)
             {
-                this.answers.Add(new AnwserTestDTO(item.AnswerId, item.Answer1));
-            } 
+                foreach (Answer item in answers)
+                {
+                    this.answers.Add(new AnwserTestDTO(item.AnswerId, item.Answer1));
+                }
+            }
+            
         }
     }
 }
