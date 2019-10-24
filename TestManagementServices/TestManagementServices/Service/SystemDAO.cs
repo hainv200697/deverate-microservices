@@ -99,11 +99,10 @@ namespace TestManagementServices.Service
                         return Message.numberQuestionExceptopn;
                     }
                     Account acc = context.Account.SingleOrDefault(o => o.AccountId == con.TestOwnerId);
-                    int? companyId = acc.CompanyId;
 
 
                     var emps = from a in context.Account
-                               where a.CompanyId == companyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
+                               where a.CompanyId == acc.CompanyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
                                select new AccountDTO(a);
                     List<AccountDTO> accounts = emps.ToList();
                     if (accounts.Count == 0)
@@ -543,20 +542,16 @@ namespace TestManagementServices.Service
             }
             var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
             anss.ForEach(a => answers.Add(new AnswerDTO(a)));
-            //for (int i = 0; i < userTest.questionInTest.Count; i++)
-            //{
-            //    if (userTest.questionInTest[i].answerId == null)
-            //    {
-            //        continue;
-            //    }
-            //    var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
-            //    answers.Add(new AnswerDTO(answerEn));
-            //}
 
             var qitss = db.QuestionInTest.Where(o => qitIds.Contains(o.Qitid)).ToList();
             for(int i = 0; i < qitss.Count; i++)
             {
-                qitss[i].AnswerId = answerIds[i];
+                for(int j = 0; j < userTest.questionInTest.Count; j++)
+                {
+                    if (qitss[i].Qitid == userTest.questionInTest[j].qitid)
+                        qitss[i].AnswerId = userTest.questionInTest[j].answerId;
+                }
+                
             }
             db.SaveChanges();
            TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);

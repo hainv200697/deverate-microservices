@@ -17,5 +17,6 @@ namespace TestManagementServices.Model
             this.rank = rank;
             this.catalogues = catalogues;
         }
+
     }
 }
