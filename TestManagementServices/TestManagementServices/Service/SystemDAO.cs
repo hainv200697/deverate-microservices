@@ -532,33 +532,18 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
-
             List<AnswerDTO> answers = new List<AnswerDTO>();
-            List<int> answerIds = new List<int>();
-            List<int> qitIds = new List<int>();
-            for(int i = 0; i < userTest.questionInTest.Count; i++)
+            for (int i = 0; i < userTest.questionInTest.Count; i++)
             {
-                answerIds.Add(userTest.questionInTest[i].answerId.Value);
-                qitIds.Add(userTest.questionInTest[i].qitid.Value);
+                if (userTest.questionInTest[i].answerId == null)
+                {
+                    continue;
+                }
+                var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
+                var question = db.QuestionInTest.SingleOrDefault(o => o.TestId == userTest.testId && o.QuestionId == answerEn.QuestionId);
+                SaveAnswer(userTest.questionInTest[i].qitid, userTest.questionInTest[i].answerId);
+                answers.Add(new AnswerDTO(answerEn));
             }
-            var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
-            anss.ForEach(a => answers.Add(new AnswerDTO(a)));
-            //for (int i = 0; i < userTest.questionInTest.Count; i++)
-            //{
-            //    if (userTest.questionInTest[i].answerId == null)
-            //    {
-            //        continue;
-            //    }
-            //    var answerEn = db.Answer.Include(o => o.QuestionInTest).SingleOrDefault(an => an.AnswerId == userTest.questionInTest[i].answerId);
-            //    answers.Add(new AnswerDTO(answerEn));
-            //}
-
-            var qitss = db.QuestionInTest.Where(o => qitIds.Contains(o.Qitid)).ToList();
-            for(int i = 0; i < qitss.Count; i++)
-            {
-                qitss[i].AnswerId = answerIds[i];
-            }
-            db.SaveChanges();
            TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
             Statistic statistic = new Statistic();
             statistic.TestId = userTest.testId;
@@ -653,7 +638,6 @@ namespace TestManagementServices.Service
                 return -1;
             }
             List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(db, answers.testId);
-            List<DetailStatistic> details = new List<DetailStatistic>();
             for (int i = 0; i < cataloguePoints.Count; i++)
             {
                 DetailStatistic detail = new DetailStatistic();
@@ -661,13 +645,9 @@ namespace TestManagementServices.Service
                 detail.CatalogueId = cataloguePoints[i].catalogueId;
                 double? point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint;
                 detail.Point = cataloguePoints[i].cataloguePoint;
-                details.Add(detail);
-                totalPoint += point;
-            }
-            if(details.Count > 0)
-            {
-                db.DetailStatistic.AddRange(details);
+                db.DetailStatistic.Add(detail);
                 db.SaveChanges();
+                totalPoint += point;
             }
             return totalPoint;
         }
@@ -704,28 +684,52 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
-            var catalogues = db.Catalogue.Where(c => c.CatalogueInConfiguration.Any(cif => cif.Config.Test.Any(o => o.TestId == answers.testId))).ToList();
+
+            //var catas = from t in db.Test
+            //            join cf in db.Configuration on t.ConfigId equals cf.ConfigId
+            //            join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
+            //            join c in db.Catalogue on cif.CatalogueId equals c.CatalogueId
+            //            where t.TestId == answers.testId
+            //            select new CatalogueDTO(c);
+            var test = db.Test.SingleOrDefault(t => t.TestId == answers.testId);
+            var catalogues = db.Catalogue.Where(c => c.CatalogueInConfiguration.Any(cif => cif.ConfigId == test.ConfigId)).ToList();
+
+            //List<CatalogueDTO> catalogues = catas.ToList();
             List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
             List<AnswerDTO> anss = new List<AnswerDTO>(answers.answers);
-            List<int?> questIds = new List<int?>();
-            anss.ForEach(a => questIds.Add(a.AnswerId));
-            var quess = db.Answer.Include(a => a.Question).Where(an => questIds.Contains(an.AnswerId)).ToList();
-
             foreach (Catalogue cata in catalogues)
             {
                 float? point = 0;
                 float? maxPoint = 0;
                 
-                for(int i = 0; i < quess.Count; i++)
+                for(int i = 0; i < anss.Count; i++)
                 {
-                    if(quess[i].Question.CatalogueId == cata.CatalogueId)
+                    Answer ans = db.Answer.Include(a => a.Question).SingleOrDefault(an => an.AnswerId == anss[i].AnswerId);
+                    if(ans == null)
                     {
-                        maxPoint += quess[i].Question.MaxPoint;
-                        point += quess[i].Point;
-                        quess.RemoveAt(i);
+                        continue;
+                    }
+                    if(ans.Question.CatalogueId == cata.CatalogueId)
+                    {
+                        maxPoint += ans.Question.MaxPoint;
+                        point += ans.Point;
+                        anss.RemoveAt(i);
                         i--;
                     }
                 }
+                //foreach (AnswerDTO answer in answers.answers)
+                //{
+                //    Answer ans = db.Answer.Include(a => a.Question).SingleOrDefault(an => an.AnswerId == answer.AnswerId);
+                //    if (ans == null)
+                //    {
+                //        continue;
+                //    }
+                //    if (ans.Question.CatalogueId == cata.CatalogueId)
+                //    {
+                //        maxPoint += ans.Question.MaxPoint;
+                //        point += ans.Point;
+                //    }
+                //}
                 float? cataloguePoint = (point / maxPoint);
                 cataloguePoints.Add(new CataloguePointDTO(cata.CatalogueId  , cataloguePoint));
             }
@@ -753,9 +757,16 @@ namespace TestManagementServices.Service
             return new ConfigurationDTO(config);
         }
 
-        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo)
+        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo, bool checkCode)
         {
-            Test test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+            Test test = new Test();
+            if (checkCode) { 
+                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId);
+            }
+            else
+            {
+                test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+            }
             if (test == null)
             {
                 return null;
@@ -771,5 +782,12 @@ namespace TestManagementServices.Service
             }
             return result;
         }
+
+        public static List<TestInfoDTO> GetTestByConfig(DeverateContext db, int id)
+        {
+            var results = db.Test.Where(t => t.ConfigId == id).Select(t => new TestInfoDTO(t,t.Config.Title, t.Account.Username)).ToList();
+            return results;
+        }
+
     }
 }

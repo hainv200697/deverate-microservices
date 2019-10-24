@@ -40,7 +40,7 @@ namespace TestManagementServices.Controllers
         [HttpPost("MyTest")]
         public IActionResult QueryQuestionInMyTest([FromBody]TestInfoDTO testInfo) 
         {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo);
+            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo,false);
             if (listQuestion == null)
             {
                 return BadRequest("Code invalid");
@@ -77,6 +77,26 @@ namespace TestManagementServices.Controllers
                 return StatusCode(500);
             }
             
+        }
+
+        [HttpGet("GetAllTest")]
+        public IActionResult GetTest(int id)
+        {
+            List<TestInfoDTO> listTest= SystemDAO.GetTestByConfig(context,id);
+
+            return Ok(listTest);
+        }
+
+
+        [HttpPost("ManagerInTest")]
+        public IActionResult GetQuesionInTest([FromBody]TestInfoDTO testInfo)
+        {
+            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo, true);
+            if (listQuestion == null)
+            {
+                return BadRequest("Code invalid");
+            }
+            return Ok(listQuestion);
         }
     }
 }
