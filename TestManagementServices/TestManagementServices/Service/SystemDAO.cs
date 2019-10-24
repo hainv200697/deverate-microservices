@@ -758,11 +758,11 @@ namespace TestManagementServices.Service
             Test test = new Test();
             if (checkCode)
             {
-                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId);
+                test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
             }
             else
             {
-                test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId);
             }
             if (test == null)
             {
