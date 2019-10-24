@@ -34,7 +34,7 @@ namespace TestManagementServices.Service
                         {
                             if(cir.CatalogueId == c.catalogueId)
                             {
-                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, cir.WeightPoint));
+                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, RoundDownNumber(cir.WeightPoint.Value)));
                             }
                         }
                     }
@@ -56,10 +56,57 @@ namespace TestManagementServices.Service
                     }
                 }
                 statistic.Point = Math.Round(statistic.Point.Value, 2);
-                return new ApplicantResultDTO(test.AccountId, catalogueInRanks, RoundDownNumber(statistic.Point.Value), statistic.RankId, statistic.Rank.Name);
-
+                return new ApplicantResultDTO(test.AccountId,catas, catalogueInRanks, RoundDownNumber(statistic.Point.Value), statistic.RankId, statistic.Rank.Name);
             }
+        }
 
+        public static List<TestHistoryDTO> GetHistory(int? accountId)
+        {
+            using(DeverateContext db = new DeverateContext())
+            {
+                List<Statistic> statistics = db.Statistic.Include(t => t.Test.Config).Include(t => t.DetailStatistic).Where(t => t.Test.AccountId == accountId).ToList();
+                List<Rank> ranks = db.Rank.ToList();
+                List<TestHistoryDTO> testHistories = new List<TestHistoryDTO>();
+                List<Catalogue> catas = db.Catalogue.ToList();
+                for(int i = 0; i < statistics.Count; i++)
+                {
+                    TestHistoryDTO test = new TestHistoryDTO();
+                    test.testId = statistics[i].TestId;
+                    test.title = statistics[i].Test.Config.Title;
+                    test.point = statistics[i].Point;
+                    test.rankId = statistics[i].RankId;
+                    test.createDate = statistics[i].Test.CreateDate;
+                    test.startTime = statistics[i].Test.StartTime;
+                    foreach (Rank r in ranks)
+                    {
+                        if(r.RankId == statistics[i].RankId)
+                        {
+                            test.rank = r.Name;
+                            break;
+                        }
+                    }
+                    List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
+                    foreach(DetailStatistic ds in statistics[i].DetailStatistic.ToList())
+                    {
+                        CatalogueDTO ca = new CatalogueDTO();
+                        ca.catalogueId = ds.CatalogueId;
+                        ca.overallPoint = ds.Point;
+                        ca.weightPoint = null;
+                        foreach(Catalogue c in catas)
+                        {
+                            if(c.CatalogueId == ds.CatalogueId)
+                            {
+                                ca.name = c.Name;
+                                break;
+                            }
+                        }
+                        catalogues.Add(ca);
+                    }
+                    test.catalogues = catalogues;
+                    testHistories.Add(test);
+                }
+                return testHistories;
+            }
         }
 
         public static double RoundDownNumber(double value)
