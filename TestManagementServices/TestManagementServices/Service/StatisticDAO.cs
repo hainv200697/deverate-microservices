@@ -24,8 +24,10 @@ namespace TestManagementServices.Service
                 List<ConfigurationRank> configurations = cass.ToList();
                 List<CatalogueInRankDTO> catalogueInRanks = new List<CatalogueInRankDTO>();
                 List<CatalogueDTO> catas = db.Catalogue.Select(o => new CatalogueDTO(o)).ToList();
+                List<ConfigurationRankDTO> configurationRanks = new List<ConfigurationRankDTO>();
                 for(int i = 0; i < configurations.Count; i++)
                 {
+                    configurationRanks.Add(new ConfigurationRankDTO(configurations[i]));
                     CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurations[i].RankId, configurations[i].Rank.Name, null);
                     List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
                     foreach(CatalogueInRank cir in configurations[i].CatalogueInRank.ToList())
@@ -56,7 +58,7 @@ namespace TestManagementServices.Service
                     }
                 }
                 statistic.Point = Math.Round(statistic.Point.Value, 2);
-                return new ApplicantResultDTO(test.AccountId, catas,  catalogueInRanks, RoundDownNumber(statistic.Point.Value), statistic.RankId, statistic.Rank.Name);
+                return new ApplicantResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, RoundDownNumber(statistic.Point.Value), statistic.RankId, statistic.Rank.Name);
             }
         }
 
