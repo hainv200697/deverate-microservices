@@ -753,9 +753,17 @@ namespace TestManagementServices.Service
             return new ConfigurationDTO(config);
         }
 
-        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo)
+        public static List<QuestionInTestDTO> GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo, bool checkCode)
         {
-            Test test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+            Test test = new Test();
+            if (checkCode)
+            {
+                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId);
+            }
+            else
+            {
+                test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+            }
             if (test == null)
             {
                 return null;
@@ -770,6 +778,12 @@ namespace TestManagementServices.Service
                 result.Add(new QuestionInTestDTO(item.Qitid, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
             }
             return result;
+        }
+
+        public static List<TestInfoDTO> GetTestByConfig(DeverateContext db, int id)
+        {
+            var results = db.Test.Where(t => t.ConfigId == id).Select(t => new TestInfoDTO(t, t.Config.Title, t.Account.Username)).ToList();
+            return results;
         }
     }
 }
