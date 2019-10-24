@@ -42,14 +42,6 @@ namespace TestManagementServices.Controllers
             return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByAccountId(testId)));
         }
 
-        [HttpGet("History/{accountId}")]
-        public ActionResult<IEnumerable<string>> GetHistory(int? accountId)
-        {
-            
-
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetHistory(accountId)));
-        }
-
         [HttpGet("Gen/")]
         public ActionResult<IEnumerable<string>> GenTest(string configId)
         {
