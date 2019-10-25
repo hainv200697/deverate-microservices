@@ -1,0 +1,81 @@
+<html>
+    <head>
+	<style>
+        .session-maill{
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .cart{
+            position: absolute;
+            width: 500px;
+            height: 700px;
+            left: 50%; 
+            top: 50%;
+            background-color: rgba(16, 108, 247, 0.267);
+            transform: translate(-50%, -50%);
+            border-radius: 10px;
+        }
+        .cart-icon{
+            border-bottom: 1px solid #3531313d;
+            margin: 40px;
+            text-align: center;
+        }
+        img{
+            width: 200px;
+			margin-top: 35px;
+            height: auto;
+            margin-bottom: 5px;
+        }
+        .maill-body{
+            margin: 40px;
+            text-align: left;
+        }
+        h2{
+            
+            font-size: 32px;
+        }
+        p{
+            font: small/1.5 Arial,Helvetica,sans-serif;
+            font-size: 22px;
+        }
+        i{
+            font-size: 22px;
+        }
+        .footer-mail{
+            margin: 10px;
+            border-top: 1px solid #3531313d;
+            text-align: center;
+        }
+        a{
+            margin-top: 10px;
+        }
+		.icon-small{
+			width: 25px;
+			height: 25px;
+		}
+    </style>
+    </head>
+    <body>
+        <div class="session-maill">
+            <div class="cart">
+                <div class="cart-icon">
+                    <img src="http://deverate.s3-website.us-east-2.amazonaws.com/assets/images/logo/Deverate_logo.jpg">
+                </div>
+                <div class="maill-body" >
+                    <h2>Wellcome!</h3>
+                    <p>Dear [fullname],</p>
+                    <p>
+                       There are your Username and Password: 
+                    </p>
+					<br/>
+					<p>Username: [username]</p>
+                    <p>Password: [password]</p> 
+                </div>
+                <div class="footer-mail" style="font-size: 22px;">
+                    <a href="http://deverate.s3-website.us-east-2.amazonaws.com">Click here to login!</a>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

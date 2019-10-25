@@ -10,12 +10,14 @@ namespace AuthenServices.Models
         public string Username;
         public string Password;
         public string Email;
+        public string Fullname;
 
-        public MessageAccountDTO(string username, string password, string email)
+        public MessageAccountDTO(string username, string password, string email, string fullname)
         {
             Username = username;
             Password = password;
             Email = email;
+            Fullname = fullname;
         }
     }
 }
