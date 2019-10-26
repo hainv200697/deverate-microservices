@@ -40,7 +40,7 @@ namespace AuthenServices.Controllers
         {
             var result = AccountDAO.GenerateCompanyAccount(context, account).Split('_');
             Producer producer = new Producer();
-            MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], account.Email);
+            MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], account.Email, account.Fullname);
             producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
             return new JsonResult(rm.Success("Login successful", result));
         }

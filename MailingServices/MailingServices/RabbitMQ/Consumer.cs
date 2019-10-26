@@ -19,22 +19,24 @@ namespace MailingServices.RabbitMQ
         private IConnection connection;
         private IModel channel;
         private string queueName;
+        private string exch;
         public Consumer(string exch)
         {
-            InitRabbitMQ(exch);
+            this.exch = exch;
+            InitRabbitMQ();
         }
-        private void InitRabbitMQ(string exch)
+        private void InitRabbitMQ()
         {
-            var factory = new ConnectionFactory() { HostName = "35.240.253.45" }; ;
+            var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
 
-            channel.ExchangeDeclare(exchange: exch, type: ExchangeType.Fanout);
+            channel.ExchangeDeclare(exchange: this.exch, type: ExchangeType.Fanout);
 
             queueName = channel.QueueDeclare().QueueName;
             channel.QueueBind(queue: queueName,
-                              exchange: exch,
+                              exchange: this.exch,
                               routingKey: "");
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -45,8 +47,21 @@ namespace MailingServices.RabbitMQ
             {
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
-                var messageAccountDTO = JsonConvert.DeserializeObject<MessageAccountDTO>(message);
-                EmailSender.SendMailAsync(messageAccountDTO.Email, "Welcome To DEVERATE", "Username: " + messageAccountDTO.Username + ", Password: " + messageAccountDTO.Password);
+				Console.WriteLine(" [x] Receive {0}", message);
+                try
+                {
+                    switch (this.exch)
+                    {
+                        case "AccountToEmail":
+                            var messageAccountDTO = JsonConvert.DeserializeObject<MessageAccountDTO>(message);
+                            EmailSender.SendAccountMailAsync(messageAccountDTO);
+                            break;
+                    }
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(" [x] Exception ", ex.ToString());
+                }
+                
             };
             channel.BasicConsume(queue: queueName,
                                  autoAck: false,

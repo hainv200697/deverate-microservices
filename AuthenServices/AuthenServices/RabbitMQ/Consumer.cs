@@ -49,7 +49,7 @@ namespace AuthenServices.RabbitMQ
                 var messageAccount = JsonConvert.DeserializeObject<MessageAccount>(message);
                 var result = AccountDAO.GenerateCompanyAccount(context, messageAccount).Split('_');
                 Producer producer = new Producer();
-                MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], messageAccount.Email);
+                MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], messageAccount.Email, messageAccount.Fullname);
                 producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
             };
             channel.BasicConsume(queue: queueName,

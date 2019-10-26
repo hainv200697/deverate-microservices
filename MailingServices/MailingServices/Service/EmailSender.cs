@@ -1,7 +1,9 @@
 ﻿using AuthenServices.Model;
 using MailingServices.Model;
+using MailingServices.Models;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -34,6 +36,19 @@ namespace MailingServices.Service
             smtp.Credentials = new NetworkCredential(AppConstrain.sender, AppConstrain.senderPass);
             smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
             return smtp.SendMailAsync(mail);
+        }
+
+        public static void SendAccountMailAsync(MessageAccountDTO messageAccountDTO)
+        {
+            string subject = "Welcome To DEVERATE System";
+            string FilePath = "MailTemplates/MailTemplate.html";
+            StreamReader str = new StreamReader(FilePath);
+            string htmlBody = str.ReadToEnd();
+            htmlBody = htmlBody.Replace("[fullname]", messageAccountDTO.Fullname);
+            htmlBody = htmlBody.Replace("[username]", messageAccountDTO.Username);
+            htmlBody = htmlBody.Replace("[password]", messageAccountDTO.Password);
+            str.Close();
+            SendMailAsync(messageAccountDTO.Email, subject, htmlBody);
         }
 
         public Task SendEmailAsync(string toEmail, string subject, string message)
