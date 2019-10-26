@@ -41,7 +41,7 @@ namespace MailingServices.Service
         public static void SendAccountMailAsync(MessageAccountDTO messageAccountDTO)
         {
             string subject = "Welcome To DEVERATE System";
-            string FilePath = "MailTemplates\\MailTemplate.html";
+            string FilePath = "MailTemplates/MailTemplate.html";
             StreamReader str = new StreamReader(FilePath);
             string htmlBody = str.ReadToEnd();
             htmlBody = htmlBody.Replace("[fullname]", messageAccountDTO.Fullname);
