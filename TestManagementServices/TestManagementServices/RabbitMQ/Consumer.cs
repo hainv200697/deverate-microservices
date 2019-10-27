@@ -43,12 +43,12 @@ namespace TestManagementServices.RabbitMQ
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
-                var body = ea.Body;
+               var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
                 switch (this.exch)
                 {
                     case AppConstrain.gen_test_consumer:
-                        SystemDAO.GenerateTest(message);
+                        //SystemDAO.GenerateTest(message);
                         break;
                 }
                 

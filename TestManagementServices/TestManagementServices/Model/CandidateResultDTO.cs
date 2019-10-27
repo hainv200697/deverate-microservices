@@ -6,7 +6,7 @@ using TestManagementServices.Model;
 
 namespace TestManagementServices.Models
 {
-    public class ApplicantResultDTO
+    public class CandidateResultDTO
     {
         public int? accountId { get; set; } 
         public List<ConfigurationRankDTO> configurationRanks { get; set; }
@@ -16,9 +16,9 @@ namespace TestManagementServices.Models
         public int? rankId { get; set; }
         public string rank { get; set; }
 
-        public ApplicantResultDTO() { }
+        public CandidateResultDTO() { }
 
-        public ApplicantResultDTO(int? accountId, List<ConfigurationRankDTO> configurationRanks, List<CatalogueDTO> catalogues, List<CatalogueInRankDTO> catalogueInRanks, double? point, int? rankId, string rank)
+        public CandidateResultDTO(int? accountId, List<ConfigurationRankDTO> configurationRanks, List<CatalogueDTO> catalogues, List<CatalogueInRankDTO> catalogueInRanks, double? point, int? rankId, string rank)
         {
             this.accountId = accountId;
             this.configurationRanks = configurationRanks;

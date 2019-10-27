@@ -214,17 +214,18 @@ namespace TestManagementServices.Service
 
                     test.Code = GenerateCode();
                     db.SaveChanges();
-
+                    List<QuestionInTest> questionInTests = new List<QuestionInTest>();
                     for (int i = 0; i < questions.Count; i++)
                     {
                         QuestionInTest inTest = new QuestionInTest();
                         inTest.TestId = test.TestId;
                         inTest.QuestionId = questions[i].questionId;
                         inTest.IsActive = true;
-                        db.QuestionInTest.Add(inTest);
-                        db.SaveChanges();
+                        questionInTests.Add(inTest);
+                        
                     }
-
+                    db.QuestionInTest.AddRange(questionInTests);
+                    db.SaveChanges();
                     questions = new List<QuestionDTO>();
                     remainQues = new List<QuestionRemain>();
                     unchoosedQues = new List<QuestionDTO>();

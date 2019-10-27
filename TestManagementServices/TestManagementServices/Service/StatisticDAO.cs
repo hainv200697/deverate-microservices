@@ -10,7 +10,7 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
-        public static ApplicantResultDTO GetStatisticByAccountId(int? testId)
+        public static CandidateResultDTO GetStatisticByTestId(int? testId)
         {
             using(DeverateContext db = new DeverateContext())
             {
@@ -58,7 +58,7 @@ namespace TestManagementServices.Service
                     }
                 }
                 statistic.Point = Math.Round(statistic.Point.Value, 2);
-                return new ApplicantResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, RoundDownNumber(statistic.Point.Value), statistic.RankId, statistic.Rank.Name);
+                return new CandidateResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, RoundDownNumber(statistic.Point.Value), statistic.RankId, statistic.Rank.Name);
             }
         }
 
