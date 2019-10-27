@@ -56,5 +56,13 @@ namespace TestManagementServices.Controllers
 
             return new JsonResult(rm.Success(Message.createSucceed));
         }
+
+        [HttpPost("GenApplicantTest/")]
+        public ActionResult<IEnumerable<string>> GenApplicantTest([FromBody] ApplicantTestDTO applicantTest)
+        {
+            SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
+
+            return new JsonResult(rm.Success(Message.createSucceed));
+        }
     }
 }

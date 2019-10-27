@@ -19,7 +19,7 @@ namespace TestManagementServices.RabbitMQ
         private string queueName;
         private string exch;
         public Consumer(string exch)
-        {
+        { 
             InitRabbitMQ(exch);
         }
         private void InitRabbitMQ(string exch)
@@ -48,7 +48,7 @@ namespace TestManagementServices.RabbitMQ
                 switch (this.exch)
                 {
                     case AppConstrain.gen_test_consumer:
-                        //SystemDAO.GenerateTest(message);
+                        SystemDAO.GenerateTest(message);
                         break;
                 }
                 

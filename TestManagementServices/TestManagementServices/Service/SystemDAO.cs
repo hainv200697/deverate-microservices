@@ -73,7 +73,162 @@ namespace TestManagementServices.Service
         }
 
         /// <summary>
-        /// Tạo bài test dựa trên file config
+        /// Tạo bài test dựa trên file config cho applicant
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static string GenerateTestForApplicants(string configId, List<ApplicantDTO> applicants)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                try
+                {
+                    Configuration con = context.Configuration.SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
+                    if (con.Duration < AppConstrain.minDuration)
+                    {
+                        return Message.durationExceptopn;
+                    }
+                    List<CatalogueDTO> catas = GetCatalogueWeights(context, con.ConfigId);
+                    if (catas.Count == 0)
+                    {
+                        return Message.noCatalogueException;
+                    }
+                    if (con.TotalQuestion < catas.Count)
+                    {
+                        return Message.numberQuestionExceptopn;
+                    }
+                    if (applicants.Count == 0)
+                    {
+                        return Message.noApplicantException;
+                    }
+                    GenerateQuestionsForApplicants(context, applicants, con);
+                }
+                catch (Exception e)
+                {
+                    File.WriteAllText(AppConstrain.logFile, e.Message);
+                }
+                return null;
+            }
+        }
+
+        public static void GenerateQuestionsForApplicants(DeverateContext db, List<ApplicantDTO> applicants, Configuration config)
+        {
+            List<QuestionDTO> questions = new List<QuestionDTO>();
+            List<QuestionRemain> remainQues = new List<QuestionRemain>();
+            List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
+            List<QuestionDTO> choosedQues = new List<QuestionDTO>();
+            List<int?> quesIds = new List<int?>();
+            Random rand = new Random();
+            int totalCataQues = 0;
+
+
+            try
+            {
+                List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
+                catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+                for (int i = 0; i < catalogues.Count; i++)
+                {
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                    totalCataQues += catalogues[i].questions.Count;
+                }
+                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
+                catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
+
+
+                foreach (ApplicantDTO app in applicants)
+                {
+                    for (int i = 0; i < catalogues.Count; i++)
+                    {
+                        QuestionRemain quesRe = new QuestionRemain();
+                        quesRe.catalogueId = catalogues[i].catalogueId;
+
+                        List<QuestionDTO> totalQues = catalogues[i].questions;
+                        int quesLenght = totalQues.Count;
+                        int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
+                        totalQues = Shuffle(totalQues);
+                        for (int j = 0; j < numbOfQues; j++)
+                        {
+                            if (!quesIds.Contains(totalQues[j].questionId))
+                            {
+                                quesIds.Add(totalQues[j].questionId);
+                                questions.Add(totalQues[j]);
+                                if (numbOfQues != quesLenght)
+                                {
+                                    choosedQues.Add(totalQues[j]);
+                                }
+                            }
+                            else
+                            {
+                                j--;
+                            }
+                        }
+                        quesRe.curNumbQues = numbOfQues;
+                        quesRe.numbCataQues = catalogues[i].questions.Count;
+
+                        if (numbOfQues != quesLenght)
+                        {
+                            for (int k = 0; k < quesLenght; k++)
+                            {
+                                bool isContainQues = false;
+                                for (int m = 0; m < choosedQues.Count; m++)
+                                {
+                                    if (choosedQues[m].questionId == totalQues[k].questionId)
+                                    {
+                                        isContainQues = true;
+                                        break;
+                                    }
+                                }
+                                if (isContainQues == false)
+                                {
+                                    unchoosedQues.Add(totalQues[k]);
+                                }
+                            }
+                        }
+                        quesRe.unchoosedQues = unchoosedQues;
+                        quesRe.weightPoint = catalogues[i].weightPoint;
+                        remainQues.Add(quesRe);
+                    }
+                    questions = fillQues(remainQues, totalOfQues, questions);
+                    questions = Shuffle(questions);
+
+                    Test test = new Test();
+                    test.ConfigId = config.ConfigId;
+                    test.ApplicantId = app.applicantId;
+                    test.CreateDate = DateTime.Now;
+                    test.IsActive = true;
+                    db.Test.Add(test);
+                    db.SaveChanges();
+
+                    test.Code = GenerateCode();
+                    db.SaveChanges();
+                    List<QuestionInTest> questionInTests = new List<QuestionInTest>();
+                    for (int i = 0; i < questions.Count; i++)
+                    {
+                        QuestionInTest inTest = new QuestionInTest();
+                        inTest.TestId = test.TestId;
+                        inTest.QuestionId = questions[i].questionId;
+                        inTest.IsActive = true;
+                        questionInTests.Add(inTest);
+
+                    }
+                    db.QuestionInTest.AddRange(questionInTests);
+                    db.SaveChanges();
+                    questions = new List<QuestionDTO>();
+                    remainQues = new List<QuestionRemain>();
+                    unchoosedQues = new List<QuestionDTO>();
+                    choosedQues = new List<QuestionDTO>();
+                    quesIds = new List<int?>();
+                }
+            }
+            catch (Exception e)
+            {
+                File.WriteAllText(AppConstrain.logFile, e.Message);
+            }
+        }
+
+        /// <summary>
+        /// Tạo bài test dựa trên file config cho employee
         /// </summary>
         /// <param name="db"></param>
         /// <param name="config"></param>
@@ -535,26 +690,13 @@ namespace TestManagementServices.Service
 
             List<AnswerDTO> answers = new List<AnswerDTO>();
             List<int> answerIds = new List<int>();
-            List<int> qitIds = new List<int>();
             for(int i = 0; i < userTest.questionInTest.Count; i++)
             {
                 answerIds.Add(userTest.questionInTest[i].answerId.Value);
-                qitIds.Add(userTest.questionInTest[i].qitid.Value);
             }
             var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
             anss.ForEach(a => answers.Add(new AnswerDTO(a)));
-
-            var qitss = db.QuestionInTest.Where(o => qitIds.Contains(o.Qitid)).ToList();
-            for(int i = 0; i < qitss.Count; i++)
-            {
-                for(int j = 0; j < userTest.questionInTest.Count; j++)
-                {
-                    if (qitss[i].Qitid == userTest.questionInTest[j].qitid)
-                        qitss[i].AnswerId = userTest.questionInTest[j].answerId;
-                }
-                
-            }
-            db.SaveChanges();
+            SaveAnswer(userTest);
            TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
             Statistic statistic = new Statistic();
             statistic.TestId = userTest.testId;
@@ -593,23 +735,30 @@ namespace TestManagementServices.Service
             {
                 return false;
             }
-            for (int i = 0; i < userTest.questionInTest.Count; i++)
-            {
-                if (userTest.questionInTest[i].answerId == null)
-                {
-                    continue;
-                }
-                SaveAnswer(userTest.questionInTest[i].qitid, userTest.questionInTest[i].answerId);
-            }
+            SaveAnswer(userTest);
             return true;
         }
 
-        public static void SaveAnswer(int? QITId, int? answerId)
+        public static void SaveAnswer(UserTest userTest)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var question = db.QuestionInTest.SingleOrDefault(o => o.Qitid == QITId);
-                question.AnswerId = answerId;
+                List<int> qitIds = new List<int>();
+                for (int i = 0; i < userTest.questionInTest.Count; i++)
+                {
+                    qitIds.Add(userTest.questionInTest[i].qitid.Value);
+                }
+
+                var qitss = db.QuestionInTest.Where(o => qitIds.Contains(o.Qitid)).ToList();
+                for (int i = 0; i < qitss.Count; i++)
+                {
+                    for (int j = 0; j < userTest.questionInTest.Count; j++)
+                    {
+                        if (qitss[i].Qitid == userTest.questionInTest[j].qitid)
+                            qitss[i].AnswerId = userTest.questionInTest[j].answerId;
+                    }
+
+                }
                 db.SaveChanges();
             }
         }
