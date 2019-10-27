@@ -39,7 +39,7 @@ namespace TestManagementServices.Controllers
         {
 
             
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByAccountId(testId)));
+            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByTestId(testId)));
         }
 
         [HttpGet("History/{accountId}")]
