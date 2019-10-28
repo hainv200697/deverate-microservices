@@ -4,51 +4,60 @@
         .session-maill{
             width: 100%;
             height: 100%;
-            position: relative;
+            background-color: silver;
+        }
+        body{
+            margin: 0px;
         }
         .cart{
-            position: absolute;
-            width: 500px;
-            height: 700px;
-            left: 50%; 
-            top: 50%;
+            width: 700px;
+            height: 100%;
             background-color: rgba(16, 108, 247, 0.267);
-            transform: translate(-50%, -50%);
             border-radius: 10px;
+            margin-left: 16%;
         }
         .cart-icon{
             border-bottom: 1px solid #3531313d;
-            margin: 40px;
+            margin: 10px;
             text-align: center;
         }
         img{
             width: 200px;
-			margin-top: 35px;
+			margin-top: 10px;
             height: auto;
             margin-bottom: 5px;
         }
         .maill-body{
             margin: 40px;
             text-align: left;
+            margin-left: 17%;
         }
         h2{
-            
             font-size: 32px;
         }
         p{
-            font: small/1.5 Arial,Helvetica,sans-serif;
+            font: small/1.5 Arial;
             font-size: 22px;
+            color: black;
+        }
+        input{
+            color: black;
         }
         i{
             font-size: 22px;
         }
         .footer-mail{
-            margin: 10px;
             border-top: 1px solid #3531313d;
             text-align: center;
+            margin-top: 70px;
         }
         a{
             margin-top: 10px;
+        }
+        #password{
+            background-color:  rgb(145, 170, 207);
+            font-size: 22px;
+            border: none;
         }
 		.icon-small{
 			width: 25px;
@@ -63,14 +72,13 @@
                     <img src="http://deverate-system.s3-website-ap-southeast-1.amazonaws.com/assets/images/logo/Deverate_logo.jpg">
                 </div>
                 <div class="maill-body" >
-                    <h2>Wellcome!</h3>
+                    <h2>Wellcome!</h2>
                     <p>Dear [fullname],</p>
                     <p>
-                       There are your Username and Password: 
-                    </p>
-					<br/>
+                        There are your Username and Password: 
+                    </p>    
 					<p>Username: [username]</p>
-                    <p>Password: [password]</p> 
+                    <p>Password: [password]</p>   
                 </div>
                 <div class="footer-mail" style="font-size: 22px;">
                     <a href="http://deverate-system.s3-website-ap-southeast-1.amazonaws.com">Click here to login!</a>
@@ -78,4 +86,6 @@
             </div>
         </div>
     </body>
+    
 </html>
+
