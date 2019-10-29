@@ -13,17 +13,17 @@ using Newtonsoft.Json;
 namespace AuthenServices.Controllers
 {
 
-    [Route("api/[controller]")]
-    public class LoginController : Controller
+    [Route("[controller]")]
+    public class AccountController : Controller
     {
         ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
-        public LoginController(DeverateContext context)
+        public AccountController(DeverateContext context)
         {
             this.context = context;
         }
 
-        [HttpPost("Authen")]
+        [HttpPost("Login")]
         public ActionResult<IEnumerable<string>> PostAuthenUser([FromBody]AccountDTO account)
         {
 
@@ -43,6 +43,24 @@ namespace AuthenServices.Controllers
             MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], account.Email, account.Fullname);
             producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
             return new JsonResult(rm.Success("Login successful", result));
+        }
+
+        [HttpPut("ChangePassword")]
+        public ActionResult PutChangePassword([FromBody]ChangePassRequest changePassRequest)
+        {
+            try
+            {
+                bool result = AccountDAO.changePassword(changePassRequest);
+                if (result)
+                {
+                    return Ok();
+                }
+                return BadRequest("Old password is invalid");
+            }
+            catch (Exception exe)
+            {
+                return StatusCode(500);
+            }
         }
     }
 }

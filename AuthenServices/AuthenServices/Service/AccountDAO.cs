@@ -1,4 +1,5 @@
-﻿using AuthenServices.Models;
+﻿using AuthenServices.Model;
+using AuthenServices.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -72,6 +73,7 @@ namespace AuthenServices.Service
             account.Username = username.ToUpper();
             account.Password = encodedPassword;
             account.Fullname = ms.Fullname;
+            account.Email = ms.Email;
             account.Gender = false;
             account.JoinDate = DateTime.Now;
             account.RoleId = ms.Role;
@@ -84,6 +86,23 @@ namespace AuthenServices.Service
 
         }
 
+        public static bool changePassword(ChangePassRequest changePassRequest)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                changePassRequest.username = changePassRequest.username.ToUpper();
+                Account account = db.Account.SingleOrDefault(a => a.Username == changePassRequest.username);
+                bool check = BCrypt.Net.BCrypt.Verify(changePassRequest.oldPassword, account.Password);
+                if (!check)
+                {
+                    return check;
+                }
+                string salt = BCrypt.Net.BCrypt.GenerateSalt(13);
+                account.Password = BCrypt.Net.BCrypt.HashPassword(changePassRequest.newPassword, salt);
+                db.SaveChanges();
+                return true;
+            }
+        }
 
         public static string RemoveVietnameseTone(string text)
         {
