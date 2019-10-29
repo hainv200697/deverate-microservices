@@ -17,6 +17,7 @@ namespace TestManagementServices.Models
 
         public virtual DbSet<Account> Account { get; set; }
         public virtual DbSet<Answer> Answer { get; set; }
+        public virtual DbSet<Applicant> Applicant { get; set; }
         public virtual DbSet<Catalogue> Catalogue { get; set; }
         public virtual DbSet<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
         public virtual DbSet<CatalogueInRank> CatalogueInRank { get; set; }
@@ -67,6 +68,12 @@ namespace TestManagementServices.Models
                     .WithMany(p => p.Account)
                     .HasForeignKey(d => d.CompanyId)
                     .HasConstraintName("FK_Account_Company");
+
+                entity.HasOne(d => d.Role)
+                    .WithMany(p => p.Account)
+                    .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Account_Role");
             });
 
             modelBuilder.Entity<Answer>(entity =>
@@ -79,6 +86,13 @@ namespace TestManagementServices.Models
                     .WithMany(p => p.Answer)
                     .HasForeignKey(d => d.QuestionId)
                     .HasConstraintName("FK_Answer_Question");
+            });
+
+            modelBuilder.Entity<Applicant>(entity =>
+            {
+                entity.Property(e => e.Email).HasMaxLength(250);
+
+                entity.Property(e => e.Fullname).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Catalogue>(entity =>
@@ -98,13 +112,13 @@ namespace TestManagementServices.Models
                     .WithMany(p => p.CatalogueInConfiguration)
                     .HasForeignKey(d => d.CatalogueId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CatalogueInConfiguration_Catalogue1");
+                    .HasConstraintName("FK_CatalogueInConfiguration_Catalogue");
 
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.CatalogueInConfiguration)
                     .HasForeignKey(d => d.ConfigId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CatalogueInConfiguration_Configuration1");
+                    .HasConstraintName("FK_CatalogueInConfiguration_Configuration");
             });
 
             modelBuilder.Entity<CatalogueInRank>(entity =>
@@ -167,11 +181,6 @@ namespace TestManagementServices.Models
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Title).HasMaxLength(250);
-
-                entity.HasOne(d => d.TestOwner)
-                    .WithMany(p => p.Configuration)
-                    .HasForeignKey(d => d.TestOwnerId)
-                    .HasConstraintName("FK_Configuration_Account");
             });
 
             modelBuilder.Entity<ConfigurationRank>(entity =>
@@ -179,7 +188,7 @@ namespace TestManagementServices.Models
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.ConfigId)
-                    .HasConstraintName("FK_ConfigurationRank_Configuration1");
+                    .HasConstraintName("FK_ConfigurationRank_Configuration");
 
                 entity.HasOne(d => d.Rank)
                     .WithMany(p => p.ConfigurationRank)
@@ -270,7 +279,7 @@ namespace TestManagementServices.Models
                 entity.HasOne(d => d.Test)
                     .WithMany(p => p.Statistic)
                     .HasForeignKey(d => d.TestId)
-                    .HasConstraintName("FK_DetailedStatistic_Test");
+                    .HasConstraintName("FK_Statistic_Test");
             });
 
             modelBuilder.Entity<Test>(entity =>
@@ -279,12 +288,19 @@ namespace TestManagementServices.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.Property(e => e.FinishTime).HasColumnType("datetime");
+
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Test)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK_Test_Account");
+
+                entity.HasOne(d => d.Applicant)
+                    .WithMany(p => p.Test)
+                    .HasForeignKey(d => d.ApplicantId)
+                    .HasConstraintName("FK_Test_Applicant");
 
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.Test)
