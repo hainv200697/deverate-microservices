@@ -34,8 +34,8 @@ namespace TestManagementServices.Service
                                  join t in db.Test on c.ConfigId equals t.ConfigId
                                  join a in db.Account on t.AccountId equals a.AccountId
                                  where c.ConfigId == configId && c.IsActive == true
-                                 select new TestMailDTO(a.Email, a.Fullname, null, c.StartDate, c.EndDate,
-                                 isUpdate == false ? t.Code: null);
+                                 select new TestMailDTO(a.Email, a.Fullname, c.Title, c.StartDate, c.EndDate,
+                                 isUpdate == false ? t.Code: null, t.TestId.ToString());
                     if(result.ToList().Count == 0)
                     {
                         return null;

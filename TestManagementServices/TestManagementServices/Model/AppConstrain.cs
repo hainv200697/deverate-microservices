@@ -17,7 +17,7 @@ namespace TestManagementServices.Model
         public const bool includeSpaces = false;
         public const int lengthOfPassword = 8;
         public const string gen_test_consumer = "GenerateTest";
-        public const string test_mail = "TestMail";
+        public const string test_mail = "TestEmployeeToEmail";
 
         public const int minDuration = 5;
 
