@@ -10,6 +10,74 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
+        public static GeneralStatisticDTO GetGeneralStatisticByTestOwnerId(int? testOwnerId)
+        {
+            using(DeverateContext db = new DeverateContext())
+            {
+                Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
+                List<Account> accounts = db.Account.Include(a => a.Configuration).Where(a => a.CompanyId == account.CompanyId).ToList();
+                var result = from t in db.Test
+                                    join con in db.Configuration on t.ConfigId equals con.ConfigId
+                                    join acc in db.Account on con.TestOwnerId equals acc.AccountId
+                                    where acc.CompanyId == account.CompanyId
+                                    select t;
+                List<Test> tests = result.ToList();
+                List<int?> testIds = new List<int?>();
+                foreach(Test t in tests)
+                {
+                    testIds.Add(t.TestId);
+                }
+                List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
+                List<CatalogueDTO> catalogues = db.Catalogue.Select(c => new CatalogueDTO(c.CatalogueId, c.Name, 0)).ToList();
+                List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
+                for(int i = 0; i < accounts.Count; i++)
+                {
+                   List<Configuration> configurations = accounts[i].Configuration.ToList();
+                    for(int j = 0; j < configurations.Count; j++)
+                    {
+                        int numberOfTest = configurations[j].Test.ToList().Count();
+                        int numberOfFinishedTest = 0;
+                        List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>(catalogues);
+                        GeneralStatisticItemDTO gsi = new GeneralStatisticItemDTO();
+                        gsi.configId = configurations[j].ConfigId;
+                        double? totalGPA = 0;
+                        for(int k = 0; k < statistics.Count; k++)
+                        {
+                            if(statistics[k].Test.ConfigId == configurations[j].ConfigId)
+                            {
+                                totalGPA += statistics[k].Point;
+                                List<DetailStatistic> details = statistics[k].DetailStatistic.ToList();
+                                for (int m = 0; m < details.Count; m++)
+                                {
+                                    numberOfFinishedTest += 1;
+                                    for (int n = 0; i < cloneCatalogues.Count; n++)
+                                    {
+                                        if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
+                                        {
+                                            cloneCatalogues[n].catalogueGPA += details[m].Point / numberOfTest;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        }
+                        gsi.configGPA = totalGPA / numberOfTest;
+                        gsi.catalogues = cloneCatalogues;
+                        gsi.createDate = configurations[j].CreateDate;
+                        gsi.endDate = configurations[j].EndDate;
+                        gsi.title = configurations[j].Title;
+                        gsi.numberOfFinishedTest = numberOfFinishedTest;
+                        gsi.totalTest = numberOfTest;
+
+                        generalStatisticItems.Add(gsi);
+
+                    }
+                }
+                 
+                return new GeneralStatisticDTO(generalStatisticItems);
+            }
+        }
         public static CandidateResultDTO GetStatisticByTestId(int? testId)
         {
             using(DeverateContext db = new DeverateContext())

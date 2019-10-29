@@ -181,6 +181,11 @@ namespace TestManagementServices.Models
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Title).HasMaxLength(250);
+
+                entity.HasOne(d => d.TestOwner)
+                    .WithMany(p => p.Configuration)
+                    .HasForeignKey(d => d.TestOwnerId)
+                    .HasConstraintName("FK_Configuration_Account");
             });
 
             modelBuilder.Entity<ConfigurationRank>(entity =>

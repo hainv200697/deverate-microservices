@@ -41,6 +41,12 @@ namespace TestManagementServices.Model
             this.overallPoint = overallPoint;
             this.thresholdPoint = thresholdPoint;
         }
+        public CatalogueDTO(int? catalogueId, string name, double? catalogueGPA)
+        {
+            this.catalogueId = catalogueId;
+            this.name = name;
+            this.catalogueGPA = catalogueGPA;
+        }
         [JsonProperty("CatalogueId")]
         public int? catalogueId { get; set; }
         public string name { get; set; }
@@ -48,6 +54,10 @@ namespace TestManagementServices.Model
         public double? overallPoint { get; set; }
         public double? weightPoint { get; set; }
         public double? thresholdPoint { get; set; }
+        /// <summary>
+        /// điểm trung bình
+        /// </summary>
+        public double? catalogueGPA { get; set; }
         public List<QuestionDTO> questions { get; set; }
         public bool? isActive { get; set; }
     }

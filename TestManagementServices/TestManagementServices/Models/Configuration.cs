@@ -23,6 +23,7 @@ namespace TestManagementServices.Models
         public bool? Type { get; set; }
         public bool? IsActive { get; set; }
 
+        public virtual Account TestOwner { get; set; }
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
         public virtual ICollection<ConfigurationRank> ConfigurationRank { get; set; }
         public virtual ICollection<Test> Test { get; set; }
