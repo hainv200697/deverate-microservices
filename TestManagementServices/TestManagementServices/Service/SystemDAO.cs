@@ -689,7 +689,7 @@ namespace TestManagementServices.Service
             }
 
             List<AnswerDTO> answers = new List<AnswerDTO>();
-            List<int> answerIds = new List<int>();
+            List<int?> answerIds = new List<int?>();
             for(int i = 0; i < userTest.questionInTest.Count; i++)
             {
                 answerIds.Add(userTest.questionInTest[i].answerId.Value);
