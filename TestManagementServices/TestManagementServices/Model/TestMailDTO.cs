@@ -10,21 +10,16 @@ namespace TestManagementServices.Model
     [JsonObject("TestMailDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class TestMailDTO
     {
-        [JsonProperty("email")]
         public string email { get; set; }
-        [JsonProperty("fullName")]
         public string fullName { get; set; }
-        [JsonProperty("title")]
         public string title { get; set; }
-        [JsonProperty("startDate")]
         public DateTime? startDate { get; set; }
-        [JsonProperty("endDate")]
         public DateTime? endDate { get; set; }
-        [JsonProperty("code")]
         public string code { get; set; }
+        public string testId { get; set; }
 
         public TestMailDTO() { }
-        public TestMailDTO(string email, string fullName, string title, DateTime? startDate, DateTime? endDate, string code)
+        public TestMailDTO(string email, string fullName, string title, DateTime? startDate, DateTime? endDate, string code, string testId)
         {
             this.email = email;
             this.fullName = fullName;
@@ -32,6 +27,7 @@ namespace TestManagementServices.Model
             this.startDate = startDate;
             this.endDate = endDate;
             this.code = code;
+            this.testId = testId;
         }
     }
 }
