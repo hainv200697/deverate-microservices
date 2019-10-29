@@ -1,5 +1,4 @@
-﻿using AuthenServices.Model;
-using MailingServices.Models;
+﻿using MailingServices.Model;
 using MailingServices.Service;
 using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
@@ -7,7 +6,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -55,6 +53,10 @@ namespace MailingServices.RabbitMQ
                         case "AccountToEmail":
                             var messageAccountDTO = JsonConvert.DeserializeObject<MessageAccountDTO>(message);
                             EmailSender.SendAccountMailAsync(messageAccountDTO);
+                            break;
+                        case "TestEmployeeToEmail":
+                            List<TestMailDTO> testMailDTOs = JsonConvert.DeserializeObject<List<TestMailDTO>>(message);
+                            EmailSender.SendTestEmployeeMailAsync(testMailDTOs);
                             break;
                     }
                 } catch (Exception ex)
