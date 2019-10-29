@@ -86,6 +86,14 @@ namespace TestManagementServices.Controllers
             return Ok(listTest);
         }
 
+        [HttpGet("GetGeneralStatistic")]
+        public IActionResult GetGeneralStatistic(int? accountId)
+        {
+            
+
+            return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId) );
+        }
+
 
         [HttpPost("ManagerInTest")]
         public IActionResult GetQuesionInTest([FromBody]TestInfoDTO testInfo)
