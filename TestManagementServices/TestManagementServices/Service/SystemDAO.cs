@@ -691,38 +691,49 @@ namespace TestManagementServices.Service
             List<int?> answerIds = new List<int?>();
             for(int i = 0; i < userTest.questionInTest.Count; i++)
             {
-                answerIds.Add(userTest.questionInTest[i].answerId.Value);
+                answerIds.Add(userTest.questionInTest[i].answerId);
             }
             var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
-            anss.ForEach(a => answers.Add(new AnswerDTO(a)));
-            SaveAnswer(userTest);
-           TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
             Statistic statistic = new Statistic();
+            string rank = "Dev0";
+            double? totalPoint = 0;
             statistic.TestId = userTest.testId;
             statistic.IsActive = true;
             db.Statistic.Add(statistic);
             db.SaveChanges();
-            double? totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId);
-            List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
-            configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
-            ConfigurationRankDTO tmp = new ConfigurationRankDTO();
-            tmp.rankId = configurationRanks[0].rankId.Value;
-            tmp.point = configurationRanks[0].point;
-            foreach (ConfigurationRankDTO cr in configurationRanks)
+            if (anss.Count != 0)
             {
-                if (totalPoint > cr.point)
+                anss.ForEach(a => answers.Add(new AnswerDTO(a)));
+                SaveAnswer(userTest);
+                TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
+                totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId);
+                List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
+                configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
+                ConfigurationRankDTO tmp = new ConfigurationRankDTO();
+                tmp.rankId = configurationRanks[0].rankId.Value;
+                tmp.point = configurationRanks[0].point;
+                foreach (ConfigurationRankDTO cr in configurationRanks)
                 {
-                    tmp = cr;
+                    if (totalPoint > cr.point)
+                    {
+                        tmp = cr;
+                    }
                 }
+                rank = db.Rank.SingleOrDefault(r => r.RankId == tmp.rankId).Name;
+                if (rank == null)
+                {
+                    return null;
+                }
+                statistic.RankId = tmp.rankId;
+                statistic.Point = totalPoint;
             }
-            string rank = db.Rank.SingleOrDefault(r => r.RankId == tmp.rankId).Name;
-            if (rank == null)
+            else
             {
-                return null;
+                statistic.RankId = null;
+                statistic.Point = 0;
             }
-            statistic.RankId = tmp.rankId;
-            statistic.Point = totalPoint;
             db.SaveChanges();
+
             return new RankPoint(rank, totalPoint);
 
         }
