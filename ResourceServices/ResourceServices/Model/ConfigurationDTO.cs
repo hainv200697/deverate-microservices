@@ -20,6 +20,7 @@ namespace ResourceServices.Model
         public int? duration { get; set; }
         public string title { get; set; }
         public bool? isActive { get; set; } = true;
+        public bool? type { get; set; }
         public string TestOwnerName { get; set; }
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
         public List<ConfigurationRank> ConfigurationRank { get; set; }
@@ -39,6 +40,7 @@ namespace ResourceServices.Model
             this.startDate = configuration.StartDate.Value.AddHours(7);
             this.endDate = configuration.EndDate;
             this.duration = configuration.Duration;
+            this.type = configuration.Type;
             this.isActive = configuration.IsActive;
         }
 
@@ -53,6 +55,7 @@ namespace ResourceServices.Model
             this.duration = configuration.Duration;
             this.isActive = configuration.IsActive;
             this.title = configuration.Title;
+            this.type = configuration.Type;
             this.TestOwnerName = name;
             this.catalogueInConfigurations = catalogueInConfiguration;
             this.ConfigurationRank = configurationRank;

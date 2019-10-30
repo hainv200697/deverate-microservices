@@ -57,6 +57,7 @@ namespace ResourceServices.Service
                 configuration.EndDate = configurationDTO.endDate;
                 configuration.Duration = configurationDTO.duration;
                 configuration.Title = configurationDTO.title;
+                configuration.Type = configurationDTO.type;
                 configuration.IsActive = true;
                 configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
                 configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
@@ -99,6 +100,7 @@ namespace ResourceServices.Service
                 configuration.StartDate = configurationDTO.startDate;
                 configuration.EndDate = configurationDTO.endDate;
                 configuration.Duration = configurationDTO.duration;
+                configuration.Type = configurationDTO.type;
                 configuration.IsActive = true;
                 db.Configuration.Update(configuration);
                 db.SaveChanges();
