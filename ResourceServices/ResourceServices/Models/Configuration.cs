@@ -20,6 +20,7 @@ namespace ResourceServices.Models
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
         public int? Duration { get; set; }
+        public bool? Type { get; set; }
         public bool? IsActive { get; set; }
 
         public virtual Account TestOwner { get; set; }

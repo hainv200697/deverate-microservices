@@ -49,11 +49,12 @@ namespace TestManagementServices.Service
                         {
                             if(statistics[k].Test.ConfigId == configurations[j].ConfigId)
                             {
+                                numberOfFinishedTest += 1;
                                 totalGPA += statistics[k].Point;
                                 List<DetailStatistic> details = statistics[k].DetailStatistic.ToList();
                                 for (int m = 0; m < details.Count; m++)
                                 {
-                                    numberOfFinishedTest += 1;
+                                    
                                     for (int n = 0; i < cloneCatalogues.Count; n++)
                                     {
                                         if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
@@ -71,7 +72,7 @@ namespace TestManagementServices.Service
                         gsi.createDate = configurations[j].CreateDate;
                         gsi.endDate = configurations[j].EndDate;
                         gsi.name = configurations[j].Title;
-                        gsi.numberOfFinishedTest = numberOfFinishedTest;
+                        gsi.numberOfFinishedTest = numberOfFinishedTest > numberOfTest ? numberOfTest : numberOfFinishedTest;
                         gsi.totalTest = numberOfTest;
                         generalStatisticItems.Add(gsi);
 
