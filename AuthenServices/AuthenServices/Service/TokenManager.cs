@@ -24,6 +24,7 @@ namespace AuthenServices.Service
                 Subject = new ClaimsIdentity(new[]
                         {
                             new Claim("AccountId",  account.AccountId.ToString()),
+                            new Claim("Username", account.Username),
                             new Claim("Roles", account.Role.Description),
                             new Claim("Fullname", account.Fullname)
                         }),
