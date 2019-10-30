@@ -10,11 +10,11 @@ namespace TestManagementServices.Model
     public class GeneralStatisticItemDTO
     {
         public int? configId { get; set; }
-        public List<CatalogueDTO> catalogues { get; set; }
+        public List<CatalogueDTO> series { get; set; }
         public double? configGPA { get; set; }
         public DateTime? createDate { get; set; }
         public DateTime? endDate { get; set; }
-        public string title { get; set; }
+        public string name { get; set; }
         public int? numberOfFinishedTest { get; set; }
         public int? totalTest { get; set; }
 
@@ -23,11 +23,11 @@ namespace TestManagementServices.Model
             DateTime? createDate, DateTime? endDate, string title, int? numberOfFinishedTest, int? totalTest)
         {
             this.configId = configId;
-            this.catalogues = catalogues;
+            this.series = catalogues;
             this.configGPA = configGPA;
             this.createDate = createDate;
             this.endDate = endDate;
-            this.title = title;
+            this.name = title;
             this.numberOfFinishedTest = numberOfFinishedTest;
             this.totalTest = totalTest;
         }

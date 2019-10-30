@@ -54,7 +54,7 @@ namespace TestManagementServices.Service
                                     {
                                         if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
                                         {
-                                            cloneCatalogues[n].catalogueGPA += details[m].Point / numberOfTest;
+                                            cloneCatalogues[n].value += details[m].Point / numberOfTest;
                                             break;
                                         }
                                     }
@@ -63,10 +63,10 @@ namespace TestManagementServices.Service
                             
                         }
                         gsi.configGPA = totalGPA / numberOfTest;
-                        gsi.catalogues = cloneCatalogues;
+                        gsi.series = cloneCatalogues;
                         gsi.createDate = configurations[j].CreateDate;
                         gsi.endDate = configurations[j].EndDate;
-                        gsi.title = configurations[j].Title;
+                        gsi.name = configurations[j].Title;
                         gsi.numberOfFinishedTest = numberOfFinishedTest;
                         gsi.totalTest = numberOfTest;
 
