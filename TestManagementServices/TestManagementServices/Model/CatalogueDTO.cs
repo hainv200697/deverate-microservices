@@ -45,7 +45,7 @@ namespace TestManagementServices.Model
         {
             this.catalogueId = catalogueId;
             this.name = name;
-            this.catalogueGPA = catalogueGPA;
+            this.value = catalogueGPA;
         }
         [JsonProperty("CatalogueId")]
         public int? catalogueId { get; set; }
@@ -57,7 +57,7 @@ namespace TestManagementServices.Model
         /// <summary>
         /// điểm trung bình
         /// </summary>
-        public double? catalogueGPA { get; set; }
+        public double? value { get; set; }
         public List<QuestionDTO> questions { get; set; }
         public bool? isActive { get; set; }
     }
