@@ -37,7 +37,11 @@ namespace TestManagementServices.Service
                     {
                         int numberOfTest = configurations[j].Test.ToList().Count();
                         int numberOfFinishedTest = 0;
-                        List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>(catalogues);
+                        List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
+                        foreach (CatalogueDTO c in catalogues)
+                        {
+                            cloneCatalogues.Add(new CatalogueDTO(c.catalogueId, c.name, 0));
+                        }
                         GeneralStatisticItemDTO gsi = new GeneralStatisticItemDTO();
                         gsi.configId = configurations[j].ConfigId;
                         double? totalGPA = 0;
@@ -69,7 +73,6 @@ namespace TestManagementServices.Service
                         gsi.name = configurations[j].Title;
                         gsi.numberOfFinishedTest = numberOfFinishedTest;
                         gsi.totalTest = numberOfTest;
-
                         generalStatisticItems.Add(gsi);
 
                     }

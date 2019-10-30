@@ -41,14 +41,19 @@ namespace TestManagementServices.Model
             this.overallPoint = overallPoint;
             this.thresholdPoint = thresholdPoint;
         }
-        public CatalogueDTO(int? catalogueId, string name, double? catalogueGPA)
+        public CatalogueDTO(int? catalogueId, string name, double? value)
         {
             this.catalogueId = catalogueId;
             this.name = name;
-            this.value = catalogueGPA;
+            this.value = value;
+        }
+        public CatalogueDTO(int? configId)
+        {
+            this.configId = configId;
         }
         [JsonProperty("CatalogueId")]
         public int? catalogueId { get; set; }
+        public int? configId { get; set; }
         public string name { get; set; }
         public int? numberOfQuestion { get; set; }
         public double? overallPoint { get; set; }
