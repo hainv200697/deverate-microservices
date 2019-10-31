@@ -904,8 +904,9 @@ namespace TestManagementServices.Service
 
         public static ConfigurationDTO GetConfig(DeverateContext db, int testId)
         {
-            var config = db.Configuration.Include(z=>z.Test).Where(c => c.Test.Any(x=>x.TestId == testId)).FirstOrDefault()   ;
-            return new ConfigurationDTO(config);
+            var config = db.Configuration.Include(z=>z.Test).Where(c => c.Test.Any(x=>x.TestId == testId)).FirstOrDefault();
+            var test = config.Test.SingleOrDefault(t => t.TestId == testId);
+            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId);
         }
 
         public static UserTest GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo, bool checkCode)
@@ -914,7 +915,7 @@ namespace TestManagementServices.Service
             Test test = new Test();
             if (checkCode)
             {
-                test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId && t.Code == testInfo.code);
                 if (test.StartTime == null)
                 {
                     test.StartTime = DateTime.Now;
