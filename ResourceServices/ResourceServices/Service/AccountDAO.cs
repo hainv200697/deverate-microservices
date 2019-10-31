@@ -1,4 +1,5 @@
-﻿using AuthenServices.Models;
+﻿using AuthenServices.Model;
+using AuthenServices.Models;
 using ResourceServices.Model;
 using ResourceServices.Models;
 using System;
@@ -80,6 +81,30 @@ namespace AuthenServices.Service
             }
             return null;
 
+
+        }
+
+        public static int? GetCompany(int? id)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                Account account = context.Account.SingleOrDefault(acc => acc.AccountId == id);
+                int? companyId = account.CompanyId;
+                return companyId;
+            }
+
+        }
+
+        public static List<AccountDTO> GetEmployee(int? id)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var employee = context.Account.Where(acc => acc.CompanyId == id && acc.RoleId == 3).Select(acc => new AccountDTO(acc));
+
+                return employee.ToList();
+            }
 
         }
     }

@@ -7,12 +7,12 @@ namespace ResourceServices.Model
 {
     public class MessageAccount
     {
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
         public string Fullname { get; set; }
         public string Email { get; set; }
         public int Role { get; set; }
 
-        public MessageAccount(int companyId, string fullname, string email, int role)
+        public MessageAccount(int? companyId, string fullname, string email, int role)
         {
             CompanyId = companyId;
             Fullname = fullname;
