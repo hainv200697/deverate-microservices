@@ -31,7 +31,7 @@ namespace TestManagementServices.Controllers
         }
 
         [HttpGet("GetConfig/{testId}")]
-        public IActionResult GetConfig(int testId)
+        public IActionResult GetConfig(int testId,int accountId)
         {
             ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
             return Ok(con);
@@ -105,6 +105,13 @@ namespace TestManagementServices.Controllers
             }
             return Ok(listQuestion);
         }
-    }
     
+
+        [HttpGet("GetTestAccount")]
+        public IActionResult GetTestAccount(int testId)
+        {
+            var result = SystemDAO.GetTestAccount(context,testId);
+            return Ok(rm.Success(result));
+        }
+    }
 }

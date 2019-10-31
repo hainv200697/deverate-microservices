@@ -914,7 +914,7 @@ namespace TestManagementServices.Service
             Test test = new Test();
             if (checkCode)
             {
-                test = db.Test.SingleOrDefault(t => t.AccountId == testInfo.accountId && t.ConfigId == testInfo.configId && t.Code == testInfo.code);
+                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId && t.Code == testInfo.code);
                 if (test.StartTime == null)
                 {
                     test.StartTime = DateTime.Now;
@@ -952,6 +952,12 @@ namespace TestManagementServices.Service
             return results;
         }
 
-            
+        public static int? GetTestAccount(DeverateContext db, int id)
+        {
+            Test results = db.Test.SingleOrDefault(t => t.TestId == id);
+            int? accountId = results.AccountId;
+            return accountId;
+        }
+
     }
 }
