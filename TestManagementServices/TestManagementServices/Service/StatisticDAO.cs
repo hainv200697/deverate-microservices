@@ -10,6 +10,65 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
+
+        public static List<RankStatisticItemDTO> GetRankStatisticByTestOwnerId(int? testOwnerId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
+                List<Account> accounts = db.Account.Include(a => a.Configuration).Where(a => a.CompanyId == account.CompanyId).ToList();
+                var result = from t in db.Test
+                             join con in db.Configuration on t.ConfigId equals con.ConfigId
+                             join acc in db.Account on con.TestOwnerId equals acc.AccountId
+                             where acc.CompanyId == account.CompanyId
+                             select t;
+                List<Test> tests = result.ToList();
+                List<int?> testIds = new List<int?>();
+                foreach (Test t in tests)
+                {
+                    testIds.Add(t.TestId);
+                }
+                List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
+                List<RankDTO> ranks = db.Rank.Where(r => r.IsActive == true).Select(r => new RankDTO(r)).ToList();
+                List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
+                for (int i = 0; i < accounts.Count; i++)
+                {
+                    List<Configuration> configurations = accounts[i].Configuration.ToList();
+                    for (int j = 0; j < configurations.Count; j++)
+                    {
+                        RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
+                        rankStatisticItem.configId = configurations[i].ConfigId;
+                        rankStatisticItem.createDate = configurations[i].CreateDate;
+                        rankStatisticItem.endDate = configurations[i].EndDate;
+                        rankStatisticItem.name = configurations[i].Title;
+                        List<RankDTO> cloneRanks = new List<RankDTO>();
+                        foreach (RankDTO r in ranks)
+                        {
+                            cloneRanks.Add(new RankDTO(r.rankId, r.name, 0));
+                        }
+                        for (int k = 0; k < statistics.Count; k++)
+                        {
+                            if (statistics[k].Test.ConfigId == configurations[j].ConfigId)
+                            {
+                                for(int m = 0; m < cloneRanks.Count; m++)
+                                {
+                                    if(statistics[k].RankId == cloneRanks[m].rankId)
+                                    {
+                                        cloneRanks[m].count += 1;
+                                    }
+                                }
+                            }
+
+                        }
+                        rankStatisticItem.series = cloneRanks;
+                        rankStatisticItems.Add(rankStatisticItem);
+                    }
+                }
+
+                return rankStatisticItems;
+            }
+        }
+
         public static GeneralStatisticDTO GetGeneralStatisticByTestOwnerId(int? testOwnerId)
         {
             using(DeverateContext db = new DeverateContext())
@@ -74,7 +133,7 @@ namespace TestManagementServices.Service
                         gsi.name = configurations[j].Title;
                         gsi.numberOfFinishedTest = numberOfFinishedTest > numberOfTest ? numberOfTest : numberOfFinishedTest;
                         gsi.totalTest = numberOfTest;
-                        generalStatisticItems.Add(gsi);
+                        generalStatisticItems.Add(gsi); 
 
                     }
                 }
