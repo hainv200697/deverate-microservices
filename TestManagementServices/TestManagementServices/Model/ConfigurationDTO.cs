@@ -11,6 +11,8 @@ namespace TestManagementServices.Model
         public int? configId { get; set; }
         public int? testOwnerId { get; set; }
         public string title { get; set; }
+        public int? accountId { get; set; }
+        public int? applicantId { get; set; }
         public int? totalQuestion { get; set; }
         public DateTime? createDate { get; set; }
         public DateTime? startDate { get; set; }
@@ -19,7 +21,7 @@ namespace TestManagementServices.Model
         public bool? isActive { get; set; }
 
         public ConfigurationDTO() { }
-        public ConfigurationDTO(Configuration config)
+        public ConfigurationDTO(Configuration config,int? accountId,int? applicantId)
         {
             this.title = config.Title;
             this.configId = config.ConfigId;
@@ -30,6 +32,8 @@ namespace TestManagementServices.Model
             this.endDate = config.EndDate;
             this.duration = config.Duration;
             this.isActive = config.IsActive;
+            this.accountId = accountId;
+            this.applicantId = applicantId;
         }
 
     }
