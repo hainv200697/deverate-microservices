@@ -869,7 +869,7 @@ namespace TestManagementServices.Service
             foreach (Catalogue cata in catalogues)
             {
                 float? point = 0;
-                float? maxPoint = 0;
+                float? maxPoint = 0.000000001f;
                 
                 for(int i = 0; i < quess.Count; i++)
                 {
