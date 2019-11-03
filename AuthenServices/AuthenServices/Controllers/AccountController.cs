@@ -30,9 +30,9 @@ namespace AuthenServices.Controllers
             string token = AccountDAO.CheckLogin(context, account.Username, account.Password);
             if (token == null)
             {
-                return new JsonResult(rm.Error("Invalid username or password"));
+                return BadRequest("Invalid username or password");
             }
-            return new JsonResult(rm.Success("Login successful", token));
+            return Ok(new TokenResponse { Token = token});
         }
 
         [HttpPost("CreateManagerAccount")]
