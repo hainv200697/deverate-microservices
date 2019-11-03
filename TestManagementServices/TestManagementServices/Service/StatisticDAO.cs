@@ -37,10 +37,10 @@ namespace TestManagementServices.Service
                     for (int j = 0; j < configurations.Count; j++)
                     {
                         RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
-                        rankStatisticItem.configId = configurations[i].ConfigId;
-                        rankStatisticItem.createDate = configurations[i].CreateDate;
-                        rankStatisticItem.endDate = configurations[i].EndDate;
-                        rankStatisticItem.name = configurations[i].Title;
+                        rankStatisticItem.configId = configurations[j].ConfigId;
+                        rankStatisticItem.createDate = configurations[j].CreateDate;
+                        rankStatisticItem.endDate = configurations[j].EndDate;
+                        rankStatisticItem.name = configurations[j].Title;
                         List<RankDTO> cloneRanks = new List<RankDTO>();
                         foreach (RankDTO r in ranks)
                         {
