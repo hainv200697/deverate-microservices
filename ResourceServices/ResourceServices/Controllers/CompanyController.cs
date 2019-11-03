@@ -29,45 +29,24 @@ namespace ResourceServices.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompany(bool isActive)
         {
-            try
-            {
-                List<CompanyDTO> com = CompanyDAO.GetAllCompany(isActive);
-                return Ok(rm.Success(com));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            List<CompanyDTO> com = CompanyDAO.GetAllCompany(isActive);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("GetAllCompanyById")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompanyById(int id)
         {
-            try
-            {
-                CompanyDTO com = CompanyDAO.GetCompanyById(id);
-                return Ok(rm.Success(com));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            CompanyDTO com = CompanyDAO.GetCompanyById(id);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("GetAllCompanyByName")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompanyByName(string name)
         {
-            try
-            {
-                List<CompanyDTO> com = CompanyDAO.GetCompanyByName(name);
-                return Ok(rm.Success(com));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            List<CompanyDTO> com = CompanyDAO.GetCompanyByName(name);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("CreateCompany")]
@@ -78,46 +57,28 @@ namespace ResourceServices.Controllers
             {
                 var company = CompanyDAO.CreateCompany(companyDataDTO);
                 var account = companyDataDTO.AccountDTO;
-                var messageAccount = new MessageAccount(company.CompanyId, account.fullname, account.email, 2);
+                var messageAccount = new MessageAccount(company.CompanyId, account.Fullname, account.Email, 2);
                 Producer producer = new Producer();
-                producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
-
+                producer.PublishMessage(message: JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
                 return new JsonResult(rm.Success("Save success"));
-            }
-            catch (Exception)
+            } catch
             {
-                return StatusCode(500);
+                return new JsonResult(rm.Error("Save fail"));
             }
+            
+            
         }
 
         [Route("UpdateCompany")]
         [HttpPut]
         public IActionResult PutUpdateCompany([FromBody] CompanyDTO company)
         {
-            try
+            string message = CompanyDAO.UpdateCompany(company);
+            if (message == null)
             {
-                string message = CompanyDAO.UpdateCompany(company);
-                return Ok(rm.Success(message));
+                return new JsonResult(rm.Success(message));
             }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        [Route("DisableCompany")]
-        [HttpPut]
-        public IActionResult PutDisableCompany([FromBody] List<CompanyDTO> company)
-        {
-            try
-            {
-                string message = CompanyDAO.DisableCompany(company);
-                return Ok(rm.Success(message));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            return new JsonResult(rm.Error(message));
         }
     }
 }

@@ -15,13 +15,16 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class CatalogueController : Controller
     {
+        ResponseMessage _rm = new ResponseMessage();
+        DeverateContext context;
+
         [HttpGet]
-        [Route("GetAllCatalogue")]
-        public ActionResult GetAllCatalogue(bool status)
+        [Route("GetAllCatelogue")]
+        public ActionResult GetAllCatelogue()
         {
             try
             {
-                List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogue(status);
+                List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogue();
                 return Ok(catalogues);
             }
             catch (Exception)
@@ -30,15 +33,29 @@ namespace ResourceServices.Controllers
             }
         }
 
+        [HttpPost]
+        [Route("CreateCatelogue")]
+        public ActionResult CreateCatelogue(CatalogueDTO catalog)
+        {
+            try
+            {
+                string message = CatalogueDAO.CreateCatalogue(catalog);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
 
 
         [HttpPost]
-        [Route("CreateCatalogue")]
-        public ActionResult CreateCatalogue([FromBody]CatalogueDTO catalog)
+        [Route("UpdateCatelogue")]
+        public ActionResult UpdateCatelogue(CatalogueDTO catalog)
         {
             try
             {
-                var message = CatalogueDAO.CreateCatalogue(catalog);
+                string message = CatalogueDAO.UpdateCatalogue(catalog);
                 return Ok(message);
             }
             catch (Exception)
@@ -47,28 +64,13 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPut]
-        [Route("UpdateCatalogue")]
-        public ActionResult UpdateCatalogue([FromBody]CatalogueDTO catalog)
+        [HttpPost]
+        [Route("RemoveCatelogue")]
+        public ActionResult RemoveCatelogue(List<CatalogueDTO> catalog)
         {
             try
             {
-                var message = CatalogueDAO.UpdateCatalogue(catalog);
-                return Ok(message);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
-
-        [HttpPut]
-        [Route("RemoveCatalogue")]
-        public ActionResult RemoveCatalogue([FromBody]List<CatalogueDTO> catalog)
-        {
-            try
-            {
-                var message = CatalogueDAO.removeCatalogue(catalog);
+                string message = CatalogueDAO.removeCatalogue(catalog);
                 return Ok(message);
             }
             catch (Exception)

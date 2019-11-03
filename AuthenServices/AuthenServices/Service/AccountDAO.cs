@@ -1,6 +1,4 @@
-﻿using AuthenServices.Model;
-using AuthenServices.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using AuthenServices.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +15,8 @@ namespace AuthenServices.Service
         public static string CheckLogin(DeverateContext context, string username, string password)
         {
             username = username.ToUpper();
-            Account account = context.Account.Include(a => a.Role).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
-            if (account == null)
+            Account account = context.Account.Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
+            if(account == null)
             {
                 return null;
             }
@@ -31,8 +29,8 @@ namespace AuthenServices.Service
             {
                 return null;
             }
-
-            if (result.Value == false)
+            
+            if(result.Value == false)
             {
                 return null;
             }
@@ -47,7 +45,7 @@ namespace AuthenServices.Service
             Account account = new Account();
             var items = ms.Fullname.Split(' ');
             string username = items[items.Length - 1];
-            for (int i = 0; i < items.Length - 1; i++)
+            for(int i = 0; i < items.Length  - 1; i++)
             {
                 username += items[i].ElementAt(0);
             }
@@ -73,7 +71,6 @@ namespace AuthenServices.Service
             account.Username = username.ToUpper();
             account.Password = encodedPassword;
             account.Fullname = ms.Fullname;
-            account.Email = ms.Email;
             account.Gender = false;
             account.JoinDate = DateTime.Now;
             account.RoleId = ms.Role;
@@ -85,24 +82,7 @@ namespace AuthenServices.Service
 
 
         }
-
-        public static bool changePassword(ChangePassRequest changePassRequest)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                changePassRequest.username = changePassRequest.username.ToUpper();
-                Account account = db.Account.SingleOrDefault(a => a.Username == changePassRequest.username);
-                bool check = BCrypt.Net.BCrypt.Verify(changePassRequest.oldPassword, account.Password);
-                if (!check)
-                {
-                    return check;
-                }
-                string salt = BCrypt.Net.BCrypt.GenerateSalt(13);
-                account.Password = BCrypt.Net.BCrypt.HashPassword(changePassRequest.newPassword, salt);
-                db.SaveChanges();
-                return true;
-            }
-        }
+        
 
         public static string RemoveVietnameseTone(string text)
         {

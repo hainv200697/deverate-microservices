@@ -32,7 +32,7 @@ namespace Deverate
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHostedService>(provider => new Consumer("AccountToEmail"));
-            services.AddSingleton<IHostedService>(provider => new Consumer("TestEmployeeToEmail"));
+            services.AddSingleton<IHostedService>(provider => new Consumer("TestToEmail"));
             services.AddDiscoveryClient(Configuration);
             services.AddMvc();
             services.AddCors(c =>

@@ -8,7 +8,6 @@ namespace TestManagementServices.Models
         public Rank()
         {
             ConfigurationRank = new HashSet<ConfigurationRank>();
-            Statistic = new HashSet<Statistic>();
         }
 
         public int RankId { get; set; }
@@ -18,6 +17,5 @@ namespace TestManagementServices.Models
         public bool? IsActive { get; set; }
 
         public virtual ICollection<ConfigurationRank> ConfigurationRank { get; set; }
-        public virtual ICollection<Statistic> Statistic { get; set; }
     }
 }

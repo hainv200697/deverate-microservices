@@ -25,8 +25,8 @@ namespace ResourceServices.Service
                 var company = from com in db.Company
                               join acc in db.Account on com.CompanyId equals acc.CompanyId
                               where com.IsActive == isActive
-                              select new CompanyDTO(com, acc.Fullname);
-                return company.ToList().OrderByDescending(x => x.companyId).ToList();
+                              select new CompanyDTO(acc.Company, acc.Fullname);
+                return company.ToList();
             }
         }
 
@@ -57,12 +57,12 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Company com = new Company();
-                com.Address = companyData.CompanyDTO.address;
-                com.Name = companyData.CompanyDTO.name;
+                com.Address = companyData.CompanyDTO.Address;
+                com.Name = companyData.CompanyDTO.Name;
                 com.CreateAt = DateTime.Now;
-                com.Fax = companyData.CompanyDTO.fax;
-                com.Phone = companyData.CompanyDTO.phone;
-                com.IsActive = companyData.CompanyDTO.isActive;
+                com.Fax = companyData.CompanyDTO.Fax;
+                com.Phone = companyData.CompanyDTO.Phone;
+                com.IsActive = companyData.CompanyDTO.IsActive;
                 var result = db.Company.Add(com);
                 db.SaveChanges();
                 return result.Entity;
@@ -73,12 +73,12 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                Company com = db.Company.SingleOrDefault(co => co.CompanyId == company.companyId);
-                com.Name = company.name;
-                com.Address = company.address;
-                com.Fax = company.fax;
-                com.Phone = company.phone;
-                com.IsActive = company.isActive;
+                Company com = db.Company.SingleOrDefault(co => co.CompanyId == company.CompanyId);
+                com.Name = company.Name;
+                com.Address = company.Address;
+                com.Fax = company.Fax;
+                com.Phone = company.Phone;
+                com.IsActive = company.IsActive;
                 db.SaveChanges();
                 return null;
             }
@@ -91,10 +91,10 @@ namespace ResourceServices.Service
                 Company com;
                 foreach (var item in company)
                 {
-                    com = db.Company.SingleOrDefault(co => co.CompanyId == item.companyId);
-                    com.Name = item.name;
-                    com.Address = item.address;
-                    com.IsActive = item.isActive;
+                    com = db.Company.SingleOrDefault(co => co.CompanyId == item.CompanyId);
+                    com.Name = item.Name;
+                    com.Address = item.Address;
+                    com.IsActive = item.IsActive;
                 }
                 db.SaveChanges();
                 return null;

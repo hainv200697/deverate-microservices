@@ -10,6 +10,12 @@ namespace MailingServices.Models
         public string Username;
         public string Password;
         public string Email;
-        public string Fullname;
+
+        public MessageAccountDTO(string username, string password, string email)
+        {
+            Username = username;
+            Password = password;
+            Email = email;
+        }
     }
 }

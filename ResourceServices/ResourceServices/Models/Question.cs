@@ -17,7 +17,7 @@ namespace ResourceServices.Models
         public int? MaxPoint { get; set; }
         public int? CreateBy { get; set; }
         public bool? IsActive { get; set; }
-        public DateTime? CreateAt { get; set; }
+        public DateTime? CreatAt { get; set; }
 
         public virtual Catalogue Catalogue { get; set; }
         public virtual ICollection<Answer> Answer { get; set; }

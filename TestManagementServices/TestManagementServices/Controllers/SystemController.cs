@@ -21,48 +21,28 @@ namespace TestManagementServices.Controllers
             this.context = context;
         }
 
-        [HttpGet("SendTestMail/{configId}")]
-        public ActionResult<IEnumerable<string>> SendTestMail(int? configId)
+        [HttpPost("EvaluateRank")]
+        public ActionResult<IEnumerable<string>> PostEvaluateRank([FromBody]TestAnswerDTO answer)
         {
 
-            string message = SystemDAO.SendTestMail(configId, false);
-            if(message == null)
+            RankPoint rp = SystemDAO.EvaluateRank(context, answer);
+            if(rp == null)
             {
-                return new JsonResult(rm.Error(Message.noEmployeeException));
+                return new JsonResult(rm.Error("Evaluate Failed"));
             }
-            return new JsonResult(rm.Success(message));
+            return new JsonResult(rm.Success("Evaluate successful", rp));
         }
 
-
-        [HttpGet("Statistic/{testId}")]
-        public ActionResult<IEnumerable<string>> GetStatistic(int? testId)
+        [HttpPost("GenTest")]
+        public ActionResult<IEnumerable<string>> GenTest([FromBody]ConfigurationDTO configuration)
         {
 
-            
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByTestId(testId)));
-        }
-
-        [HttpGet("History/{accountId}")]
-        public ActionResult<IEnumerable<string>> GetHistory(int? accountId)
-        {
-
-
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetHistory(accountId)));
-        }
-        [HttpGet("Gen/")]
-        public ActionResult<IEnumerable<string>> GenTest(string configId)
-        {
-            SystemDAO.GenerateTest(configId);
-
-            return new JsonResult(rm.Success(Message.createSucceed));
-        }
-
-        [HttpPost("GenApplicantTest/")]
-        public ActionResult<IEnumerable<string>> GenApplicantTest([FromBody] ApplicantTestDTO applicantTest)
-        {
-            SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
-
-            return new JsonResult(rm.Success(Message.createSucceed));
+            string message = SystemDAO.GenerateTest(context, configuration);
+            if(message != null)
+            {
+                return new JsonResult(rm.Error(message));
+            }
+            return new JsonResult(rm.Success("Created succeed"));
         }
     }
 }

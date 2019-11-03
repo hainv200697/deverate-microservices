@@ -7,7 +7,7 @@ namespace AuthenServices.Models
     {
         public Account()
         {
-            Test = new HashSet<Test>();
+            AccountInTest = new HashSet<AccountInTest>();
         }
 
         public int AccountId { get; set; }
@@ -26,6 +26,6 @@ namespace AuthenServices.Models
 
         public virtual Company Company { get; set; }
         public virtual Role Role { get; set; }
-        public virtual ICollection<Test> Test { get; set; }
+        public virtual ICollection<AccountInTest> AccountInTest { get; set; }
     }
 }

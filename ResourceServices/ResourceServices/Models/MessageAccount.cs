@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace AuthenServices.Models
+namespace ResourceServices.Models
 {
     public class MessageAccount
     {

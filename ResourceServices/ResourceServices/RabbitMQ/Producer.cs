@@ -1,6 +1,9 @@
-﻿using System;
+﻿using RabbitMQ.Client;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using RabbitMQ.Client;
+using System.Threading.Tasks;
 
 namespace ResourceServices.RabbitMQ
 {
@@ -12,13 +15,12 @@ namespace ResourceServices.RabbitMQ
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.ExchangeDeclare(exchange: "logs", type: ExchangeType.Fanout);
+                channel.ExchangeDeclare(exchange: exch, type: ExchangeType.Fanout);
                 var body = Encoding.UTF8.GetBytes(message);
                 channel.BasicPublish(exchange: exch,
                                      routingKey: "",
                                      basicProperties: null,
                                      body: body);
-                Console.WriteLine(" [x] Sent {0}", message);
             }
         }
     }

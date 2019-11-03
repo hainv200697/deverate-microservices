@@ -9,6 +9,7 @@ using AuthenServices.RabbitMQ;
 using AuthenServices.Service;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AuthenServices.Controllers
 {
@@ -24,15 +25,15 @@ namespace AuthenServices.Controllers
         }
 
         [HttpPost("Login")]
-        public ActionResult<IEnumerable<string>> PostAuthenUser([FromBody]AccountDTO account)
+        public IActionResult PostAuthenUser([FromBody]AccountRequest account)
         {
 
-            string token = AccountDAO.CheckLogin(context, account.Username, account.Password);
+            string token = AccountDAO.CheckLogin(context, account.username, account.password);
             if (token == null)
             {
-                return new JsonResult(rm.Error("Invalid username or password"));
+                return BadRequest("Invalid username or password");
             }
-            return new JsonResult(rm.Success("Login successful", token));
+            return Ok(new TokenResponse { Token = token });
         }
 
         [HttpPost("CreateManagerAccount")]

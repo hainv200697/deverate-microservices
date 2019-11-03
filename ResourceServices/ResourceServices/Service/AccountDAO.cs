@@ -1,10 +1,7 @@
-﻿using AuthenServices.Model;
-using AuthenServices.Models;
-using ResourceServices.Model;
+﻿using AuthenServices.Models;
 using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -46,66 +43,59 @@ namespace AuthenServices.Service
 
         public static string CreateCompanyAccount(DeverateContext context, CompanyManagerDTO cm)
         {
-            try
+            Account account = new Account();
+            var items = cm.fullName.Split(' ');
+            string username = items[items.Length - 1];
+            for(int i = 0; i < items.Length  - 1; i++)
             {
-                Account account = new Account();
-                var items = cm.fullName.Split(' ');
-                string username = items[items.Length - 1];
-                for (int i = 0; i < items.Length - 1; i++)
-                {
-                    username += items[i].ElementAt(0);
-                }
-                List<Account> accounts = context.Account.ToList();
-                username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
-                username = AppConstrain.RemoveVietnameseTone(username);
-
-                string password = AppConstrain.GeneratePassword();
-                string salt = BCrypt.Net.BCrypt.GenerateSalt(13);
-                string encodedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
-
-                account.Username = username.ToUpper();
-                account.Password = encodedPassword;
-                account.Fullname = cm.fullName;
-                account.Gender = false;
-                account.JoinDate = DateTime.Now;
-                account.RoleId = 2;
-                account.CompanyId = cm.companyId;
-                account.IsActive = true;
-                context.Account.Add(account);
-                context.SaveChanges();
-                return username.ToUpper() + "_" + password;
+                username += items[i].ElementAt(0);
             }
-            catch(Exception e)
+            List<Account> accounts = context.Account.ToList();
+            username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
+            username = RemoveVietnameseTone(username);
+            bool includeLowercase = true;
+            bool includeUppercase = true;
+            bool includeNumeric = true;
+            bool includeSpecial = true;
+            bool includeSpaces = false;
+            int lengthOfPassword = 16;
+
+            string password = PasswordGenerator.GeneratePassword(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, lengthOfPassword);
+
+            while (!PasswordGenerator.PasswordIsValid(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, password))
             {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
+                password = PasswordGenerator.GeneratePassword(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, lengthOfPassword);
             }
-            return null;
+            string salt = BCrypt.Net.BCrypt.GenerateSalt(13);
+            string encodedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
+
+            account.Username = username.ToUpper();
+            account.Password = encodedPassword;
+            account.Fullname = cm.fullName;
+            account.Gender = false;
+            account.JoinDate = DateTime.Now;
+            account.RoleId = 2;
+            account.CompanyId = cm.companyId;
+            account.IsActive = true;
+            context.Account.Add(account);
+            context.SaveChanges();
+            return username.ToUpper() + "_" + password;
 
 
         }
+        
 
-        public static int? GetCompany(int? id)
+        public static string RemoveVietnameseTone(string text)
         {
-            using (DeverateContext context = new DeverateContext())
-
-            {
-                Account account = context.Account.SingleOrDefault(acc => acc.AccountId == id);
-                int? companyId = account.CompanyId;
-                return companyId;
-            }
-
-        }
-
-        public static List<AccountDTO> GetEmployee(int? id)
-        {
-            using (DeverateContext context = new DeverateContext())
-
-            {
-                var employee = context.Account.Where(acc => acc.CompanyId == id && acc.RoleId == 3).Select(acc => new AccountDTO(acc));
-
-                return employee.ToList();
-            }
-
+            string result = text.ToLower();
+            result = Regex.Replace(result, "à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ|/g", "a");
+            result = Regex.Replace(result, "è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ|/g", "e");
+            result = Regex.Replace(result, "ì|í|ị|ỉ|ĩ|/g", "i");
+            result = Regex.Replace(result, "ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ|/g", "o");
+            result = Regex.Replace(result, "ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ|/g", "u");
+            result = Regex.Replace(result, "ỳ|ý|ỵ|ỷ|ỹ|/g", "y");
+            result = Regex.Replace(result, "đ", "d");
+            return result;
         }
     }
 }

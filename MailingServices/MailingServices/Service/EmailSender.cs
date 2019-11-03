@@ -2,7 +2,6 @@
 using MailingServices.Model;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
@@ -21,9 +20,10 @@ namespace MailingServices.Service
 
         public static Task SendMailAsync(string receiver, string SUBJECT, string message)
         {
+            string myMail = "anhnhse62597@fpt.edu.vn";
             MailMessage mail = new MailMessage();
             SmtpClient smtp = new SmtpClient();
-            mail.From = new MailAddress(AppConstrain.sender);
+            mail.From = new MailAddress(myMail);
             mail.To.Add(new MailAddress(receiver));
             mail.Subject = SUBJECT;
             mail.IsBodyHtml = true;
@@ -32,22 +32,9 @@ namespace MailingServices.Service
             smtp.Host = "smtp.gmail.com"; //for gmail host  
             smtp.EnableSsl = true;
             smtp.UseDefaultCredentials = false;
-            smtp.Credentials = new NetworkCredential(AppConstrain.sender, AppConstrain.senderPass);
+            smtp.Credentials = new NetworkCredential(myMail, "Darkknightst123");
             smtp.DeliveryMethod = SmtpDeliveryMethod.Network;
             return smtp.SendMailAsync(mail);
-        }
-
-        public static void SendAccountMailAsync(MessageAccountDTO messageAccountDTO)
-        {
-            string subject = "Welcome To DEVERATE System";
-            string FilePath = "MailTemplates/MailAccountTemplate.html";
-            StreamReader str = new StreamReader(FilePath);
-            string htmlBody = str.ReadToEnd();
-            htmlBody = htmlBody.Replace("[fullname]", messageAccountDTO.Fullname);
-            htmlBody = htmlBody.Replace("[username]", messageAccountDTO.Username);
-            htmlBody = htmlBody.Replace("[password]", messageAccountDTO.Password);
-            str.Close();
-            SendMailAsync(messageAccountDTO.Email, subject, htmlBody);
         }
 
         public Task SendEmailAsync(string toEmail, string subject, string message)
@@ -58,22 +45,6 @@ namespace MailingServices.Service
                 Options.UserName, Options.Key, Options.UseSsl);
 
             return client.SendMailAsync(mail);
-        }
-
-        public static void SendTestEmployeeMailAsync(List<TestMailDTO> testMailDTOs)
-        {
-          foreach(TestMailDTO testMailDTO in testMailDTOs)
-            {
-                string subject = testMailDTO.title;
-                string FilePath = "MailTemplates/MailEmployeeTestTemplate.html";
-                StreamReader str = new StreamReader(FilePath);
-                string htmlBody = str.ReadToEnd();
-                htmlBody = htmlBody.Replace("[fullname]", testMailDTO.fullName);
-                htmlBody = htmlBody.Replace("[url]", "http://deverate-system.s3-website-ap-southeast-1.amazonaws.com/test/" + testMailDTO.testId);
-                htmlBody = htmlBody.Replace("[code]", testMailDTO.code);
-                str.Close();
-                SendMailAsync(testMailDTO.email, subject, htmlBody);
-            }
         }
 
         public void SendEmail(string toEmail, string subject, string message)

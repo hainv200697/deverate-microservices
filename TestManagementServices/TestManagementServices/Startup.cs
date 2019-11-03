@@ -10,14 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Discovery.Client;
 using Swashbuckle.AspNetCore.Swagger;
-using TestManagementServices.Model;
 using TestManagementServices.Models;
-using TestManagementServices.RabbitMQ;
 
 namespace Deverate
 {
@@ -34,7 +31,6 @@ namespace Deverate
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_consumer));
             services.AddDiscoveryClient(Configuration);
             services.AddMvc();
             services.AddCors(c =>
@@ -53,16 +49,15 @@ namespace Deverate
                     Description = "My First ASP.NET Core Web API"
                 });
             });
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2).AddJsonOptions(options => {
-                options.SerializerSettings.ReferenceLoopHandling =
-                    Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseDiscoveryClient();
             app.UseHttpsRedirection();

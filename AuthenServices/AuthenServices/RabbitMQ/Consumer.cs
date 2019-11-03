@@ -26,7 +26,7 @@ namespace AuthenServices.RabbitMQ
         }
         private void InitRabbitMQ(string exch)
         {
-            var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
+            var factory = new ConnectionFactory() { HostName = "35.240.253.45" }; ;
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
@@ -49,7 +49,7 @@ namespace AuthenServices.RabbitMQ
                 var messageAccount = JsonConvert.DeserializeObject<MessageAccount>(message);
                 var result = AccountDAO.GenerateCompanyAccount(context, messageAccount).Split('_');
                 Producer producer = new Producer();
-                MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], messageAccount.Email, messageAccount.Fullname);
+                MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], messageAccount.Email);
                 producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
             };
             channel.BasicConsume(queue: queueName,

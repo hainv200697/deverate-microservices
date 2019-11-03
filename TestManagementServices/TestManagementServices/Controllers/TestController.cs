@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AuthenServices.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
@@ -23,96 +22,11 @@ namespace TestManagementServices.Controllers
         {
             this.context = context;
         }
-        [HttpGet("AllMyTestToday/{accountId}")]
-        public IActionResult GetAllTestInfoToday(int accountId)
+        [HttpGet("MyConfigTest/{acccountId}")]
+        public ActionResult<IEnumerable<string>> GetAllConfigTestInfoToday(int acccountId)
         {
-            List<TestInfoDTO> con = SystemDAO.GetAllTestTodayByUsername(context, accountId);
-            return Ok(con);
-        }
-
-        [HttpGet("GetConfig/{testId}")]
-        public IActionResult GetConfig(int testId)
-        {
-            ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
-            return Ok(con);
-        }
-
-        [HttpPost("MyTest")]
-        public IActionResult QueryQuestionInMyTest([FromBody]TestInfoDTO testInfo) 
-        {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo,true);
-            if (listQuestion == null)
-            {
-                return BadRequest("Code invalid");
-            }
-            return Ok(listQuestion);
-        }
-
-        [HttpPost("SubmitTest")]
-        public IActionResult SubmitTest([FromBody] UserTest userTest)
-        {
-            RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
-            if (rp == null)
-            {
-                return BadRequest("Code invalid, Submit fail");
-            }
-            return Ok(rp);
-        }
-
-        [HttpPost("AutoSave")]
-        public IActionResult AutoSave([FromBody] UserTest userTest)
-        {
-            try
-            {
-                bool save = SystemDAO.AutoSaveAnswer(context, userTest);
-                if (save)
-                {
-                   return Ok("{\"message\" : \"Auto Save Success\"}");
-                } else
-                {
-                    return BadRequest("{\"message\" : \"Code invalid, Auto Save\"}");
-                }
-            } catch(Exception ex)
-            {
-                return StatusCode(500);
-            }
-            
-        }
-        [HttpGet("GetAllTest")]
-        public IActionResult GetTest(int id)
-        {
-            List<TestInfoDTO> listTest = SystemDAO.GetTestByConfig(context, id);
-
-            return Ok(listTest);
-        }
-
-        [HttpGet("GetGeneralStatistic")]
-        public IActionResult GetGeneralStatistic(int? accountId)
-        {
-            
-
-            return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId) );
-        }
-
-        [HttpGet("GetRankStatistic")]
-        public IActionResult GetRankStatistic(int? accountId)
-        {
-
-
-            return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
-        }
-
-
-        [HttpPost("ManagerInTest")]
-        public IActionResult GetQuesionInTest([FromBody]TestInfoDTO testInfo)
-        {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo, false);
-            if (listQuestion == null)
-            {
-                return BadRequest("Code invalid");
-            }
-            return Ok(listQuestion);
+            List<ConfigurationDTO> com = SystemDAO.GetAllConfigTestTodayByUsername(context, acccountId);
+            return new JsonResult(rm.Success(com));
         }
     }
-    
 }

@@ -18,35 +18,46 @@ namespace ResourceServices.Model
 
         public CompanyDTO(Company company, string name)
         {
-            this.companyId = company.CompanyId;
-            this.name = company.Name;
-            this.address = company.Address;
-            this.create_At = company.CreateAt;
-            this.fax = company.Fax;
-            this.phone = company.Phone;
-            this.isActive = company.IsActive;
-            this.managerName = name;
+            this.CompanyId = company.CompanyId;
+            this.Name = company.Name;
+            this.Address = company.Address;
+            this.Create_At = company.CreateAt;
+            this.Fax = company.Fax;
+            this.Phone = company.Phone;
+            this.IsActive = company.IsActive;
+            this.ManagerName = name;
+        }
+        public CompanyDTO(Account account)
+        {
+            this.CompanyId = account.Company.CompanyId;
+            this.Name = account.Company.Name;
+            this.Address = account.Company.Address;
+            this.Create_At = account.Company.CreateAt;
+            this.Fax = account.Company.Fax;
+            this.Phone = account.Company.Phone;
+            this.IsActive = account.Company.IsActive;
+            this.ManagerName = account.Fullname;
         }
 
         public CompanyDTO(Company company)
         {
-            this.companyId = company.CompanyId;
-            this.name = company.Name;
-            this.address = company.Address;
-            this.create_At = company.CreateAt;
-            this.fax = company.Fax;
-            this.phone = company.Phone;
-            this.isActive = company.IsActive;
+            this.CompanyId = company.CompanyId;
+            this.Name = company.Name;
+            this.Address = company.Address;
+            this.Create_At = company.CreateAt;
+            this.Fax = company.Fax;
+            this.Phone = company.Phone;
+            this.IsActive = company.IsActive;
         }
 
-        [JsonProperty("companyId")]
-        public int? companyId { get; set; }
-        public string name { get; set; }
-        public string address { get; set; }
-        public DateTime? create_At { get; set; }
-        public string fax { get; set; }
-        public int? phone { get; set; }
-        public bool? isActive { get; set; }
-        public string managerName { get; set; }
+        [JsonProperty("CompanyId")]
+        public int? CompanyId { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public DateTime? Create_At { get; set; }
+        public string Fax { get; set; }
+        public int? Phone { get; set; }
+        public bool? IsActive { get; set; }
+        public string ManagerName { get; set; }
     }
 }

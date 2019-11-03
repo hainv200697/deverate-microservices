@@ -7,8 +7,7 @@ namespace ResourceServices.Models
     {
         public Account()
         {
-            Configuration = new HashSet<Configuration>();
-            Test = new HashSet<Test>();
+            AccountInTest = new HashSet<AccountInTest>();
         }
 
         public int AccountId { get; set; }
@@ -27,7 +26,6 @@ namespace ResourceServices.Models
 
         public virtual Company Company { get; set; }
         public virtual Role Role { get; set; }
-        public virtual ICollection<Configuration> Configuration { get; set; }
-        public virtual ICollection<Test> Test { get; set; }
+        public virtual ICollection<AccountInTest> AccountInTest { get; set; }
     }
 }

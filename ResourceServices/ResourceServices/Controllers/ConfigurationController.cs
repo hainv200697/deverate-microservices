@@ -1,9 +1,7 @@
 ﻿using AuthenServices.Models;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using ResourceServices.Model;
 using ResourceServices.Models;
-using ResourceServices.RabbitMQ;
 using ResourceServices.Service;
 using System;
 using System.Collections.Generic;
@@ -27,83 +25,28 @@ namespace ResourceServices.Controllers
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompany(bool isActive)
         {
-            try
-            {
-                List<ConfigurationDTO> con = ConfigurationDAO.GetAllConfiguration(isActive);
-                return Ok(rm.Success(con));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            List<ConfigurationDTO> com = ConfigurationDAO.GetAllConfiguration(isActive);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("GetConfigurationById")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetConfigurationById(int id)
         {
-            try
-            {
-                ConfigurationDTO con = ConfigurationDAO.GetConfigurationById(id);
-                return Ok(rm.Success(con));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
+            ConfigurationDTO com = ConfigurationDAO.GetConfigurationById(id);
+            return new JsonResult(rm.Success(com));
         }
 
         [Route("CreateConfiguration")]
         [HttpPost]
-        public ActionResult CreateConfiguration([FromBody] ConfigurationDTO configuration)
+        public ActionResult<IEnumerable<string>> CreateConfiguration([FromBody] ConfigurationDTO configuration)
         {
-            try
+            string message = ConfigurationDAO.CreateConfiguration(configuration);
+            if (message == null)
             {
-                var save = ConfigurationDAO.CreateConfiguration(configuration);
-                if (save == null)
-                {
-                    return BadRequest("No employee");
-                }
-                Producer producer = new Producer();
-                producer.PublishMessage(save.configId + "", "GenerateTest");
-                return Ok(rm.Success("Save success"));
+                return new JsonResult(rm.Success(message));
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500);
-            }
-        }
-            
-
-        [Route("UpdateConfiguration")]
-        [HttpPut]
-        public ActionResult<IEnumerable<string>> UpdateConfiguration([FromBody] ConfigurationDTO configuration)
-        {
-            try
-            {
-                var message = ConfigurationDAO.UpdateConfiguration(configuration);
-                return Ok(rm.Success(message));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }  
-        }
-
-        [Route("ChangeStatusConfiguration")]
-        [HttpPut]
-        public ActionResult<IEnumerable<string>> ChangeStatusConfiguration([FromBody] List<ConfigurationDTO> configuration)
-        {
-            try
-            {
-                var message = ConfigurationDAO.ChangeStatusConfiguration(configuration);
-                return Ok(rm.Success(message));
-            }
-            catch(Exception)
-            {
-                return StatusCode(500);
-            }
-            
+            return new JsonResult(rm.Error(message));
         }
     }
 }
