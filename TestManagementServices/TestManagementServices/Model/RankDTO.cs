@@ -15,6 +15,7 @@ namespace TestManagementServices.Model
         public DateTime? create_at { get; set; }
         public DateTime? update_at { get; set; }
         public bool? isActive { get; set; }
+        [JsonProperty(PropertyName = "value")]
         public int? count { get; set; }
         public RankDTO() { }
         public RankDTO(Rank rank)
