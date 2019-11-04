@@ -35,21 +35,21 @@ namespace ResourceServices.Service
 
         }
 
-        public static List<QuestionDTO> GetQuestionByCatalogue(int id,int companyId, bool status)
+        public static List<QuestionDTO> GetQuestionByCatalogue(int catalogueId,int companyId, bool status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                var cata = context.Catalogue.SingleOrDefault(x => x.CatalogueId == id);
+                var cata = context.Catalogue.SingleOrDefault(x => x.CatalogueId == catalogueId);
                 if (cata.Type == true)
                 {
-                    var companyCata = context.CompanyCatalogue.SingleOrDefault(x => x.CompanyId == companyId && x.CatalogueId == id);
+                    var companyCata = context.CompanyCatalogue.SingleOrDefault(x => x.CompanyId == companyId && x.CatalogueId == catalogueId);
                     if(companyCata == null)
                     {
                         return null;
                     }
                 }
-                var question = context.Question.Where(ques => ques.CatalogueId == id && ques.IsActive == status)
+                var question = context.Question.Where(ques => ques.CatalogueId == catalogueId && ques.IsActive == status)
                         .Select(ques => new QuestionDTO(ques, ques.Catalogue.Name, ques.Answer.Where(ans=> ans.IsActive == true).ToList()));
 
 
