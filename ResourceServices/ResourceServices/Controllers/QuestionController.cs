@@ -34,11 +34,15 @@ namespace ResourceServices.Controllers
 
         [HttpGet]
         [Route("GetQuestionByCatalogue")]
-        public ActionResult GetQuestionByCatalogueId(int id,bool status)
+        public ActionResult GetQuestionByCatalogueId(int id,int companyId,bool status)
         {
             try
             {
-                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(id, status);
+                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(id, companyId, status);
+                if(Questions == null)
+                {
+                    return BadRequest();
+                }
                 return Ok(Questions);
             }
             catch (Exception ex)

@@ -46,7 +46,6 @@ namespace ResourceServices.Model
             this.creatAt = ques.CreateAt;
             this.isActive = ques.IsActive;
             this.createBy = ques.CreateBy;
-            this.answer = ques.Answer;
         }
 
         [JsonProperty("QuestionId")]
