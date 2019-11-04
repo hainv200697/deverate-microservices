@@ -33,7 +33,7 @@ namespace TestManagementServices.Service
                 {
                     if (!userIds.Contains(t.AccountId)){
                         userIds.Add(t.AccountId);
-                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : t.Statistic.Last().Point));
+                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : t.Statistic.Last().Point, configuration.Title, configuration.CreateDate));
                     }
                 }
                 return userStatistics;
