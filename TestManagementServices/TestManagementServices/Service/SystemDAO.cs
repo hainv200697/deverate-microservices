@@ -687,6 +687,8 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
+            test.Status = true;
+            db.SaveChanges();
             List<AnswerDTO> answers = new List<AnswerDTO>();
             List<int?> answerIds = new List<int?>();
             for(int i = 0; i < userTest.questionInTest.Count; i++)
@@ -906,7 +908,7 @@ namespace TestManagementServices.Service
         {
             var config = db.Configuration.Include(z=>z.Test).Where(c => c.Test.Any(x=>x.TestId == testId)).FirstOrDefault();
             var test = config.Test.SingleOrDefault(t => t.TestId == testId);
-            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId);
+            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId,test.Status);
         }
 
         public static UserTest GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo, bool checkCode)

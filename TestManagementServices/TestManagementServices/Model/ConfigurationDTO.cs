@@ -19,9 +19,10 @@ namespace TestManagementServices.Model
         public DateTime? endDate { get; set; }
         public int? duration { get; set; }
         public bool? isActive { get; set; }
+        public bool? status { get; set; }
 
         public ConfigurationDTO() { }
-        public ConfigurationDTO(Configuration config,int? accountId,int? applicantId)
+        public ConfigurationDTO(Configuration config,int? accountId,int? applicantId, bool? status)
         {
             this.title = config.Title;
             this.configId = config.ConfigId;
@@ -34,6 +35,7 @@ namespace TestManagementServices.Model
             this.isActive = config.IsActive;
             this.accountId = accountId;
             this.applicantId = applicantId;
+            this.status = status;
         }
 
     }
