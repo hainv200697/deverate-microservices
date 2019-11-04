@@ -22,6 +22,10 @@ namespace ResourceServices.Controllers
             try
             {
                 List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogue(companyId, status);
+                if (catalogues == null)
+                {
+                    return BadRequest();
+                }
                 return Ok(catalogues);
             }
             catch (Exception)

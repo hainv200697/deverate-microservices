@@ -34,11 +34,11 @@ namespace ResourceServices.Controllers
 
         [HttpGet]
         [Route("GetQuestionByCatalogue")]
-        public ActionResult GetQuestionByCatalogueId(int id,int companyId,bool status)
+        public ActionResult GetQuestionByCatalogueId(int catalogueId, int companyId,bool status)
         {
             try
             {
-                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(id, companyId, status);
+                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
                 if(Questions == null)
                 {
                     return BadRequest();
