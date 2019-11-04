@@ -17,11 +17,11 @@ namespace ResourceServices.Controllers
     {
         [HttpGet]
         [Route("GetAllCatalogue")]
-        public ActionResult GetAllCatalogue(bool status)
+        public ActionResult GetAllCatalogue(int id,bool status)
         {
             try
             {
-                List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogue(status);
+                List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogue(id,status);
                 return Ok(catalogues);
             }
             catch (Exception)

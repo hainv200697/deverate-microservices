@@ -5,19 +5,38 @@ using System.Linq;
 using System.Threading.Tasks;
 using AuthenServices.Models;
 using ResourceServices.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ResourceServices.Service
 {
     public class CatalogueDAO
     {
-        public static List<CatalogueDTO> GetAllCatalogue(bool status)
+        public static List<CatalogueDTO> GetAllCatalogue(int id ,bool status)
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var catalogue = from cata in context.Catalogue
-                                where cata.IsActive == status
-                                select new CatalogueDTO(cata,cata.Question.Count(ques => ques.IsActive == true));
-                return catalogue.ToList();
+                
+                List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
+                var cata = context.Catalogue.Include(x=>x.Question).Where(x => x.IsActive == status && x.Type == false).ToList();
+                foreach (var item in cata)
+                {
+                    CatalogueDTO catalogue = new CatalogueDTO(item,id);
+                    catalogues.Add(catalogue);
+                }
+                if (id != null)
+                {
+                var CompanyCatalogue = context.CompanyCatalogue
+                        .Include(x => x.Catalogue)
+                        .Where(x => x.IsActive == status && x.CompanyId == id)
+                        .ToList();
+                    foreach (var item in CompanyCatalogue)
+                    {
+                        CatalogueDTO catalogue = new CatalogueDTO(item.Catalogue,id);
+                        catalogues.Add(catalogue);
+                    }
+                }
+                return catalogues;
+               
             }
 
         }
@@ -32,7 +51,23 @@ namespace ResourceServices.Service
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
                 cata.IsActive = catalogue.isActive;
+                if (catalogue.companyId != null)
+                {
+                    cata.Type = true;
+                }
+                else
+                {
+                    cata.Type = false;
+                }
+                cata.IsActive = true;
                 context.Catalogue.Add(cata);
+                if(catalogue.companyId != null) { 
+                    CompanyCatalogue comcata = new CompanyCatalogue();
+                    comcata.CompanyId = catalogue.companyId;
+                    comcata.CatalogueId = cata.CatalogueId;
+                    comcata.IsActive = true;
+                    context.CompanyCatalogue.Add(comcata);
+                }
                 context.SaveChanges();
                 return Message.createCatalogueSucceed;
             }
@@ -61,6 +96,10 @@ namespace ResourceServices.Service
                 {
                     Catalogue cataDb = context.Catalogue.SingleOrDefault(c => c.CatalogueId == cata.catalogueId);
                     cataDb.IsActive = cata.isActive;
+                    if(cata.companyId != null) {
+                        CompanyCatalogue comcata = context.CompanyCatalogue.SingleOrDefault(c => c.CatalogueId == cata.catalogueId && c.CompanyId == cata.companyId);
+                        comcata.IsActive = cata.isActive;
+                    }
                     context.SaveChanges();
                 }
                 return Message.removeCatalogueSucceed;
