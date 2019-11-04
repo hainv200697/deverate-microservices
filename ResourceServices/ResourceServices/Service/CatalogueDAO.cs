@@ -11,7 +11,7 @@ namespace ResourceServices.Service
 {
     public class CatalogueDAO
     {
-        public static List<CatalogueDTO> GetAllCatalogue(int id ,bool status)
+        public static List<CatalogueDTO> GetAllCatalogue(int companyId ,bool status)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -20,18 +20,18 @@ namespace ResourceServices.Service
                 var cata = context.Catalogue.Include(x=>x.Question).Where(x => x.IsActive == status && x.Type == false).ToList();
                 foreach (var item in cata)
                 {
-                    CatalogueDTO catalogue = new CatalogueDTO(item,id);
+                    CatalogueDTO catalogue = new CatalogueDTO(item, companyId);
                     catalogues.Add(catalogue);
                 }
-                if (id != null)
+                if (companyId != null)
                 {
                 var CompanyCatalogue = context.CompanyCatalogue
                         .Include(x => x.Catalogue)
-                        .Where(x => x.IsActive == status && x.CompanyId == id)
+                        .Where(x => x.IsActive == status && x.CompanyId == companyId)
                         .ToList();
                     foreach (var item in CompanyCatalogue)
                     {
-                        CatalogueDTO catalogue = new CatalogueDTO(item.Catalogue,id);
+                        CatalogueDTO catalogue = new CatalogueDTO(item.Catalogue, companyId);
                         catalogues.Add(catalogue);
                     }
                 }
