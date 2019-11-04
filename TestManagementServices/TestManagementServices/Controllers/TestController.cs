@@ -102,6 +102,14 @@ namespace TestManagementServices.Controllers
             return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
         }
 
+        [HttpGet("GetOverallPointStatistic")]
+        public IActionResult GetOverallPointStatistic(int? companyId)
+        {
+
+
+            return Ok(StatisticDAO.GetOverallPointStatisticByCompanyId(companyId));
+        }
+
 
         [HttpPost("ManagerInTest")]
         public IActionResult GetQuesionInTest([FromBody]TestInfoDTO testInfo)

@@ -10,6 +10,36 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
+        public static List<UserStatisticDTO> GetOverallPointStatisticByCompanyId(int? companyId)
+        {
+            using(DeverateContext db = new DeverateContext())
+            {
+                if(companyId == null)
+                {
+                    return null;
+                }
+                Configuration configuration = db.Configuration.Where(c => c.TestOwner.CompanyId == companyId).LastOrDefault();
+                List<Test> tests = db.Test
+                    .Include(t => t.Account)
+                    .Include(t => t.Statistic)
+                    .Where(t => t.ConfigId == configuration.ConfigId).ToList();
+                List<UserStatisticDTO> userStatistics = new List<UserStatisticDTO>();
+               if(tests.Count == 0 || tests == null)
+                {
+                    return null;
+                }
+                List<int?> userIds = new List<int?>();
+               foreach(Test t in tests)
+                {
+                    if (!userIds.Contains(t.AccountId)){
+                        userIds.Add(t.AccountId);
+                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : t.Statistic.Last().Point));
+                    }
+                }
+                return userStatistics;
+            }
+        }
+
 
         public static List<RankStatisticItemDTO> GetRankStatisticByTestOwnerId(int? testOwnerId)
         {
@@ -31,11 +61,16 @@ namespace TestManagementServices.Service
                 List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
                 List<RankDTO> ranks = db.Rank.Where(r => r.IsActive == true).Select(r => new RankDTO(r)).ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
+                int configCount = 0;
                 for (int i = 0; i < accounts.Count; i++)
                 {
                     List<Configuration> configurations = accounts[i].Configuration.ToList();
                     for (int j = 0; j < configurations.Count; j++)
                     {
+                        if(configCount == 5)
+                        {
+                            break;
+                        }
                         RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
                         rankStatisticItem.configId = configurations[j].ConfigId;
                         rankStatisticItem.createDate = configurations[j].CreateDate;
@@ -62,6 +97,7 @@ namespace TestManagementServices.Service
                         }
                         rankStatisticItem.series = cloneRanks;
                         rankStatisticItems.Add(rankStatisticItem);
+                        configCount++;
                     }
                 }
 
