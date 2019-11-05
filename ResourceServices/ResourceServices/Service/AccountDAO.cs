@@ -84,28 +84,42 @@ namespace AuthenServices.Service
 
         }
 
-        public static int? GetCompany(int? id)
+        public static List<AccountDTO> GetEmployee(int? companyId, bool? status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                Account account = context.Account.SingleOrDefault(acc => acc.AccountId == id);
-                int? companyId = account.CompanyId;
-                return companyId;
+
+                var employee = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId == 3 && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                return employee.ToList();
             }
 
         }
 
-        public static List<AccountDTO> GetEmployee(int? id)
+        public static string UpdateEmployeeStatus(List<AccountDTO> employee)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                var employee = context.Account.Where(acc => acc.CompanyId == id && acc.RoleId == 3).Select(acc => new AccountDTO(acc));
-
-                return employee.ToList();
+                var lstId = new List<int?>();
+                foreach (var item in employee)
+                {
+                    lstId.Add(item.accountId);
+                }
+                context.Account.Where(acc => lstId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = employee.FirstOrDefault().isActive);
+                context.SaveChanges();
+                return "{\"message\" : \"Update employee status success\"}";
             }
 
+        }
+
+        public static bool IsEmailUnique(string Email)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                return context.Account.Where(x => x.Email == Email).Any();
+            }
         }
     }
 }

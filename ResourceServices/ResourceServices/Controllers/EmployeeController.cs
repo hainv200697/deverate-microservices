@@ -29,14 +29,17 @@ namespace ResourceServices.Controllers
             this.context = context;
         }
 
-        [HttpGet]
-        [Route("GetEmployee")]
-        public ActionResult GetEmployeeByCompany(int? id)
+        [HttpGet("GetEmployee")]
+        public ActionResult EmployeeByCompany(int? companyId, bool? status)
         {
             try
             {
-                int? companyId = AccountDAO.GetCompany(id);
-                List<AccountDTO> listEmployee = AccountDAO.GetEmployee(companyId);
+                if (companyId == null)
+                {
+                    return BadRequest();
+                }
+                List<AccountDTO> listEmployee = AccountDAO.GetEmployee(companyId, status);
+
                 return Ok(rm.Success(listEmployee));
             }
             catch (Exception ex)
@@ -45,16 +48,21 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("CreateEmployee")]
-        public ActionResult CreateEmployee([FromBody] AccountDTO employee)
+        [HttpPost("CreateEmployee")]
+        public ActionResult CreateEmployee([FromBody] List<MessageAccount> employee)
         {
             try
             {
-                int? companyId = AccountDAO.GetCompany(employee.accountId);
-                var messageAccount = new MessageAccount(companyId, employee.fullname, employee.email, 3);
+                foreach(var emp in employee)
+                {
+                    bool check = AccountDAO.IsEmailUnique(emp.Email);
+                    if (check)
+                    {
+                        return BadRequest("Email is existed");
+                    }
+                }
                 Producer producer = new Producer();
-                producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
+                producer.PublishMessage(JsonConvert.SerializeObject(employee), "AccountGenerate");
                 return Ok(rm.Success("Create success"));
             }
             catch (Exception)
@@ -63,23 +71,22 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("CreateEmployeeExcel")]
-        public ActionResult CreateEmployeeExcel([FromBody] List<AccountDTO> employees)
+        [HttpPut("RemoveEmployee")]
+        public ActionResult RemoveEmployee([FromBody] List<AccountDTO> employee)
         {
             try
             {
-                foreach (var employee in employees) { 
-                    int? companyId = AccountDAO.GetCompany(employee.accountId);
-                    var messageAccount = new MessageAccount(companyId, employee.fullname, employee.email, 3);
-                    Producer producer = new Producer();
-                    producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
+                if (employee == null)
+                {
+                    return BadRequest();
                 }
-                return new JsonResult(rm.Success("Create success"));
+                var listEmployee = AccountDAO.UpdateEmployeeStatus(employee);
+
+                return Ok(rm.Success(listEmployee));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
     }
