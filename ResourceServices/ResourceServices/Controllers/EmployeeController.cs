@@ -53,13 +53,16 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                foreach(var emp in employee)
+                List<string> listemail = new List<string>();
+                foreach (var emp in employee)
                 {
-                    bool check = AccountDAO.IsEmailUnique(emp.Email);
-                    if (check)
-                    {
-                        return BadRequest("Email is existed");
-                    }
+
+                    listemail.Add(emp.Email);
+                }
+                var check = context.Account.Where(x => listemail.Contains(x.Email)).Select(x=> x.Email ).ToList();
+                if (check.Count > 0)
+                {
+                    return BadRequest("Email "+ check[0] +" is Existed");
                 }
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(employee), "AccountGenerate");

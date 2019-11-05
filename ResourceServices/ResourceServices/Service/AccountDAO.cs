@@ -113,13 +113,5 @@ namespace AuthenServices.Service
 
         }
 
-        public static bool IsEmailUnique(string Email)
-        {
-            using (DeverateContext context = new DeverateContext())
-
-            {
-                return context.Account.Where(x => x.Email == Email).Any();
-            }
-        }
     }
 }
