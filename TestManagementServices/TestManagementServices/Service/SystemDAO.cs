@@ -691,7 +691,7 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static RankPoint EvaluateRank(DeverateContext db, UserTest userTest)
         {
-            Test test = db.Test.SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
+            Test test = db.Test.Include(t => t.Account).SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
             if (test == null)
             {
                 return null;
@@ -715,7 +715,7 @@ namespace TestManagementServices.Service
                 anss.ForEach(a => answers.Add(new AnswerDTO(a)));
                 SaveAnswer(userTest);
                 TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-                totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId);
+                totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId, test.Account.CompanyId);
                 List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
                 configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                 ConfigurationRankDTO tmp = new ConfigurationRankDTO();
@@ -808,15 +808,33 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public static double? CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, int? statisticId)
+        public static double? CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, int? statisticId, int? companyId)
         {
             double? totalPoint = 0;
-            List<CataloguePointDTO> cataloguePoints = CalculateCataloguePoints(db, answers);
+            List<CataloguePointDTO> defaultCataloguePoints = CalculateCataloguePoints(db, answers, companyId);
             if (answers.testId == null)
             {
                 return -1;
             }
+            List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
             List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(db, answers.testId);
+            for(int i = 0; i < defaultCataloguePoints.Count; i++)
+            {
+                bool isContain = false;
+                for(int j = 0; j < catalogueWeightPoints.Count; j++)
+                {
+                    if(defaultCataloguePoints[i].catalogueId == catalogueWeightPoints[j].catalogueId)
+                    {
+                        isContain = true;
+                        if (!cataloguePoints.Contains(defaultCataloguePoints[i]))
+                        {
+                            cataloguePoints.Add(defaultCataloguePoints[i]);
+                        }
+                        
+                        break;
+                    } 
+                }
+            }
             List<DetailStatistic> details = new List<DetailStatistic>();
             for (int i = 0; i < cataloguePoints.Count; i++)
             {
@@ -862,14 +880,15 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers)
+        public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers, int? companyId)
         {
             if (answers.testId == null)
             {
                 return null;
             }
             //var catalogues = db.Catalogue.Where(c => c.CatalogueInConfiguration.Any(cif => cif.Config.Test.Any(o => o.TestId == answers.testId))).ToList();
-            var cataInCompany = db.CatalogueInCompany.Where(c => c.Catalogue.CatalogueInConfiguration.Any(cif => cif.Config.Test.Any(o => o.TestId == answers.testId))).ToList();
+            //var cataInCompany = db.CatalogueInCompany.Where(c => c.Catalogue.CatalogueInConfiguration.Any(cif => cif.Config.Test.Any(o => o.TestId == answers.testId))).ToList();
+            var cataInCompany = db.CatalogueInCompany.Where(c => c.CompanyId == companyId).ToList();
             List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
             List<AnswerDTO> anss = new List<AnswerDTO>(answers.answers);
             List<int?> questIds = new List<int?>();
@@ -888,7 +907,11 @@ namespace TestManagementServices.Service
                         maxPoint += quess[i].Question.MaxPoint;
                         point += quess[i].Point;
                         quess.RemoveAt(i);
-                        i--;
+                        if(i != 0)
+                        {
+                            i--;
+                        }
+                        
                     }
                 }
                 float? cataloguePoint = maxPoint == 0 ? 0: (point / maxPoint);
