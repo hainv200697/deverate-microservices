@@ -15,8 +15,7 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class CatalogueController : Controller
     {
-        [HttpGet]
-        [Route("GetAllCatalogue")]
+        [HttpGet("GetAllCatalogue")]
         public ActionResult GetAllCatalogue(int companyId, bool status)
         {
             try
@@ -57,7 +56,7 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = CatalogueDAO.UpdateCatalogue(catalog);
+                var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
                 return Ok(message);
             }
             catch (Exception)
@@ -72,7 +71,65 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = CatalogueDAO.removeCatalogue(catalog);
+                var message = CatalogueDAO.removeCatalogueDefault(catalog);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet("GetAllCatalogueDefault")]
+        public ActionResult GetAllCatalogueDefault(bool status)
+        {
+            try
+            {
+                List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogueDefault(status);
+                return Ok(catalogues);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+
+
+        [HttpPost("CreateCatalogueDefault")]
+        public ActionResult CreateCatalogueDefault([FromBody]CatalogueDTO catalog)
+        {
+            try
+            {
+                var message = CatalogueDAO.CreateCatalogueDefault(catalog);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("UpdateCatalogueDefault")]
+        public ActionResult UpdateCatalogueDefault([FromBody]CatalogueDTO catalog)
+        {
+            try
+            {
+                var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpPut("RemoveCatalogueDefault")]
+        public ActionResult RemoveCatalogueDefault([FromBody]List<CatalogueDTO> catalog)
+        {
+            try
+            {
+                var message = CatalogueDAO.removeCatalogueDefault(catalog);
                 return Ok(message);
             }
             catch (Exception)

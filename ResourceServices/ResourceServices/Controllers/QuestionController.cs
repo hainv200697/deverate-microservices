@@ -17,20 +17,6 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class QuestionController : Controller
     {
-        [HttpGet]
-        [Route("GetAllQuestion")]
-        public ActionResult GetAllQuestion()
-        {
-            try
-            {
-                List<QuestionDTO> Questions = QuestionDAO.GetAllQuestion();
-                return Ok(Questions);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
 
         [HttpGet]
         [Route("GetQuestionByCatalogue")]
@@ -38,12 +24,12 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
-                if(Questions == null)
+             QuestionDTO ques = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
+                if(ques == null)
                 {
                     return BadRequest();
                 }
-                return Ok(Questions);
+                return Ok(ques);
             }
             catch (Exception ex)
             {
@@ -68,12 +54,12 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPost]
-        [Route("CreateQuestionExcel")]
-        public ActionResult CreateQuestionExcel([FromBody] List<QuestionDTO> question)
+        [Route("CreateQuestion")]
+        public ActionResult CreateQuestion([FromBody] List<QuestionDTO> question)
         {
             try
                     {
-                var message = QuestionDAO.CreateQuestionExcel(question);
+                var message = QuestionDAO.CreateQuestion(question);
                 return Ok(message);
             }
             catch (Exception)
@@ -82,22 +68,6 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("CreateQuestion")]
-        public ActionResult CreateQuestion([FromBody] QuestionDTO question)
-        {
-            try
-            {
-                //List<QuestionDTO> question = JsonConvert.DeserializeObject<QuestionDTO>(quest);
-                var message = QuestionDAO.CreateQuestion(question);
-                ////string message = "avc";
-                return Ok(message);
-            }
-            catch (Exception)
-            {
-                return BadRequest();
-            }
-        }
 
 
         [HttpPut]
