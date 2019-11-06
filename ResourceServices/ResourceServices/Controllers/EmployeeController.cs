@@ -63,7 +63,7 @@ namespace ResourceServices.Controllers
                 var check = AccountDAO.checkExistedEmail(listemail, companyId);
                 if (check.Count > 0)
                 {
-                    return BadRequest("Email "+ check[0] +" is Existed");
+                    return BadRequest(check);
                 }
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(ListAccountGenerate), "AccountGenerate");
@@ -83,7 +83,7 @@ namespace ResourceServices.Controllers
                 var check = AccountDAO.checkExistedAccount(ListAccountSendPass, companyId);
                 if (check.Count < ListAccountSendPass.Count)
                 {
-                    return BadRequest("Account " + check[0] + " is not Existed");
+                    return BadRequest(check);
                 }
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(ListAccountSendPass), "AccountGenerate");
