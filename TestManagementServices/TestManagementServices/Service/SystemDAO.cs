@@ -112,6 +112,15 @@ namespace TestManagementServices.Service
             }
         }
 
+        public static int isAvailableTest(int? accountId, List<Test> tests)
+        {
+            for(int i = 0; i < tests.Count; i++)
+            {
+                if (tests[i].AccountId == accountId) return i;
+            }
+            return -1;
+        }
+
         public static void GenerateQuestionsForApplicants(DeverateContext db, List<ApplicantDTO> applicants, Configuration config)
         {
             List<QuestionDTO> questions = new List<QuestionDTO>();
@@ -134,7 +143,7 @@ namespace TestManagementServices.Service
                 }
                 int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
                 catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
-
+                List<Test> tests = db.Test.Where(t => t.ConfigId == config.ConfigId).ToList();
 
                 foreach (ApplicantDTO app in applicants)
                 {
@@ -580,8 +589,8 @@ namespace TestManagementServices.Service
         {
             try
             {
-                var ques = from ca in db.Catalogue
-                           join q in db.Question on ca.CatalogueId equals q.CatalogueId
+                var ques = from ca in db.CatalogueInCompany
+                           join q in db.Question on ca.Cicid equals q.Cicid
                            where ca.CatalogueId == catalogueId
                            select new QuestionDTO(q.QuestionId, q.Question1, null);
                 List<QuestionDTO> questions = ques.ToList();
@@ -859,21 +868,22 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
-            var catalogues = db.Catalogue.Where(c => c.CatalogueInConfiguration.Any(cif => cif.Config.Test.Any(o => o.TestId == answers.testId))).ToList();
+            //var catalogues = db.Catalogue.Where(c => c.CatalogueInConfiguration.Any(cif => cif.Config.Test.Any(o => o.TestId == answers.testId))).ToList();
+            var cataInCompany = db.CatalogueInCompany.Where(c => c.Catalogue.CatalogueInConfiguration.Any(cif => cif.Config.Test.Any(o => o.TestId == answers.testId))).ToList();
             List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
             List<AnswerDTO> anss = new List<AnswerDTO>(answers.answers);
             List<int?> questIds = new List<int?>();
             anss.ForEach(a => questIds.Add(a.AnswerId));
             var quess = db.Answer.Include(a => a.Question).Where(an => questIds.Contains(an.AnswerId)).ToList();
 
-            foreach (Catalogue cata in catalogues)
+            foreach (CatalogueInCompany cata in cataInCompany)
             {
                 float? point = 0;
-                float? maxPoint = 0.000000001f;
+                float? maxPoint = 0;
                 
                 for(int i = 0; i < quess.Count; i++)
                 {
-                    if(quess[i].Question.CatalogueId == cata.CatalogueId)
+                    if(quess[i].Question.Cicid == cata.Cicid)
                     {
                         maxPoint += quess[i].Question.MaxPoint;
                         point += quess[i].Point;
@@ -881,7 +891,7 @@ namespace TestManagementServices.Service
                         i--;
                     }
                 }
-                float? cataloguePoint = (point / maxPoint);
+                float? cataloguePoint = maxPoint == 0 ? 0: (point / maxPoint);
                 cataloguePoints.Add(new CataloguePointDTO(cata.CatalogueId  , cataloguePoint));
             }
             return cataloguePoints;
@@ -916,6 +926,10 @@ namespace TestManagementServices.Service
             if (checkCode)
             {
                 test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId && t.Code == testInfo.code);
+                if(test == null)
+                {
+                    return null;
+                }
                 if (test.StartTime == null)
                 {
                     test.StartTime = DateTime.Now;
