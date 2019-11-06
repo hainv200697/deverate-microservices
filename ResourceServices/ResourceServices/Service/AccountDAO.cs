@@ -96,22 +96,38 @@ namespace AuthenServices.Service
 
         }
 
-        public static string UpdateEmployeeStatus(List<AccountDTO> employee)
+        public static string UpdateEmployeeStatus(List<int> listEmpId, bool? status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                var lstId = new List<int?>();
-                foreach (var item in employee)
-                {
-                    lstId.Add(item.accountId);
-                }
-                context.Account.Where(acc => lstId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = employee.FirstOrDefault().isActive);
+                context.Account.Where(acc => listEmpId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = status);
                 context.SaveChanges();
                 return "{\"message\" : \"Update employee status success\"}";
             }
 
         }
 
+        public static List<string> checkExistedEmail(List<string> listemail,int? companyId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.Account.Where(x => listemail.Contains(x.Email) && x.CompanyId == companyId).Select(x => x.Email).ToList();
+                return check;
+            }
+
+        }
+
+        public static List<string> checkExistedAccount(List<string> listUsername, int? companyId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.Account.Where(x => listUsername.Contains(x.Username) && x.CompanyId == companyId).Select(x => x.Username).ToList();
+                return check;
+            }
+
+        }
     }
 }

@@ -60,7 +60,7 @@ namespace ResourceServices.Controllers
                     listemail.Add(emp.Email);
                 }
                 int? companyId = ListAccountGenerate[0].CompanyId;
-                var check = context.Account.Where(x => listemail.Contains(x.Email) && x.CompanyId == companyId).Select(x=> x.Email ).ToList();
+                var check = AccountDAO.checkExistedEmail(listemail, companyId);
                 if (check.Count > 0)
                 {
                     return BadRequest("Email "+ check[0] +" is Existed");
@@ -76,24 +76,17 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPost("ResendPassword")]
-        public ActionResult ResendPassword([FromBody] List<AccountDTO> ListAccountSendPass)
+        public ActionResult ResendPassword([FromBody] List<string> ListAccountSendPass, int? companyId)
         {
             try
             {
-                List<string> listUsername = new List<string>();
-                foreach (var emp in ListAccountSendPass)
-                {
-
-                    listUsername.Add(emp.username);
-                }
-                int? companyId = ListAccountSendPass[0].companyId;
-                var check = context.Account.Where(x => listUsername.Contains(x.Username) && x.CompanyId == companyId).Select(x => x.Username).ToList();
-                if (check.Count < listUsername.Count)
+                var check = AccountDAO.checkExistedAccount(ListAccountSendPass, companyId);
+                if (check.Count < ListAccountSendPass.Count)
                 {
                     return BadRequest("Account " + check[0] + " is not Existed");
                 }
                 Producer producer = new Producer();
-                producer.PublishMessage(JsonConvert.SerializeObject(listUsername), "AccountGenerate");
+                producer.PublishMessage(JsonConvert.SerializeObject(ListAccountSendPass), "AccountGenerate");
                 return Ok(rm.Success("Password was send to your email!"));
             }
             catch (Exception)
@@ -103,15 +96,15 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPut("RemoveEmployee")]
-        public ActionResult RemoveEmployee([FromBody] List<AccountDTO> employee)
+        public ActionResult RemoveEmployee([FromBody] List<int> listEmpId,bool? status)
         {
             try
             {
-                if (employee == null)
+                if (listEmpId == null)
                 {
                     return BadRequest();
                 }
-                var listEmployee = AccountDAO.UpdateEmployeeStatus(employee);
+                var listEmployee = AccountDAO.UpdateEmployeeStatus(listEmpId,status);
 
                 return Ok(rm.Success("Status is changed"));
             }
