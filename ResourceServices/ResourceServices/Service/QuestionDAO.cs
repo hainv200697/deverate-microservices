@@ -81,8 +81,6 @@ namespace ResourceServices.Service
                 {
                     Question question = context.Question.SingleOrDefault(x=>x.QuestionId == ques.questionId);
                     question.Question1 = ques.question1;
-                    int maxPoint = context.Answer.Where(ans => ans.QuestionId == question.QuestionId).Max(ans => ans.Point);
-                    question.MaxPoint = maxPoint;
                     context.Question.Update(question);
                     context.SaveChanges();
                     return Message.updateQuestionSucceed; 
