@@ -25,7 +25,6 @@ namespace ResourceServices.Model
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
         public List<ConfigurationRank> ConfigurationRank { get; set; }
 
-
         public ConfigurationDTO()
         {
 
@@ -35,6 +34,7 @@ namespace ResourceServices.Model
         {
             this.configId = configuration.ConfigId;
             this.testOwnerId = configuration.TestOwnerId;
+            this.title = configuration.Title;
             this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate.Value.AddHours(7);
@@ -61,6 +61,5 @@ namespace ResourceServices.Model
             this.ConfigurationRank = configurationRank;
         }
 
-  
     }
 }

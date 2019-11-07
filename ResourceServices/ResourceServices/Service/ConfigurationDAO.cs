@@ -1,4 +1,5 @@
 ﻿using AuthenServices.Model;
+using Microsoft.EntityFrameworkCore;
 using ResourceServices.Model;
 using ResourceServices.Models;
 using System;
@@ -18,15 +19,11 @@ namespace ResourceServices.Service
         }
 
 
-        public static List<ConfigurationDTO> GetAllConfiguration(bool isActive)
+        public static List<ConfigurationDTO> GetAllConfiguration(bool isActive, int companyId)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var configuration = from con in db.Configuration
-                                    join acc in db.Account on con.TestOwnerId equals acc.AccountId
-                                    where con.IsActive == isActive
-                                    select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList(), acc.Fullname);
-                return configuration.ToList().OrderByDescending(x => x.configId).ToList();
+                return db.Configuration.Include(a => a.TestOwner).Where(c => c.TestOwner.CompanyId == companyId && c.IsActive == isActive).Select(c => new ConfigurationDTO(c)).ToList();
             }
         }
 

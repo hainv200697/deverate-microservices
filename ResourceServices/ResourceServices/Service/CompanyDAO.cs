@@ -1,4 +1,5 @@
 ﻿using AuthenServices.Models;
+using Microsoft.EntityFrameworkCore;
 using ResourceServices.Model;
 using ResourceServices.Models;
 using System;
@@ -24,7 +25,7 @@ namespace ResourceServices.Service
             {
                 var company = from com in db.Company
                               join acc in db.Account on com.CompanyId equals acc.CompanyId
-                              where com.IsActive == isActive
+                              where com.IsActive == isActive && acc.RoleId == 2
                               select new CompanyDTO(com, acc.Fullname);
                 return company.ToList().OrderByDescending(x => x.companyId).ToList();
             }
@@ -64,6 +65,19 @@ namespace ResourceServices.Service
                 com.Phone = companyData.CompanyDTO.phone;
                 com.IsActive = companyData.CompanyDTO.isActive;
                 var result = db.Company.Add(com);
+                var cata = db.Catalogue.Where(x => x.IsActive.Value && !x.Type.Value).ToList();
+                // add all catalogue to companyCatalogue
+                List<CatalogueInCompany> catalogueInCompany = new List<CatalogueInCompany>();
+                foreach(Catalogue catalogue in cata)
+                {
+                    catalogueInCompany.Add(new CatalogueInCompany
+                    {
+                        Catalogue = catalogue,
+                        IsActive = true,
+                    });
+                }
+                // add to company
+                com.CatalogueInCompany = catalogueInCompany;
                 db.SaveChanges();
                 return result.Entity;
             }
