@@ -46,7 +46,7 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Account> accounts = db.Account.Include(a => a.Configuration).Where(a => a.CompanyId == account.CompanyId).ToList();
+                List<Account> accounts = db.Account.Include(a => a.Configuration).ThenInclude(Configuration=> Configuration.CatalogueInConfiguration).Where(a => a.CompanyId == account.CompanyId).ToList();
                 var result = from t in db.Test
                              join con in db.Configuration on t.ConfigId equals con.ConfigId
                              join acc in db.Account on con.TestOwnerId equals acc.AccountId

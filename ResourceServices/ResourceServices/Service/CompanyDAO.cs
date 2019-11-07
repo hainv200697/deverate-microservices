@@ -68,16 +68,17 @@ namespace ResourceServices.Service
                 var result = db.Company.Add(com);
                 var cata = db.Catalogue.Where(x => x.IsActive.Value && !x.Type.Value).ToList();
                 // add all catalogue to companyCatalogue
-                List<CompanyCatalogue> companyCatalogues = new List<CompanyCatalogue>();
+                List<CatalogueInCompany> catalogueInCompany = new List<CatalogueInCompany>();
                 foreach(Catalogue catalogue in cata)
                 {
-                    companyCatalogues.Add(new CompanyCatalogue
+                    catalogueInCompany.Add(new CatalogueInCompany
                     {
-                       Catalogue = catalogue
+                        Catalogue = catalogue,
+                        IsActive = true,
                     });
                 }
                 // add to company
-                com.CompanyCatalogue = companyCatalogues;
+                com.CatalogueInCompany = catalogueInCompany;
                 db.SaveChanges();
                 return result.Entity;
             }
