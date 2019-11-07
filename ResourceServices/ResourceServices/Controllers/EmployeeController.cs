@@ -66,8 +66,8 @@ namespace ResourceServices.Controllers
                     return BadRequest(check);
                 }
                 Producer producer = new Producer();
-                producer.PublishMessage(JsonConvert.SerializeObject(ListAccountGenerate), "AccountGenerate");
-                return Ok(rm.Success("Create success"));
+                producer.PublishMessage(JsonConvert.SerializeObject(ListAccountGenerate), "ListAccountGenerate");
+                return Ok("Create success");
             }
             catch (Exception)
             {
@@ -87,7 +87,7 @@ namespace ResourceServices.Controllers
                 }
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(ListAccountSendPass), "ResendPassword");
-                return Ok(rm.Success("Password was send to your email!"));
+                return Ok("Password was send to your email!");
             }
             catch (Exception)
             {
