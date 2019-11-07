@@ -71,7 +71,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -87,11 +87,11 @@ namespace ResourceServices.Controllers
                 }
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(ListAccountSendPass), "ResendPassword");
-                return Ok("Password was send to your email!");
+                return Ok();
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
