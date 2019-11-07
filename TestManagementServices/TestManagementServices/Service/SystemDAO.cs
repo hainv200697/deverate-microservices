@@ -121,6 +121,22 @@ namespace TestManagementServices.Service
             return -1;
         }
 
+        public static List<Test> removeAvailableTests(List<int?> accountIds, List<Test> tests)
+        {
+            for (int i = 0; i < tests.Count; i++)
+            {
+                for(int j = 0; j < accountIds.Count; j++)
+                {
+                    if(accountIds[j] == tests[i].AccountId)
+                    {
+                        tests[i].IsActive = false;
+                        break;
+                    }
+                }
+            }
+            return tests;
+        }
+
         public static void GenerateQuestionsForApplicants(DeverateContext db, List<ApplicantDTO> applicants, Configuration config)
         {
             List<QuestionDTO> questions = new List<QuestionDTO>();
@@ -298,7 +314,11 @@ namespace TestManagementServices.Service
             Random rand = new Random();
             int totalCataQues = 0;
 
-            
+            List<int?> accountIds = new List<int?>();
+            accounts.ForEach(a => accountIds.Add(a.accountId));
+            List<Test> tests = db.Test.Where(t => t.ConfigId == config.ConfigId).ToList();
+            tests = removeAvailableTests(accountIds, tests);
+            db.SaveChanges();
             try
             {
                 List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
@@ -696,6 +716,12 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
+            Statistic stt = db.Statistic.Where(s => s.TestId == userTest.testId).FirstOrDefault();
+            if(stt != null)
+            {
+                return null;
+            }
+            
             test.Status = true;
             db.SaveChanges();
             List<AnswerDTO> answers = new List<AnswerDTO>();
