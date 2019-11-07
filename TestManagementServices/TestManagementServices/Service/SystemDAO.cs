@@ -992,6 +992,24 @@ namespace TestManagementServices.Service
             return results;
         }
 
-            
+        public static void SendQuizCode(List<int> listestResendCode)
+        {
+            using(DeverateContext context = new DeverateContext())
+            {
+                List<TestMailDTO> list = context.Test.Include(x => x.AccountId).Include(x=>x.Config).Where(x => listestResendCode.Contains(x.TestId))
+                    .Select(x=> new TestMailDTO(
+                        x.Account.Email,
+                        x.Account.Fullname,
+                        x.Config.Title,
+                        x.Config.StartDate,
+                        x.Config.EndDate,
+                        x.Code,
+                        x.TestId.ToString()
+                        )
+                    )
+                    .ToList();
+                Producer.PublishMessage(JsonConvert.SerializeObject(list), AppConstrain.test_mail);
+            }
+        }
     }
 }
