@@ -18,24 +18,27 @@ namespace AuthenServices.RabbitMQ
         private IConnection connection;
         private IModel channel;
         private string queueName;
+        private string exch;
         DeverateContext context;
         public Consumer(DeverateContext context, string exch)
         {
-            InitRabbitMQ(exch);
+            this.exch = exch;
             this.context = context;
+            InitRabbitMQ();
+
         }
-        private void InitRabbitMQ(string exch)
+        private void InitRabbitMQ()
         {
             var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
 
-            channel.ExchangeDeclare(exchange: exch, type: ExchangeType.Fanout);
+            channel.ExchangeDeclare(exchange: this.exch, type: ExchangeType.Fanout);
 
             queueName = channel.QueueDeclare().QueueName;
             channel.QueueBind(queue: queueName,
-                              exchange: exch,
+                              exchange: this.exch,
                               routingKey: "");
         }
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -46,11 +49,33 @@ namespace AuthenServices.RabbitMQ
             {
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
-                var messageAccount = JsonConvert.DeserializeObject<MessageAccount>(message);
-                var result = AccountDAO.GenerateCompanyAccount(context, messageAccount).Split('_');
                 Producer producer = new Producer();
-                MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], messageAccount.Email, messageAccount.Fullname);
-                producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
+                switch (this.exch)
+                {
+                    case "AccountGenerate":
+                        var messageAccount = JsonConvert.DeserializeObject<MessageAccount>(message);
+                        MessageAccountDTO messageDTO = AccountDAO.GenerateCompanyAccount(context, messageAccount);
+                        producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
+                        break;
+                    case "ListAccountGenerate":
+                        var listmessageAccount = JsonConvert.DeserializeObject<List<MessageAccount>>(message);
+                        foreach(MessageAccount msAccount in listmessageAccount)
+                        {
+
+                            MessageAccountDTO msAccountDTO = AccountDAO.GenerateCompanyAccount(context, msAccount);
+                            producer.PublishMessage(message: JsonConvert.SerializeObject(msAccountDTO), "AccountToEmail");
+                        }
+                        break;
+                    case "ResendPassword":
+                        List<string> listSendPass = JsonConvert.DeserializeObject<List<string>>(message);
+                        var listResendAccount = AccountDAO.resend(listSendPass);
+                        foreach (MessageAccountDTO msAccount in listResendAccount)
+                        {
+
+                            producer.PublishMessage(message: JsonConvert.SerializeObject(msAccount), "AccountToEmail");
+                        }
+                        break;
+                }
             };
             channel.BasicConsume(queue: queueName,
                                  autoAck: false,
