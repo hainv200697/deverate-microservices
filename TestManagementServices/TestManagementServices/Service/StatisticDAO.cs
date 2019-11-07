@@ -202,7 +202,7 @@ namespace TestManagementServices.Service
                             .Where(cir => cir.ConfigId == cir.Config.ConfigId && cir.Config.ConfigId == test.ConfigId)
                             .ToList();
                 List<ConfigurationRank> configurations = cass.ToList();
-                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.Catalogue).Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
                 configurations.ForEach(c => c.WeightPoint = c.WeightPoint * AppConstrain.scaleUpNumb);
                 List<CatalogueInRankDTO> catalogueInRanks = new List<CatalogueInRankDTO>();
                 List<CatalogueDTO> catas = db.Catalogue.Select(o => new CatalogueDTO(o)).ToList();
