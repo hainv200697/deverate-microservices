@@ -13,6 +13,7 @@ namespace TestManagementServices.Model
         public int? cicId { get; set; }
         public int? configId { get; set; }
         public int? catalogueId { get; set; }
+        public string catalogueName { get; set; }
         public double? weightPoint { get; set; }
         public bool? isActive { get; set; }
         public CatalogueInConfigDTO() { }
@@ -21,6 +22,7 @@ namespace TestManagementServices.Model
             this.cicId = c.Cicid;
             this.configId = c.ConfigId;
             this.catalogueId = c.CatalogueId;
+            this.catalogueName = c.Catalogue.Name;
             this.weightPoint = c.WeightPoint * AppConstrain.scaleUpNumb;
             this.isActive = c.IsActive;
         }
