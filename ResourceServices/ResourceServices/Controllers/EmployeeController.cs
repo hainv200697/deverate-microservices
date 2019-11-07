@@ -104,7 +104,7 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var listEmployee = AccountDAO.UpdateEmployeeStatus(listEmpId,status);
+                AccountDAO.UpdateEmployeeStatus(listEmpId,status);
 
                 return Ok();
             }

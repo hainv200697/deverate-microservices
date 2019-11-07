@@ -96,14 +96,13 @@ namespace AuthenServices.Service
 
         }
 
-        public static string UpdateEmployeeStatus(List<int> listEmpId, bool? status)
+        public static void UpdateEmployeeStatus(List<int> listEmpId, bool? status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
                 context.Account.Where(acc => listEmpId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = status);
                 context.SaveChanges();
-                return "{\"message\" : \"Update employee status success\"}";
             }
 
         }
