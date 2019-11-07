@@ -84,26 +84,47 @@ namespace AuthenServices.Service
 
         }
 
-        public static int? GetCompany(int? id)
+        public static List<AccountDTO> GetEmployee(int? companyId, bool? status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                Account account = context.Account.SingleOrDefault(acc => acc.AccountId == id);
-                int? companyId = account.CompanyId;
-                return companyId;
+
+                var employee = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId == 3 && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                return employee.ToList();
             }
 
         }
 
-        public static List<AccountDTO> GetEmployee(int? id)
+        public static void UpdateEmployeeStatus(List<int> listEmpId, bool? status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                var employee = context.Account.Where(acc => acc.CompanyId == id && acc.RoleId == 3).Select(acc => new AccountDTO(acc));
+                context.Account.Where(acc => listEmpId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = status);
+                context.SaveChanges();
+            }
 
-                return employee.ToList();
+        }
+
+        public static List<string> checkExistedEmail(List<string> listemail,int? companyId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.Account.Where(x => listemail.Contains(x.Email) && x.CompanyId == companyId).Select(x => x.Email).ToList();
+                return check;
+            }
+
+        }
+
+        public static List<string> checkExistedAccount(List<string> listUsername, int? companyId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.Account.Where(x => listUsername.Contains(x.Username) && x.CompanyId == companyId).Select(x => x.Username).ToList();
+                return check;
             }
 
         }

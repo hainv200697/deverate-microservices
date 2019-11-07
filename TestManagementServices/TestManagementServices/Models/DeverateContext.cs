@@ -19,10 +19,10 @@ namespace TestManagementServices.Models
         public virtual DbSet<Answer> Answer { get; set; }
         public virtual DbSet<Applicant> Applicant { get; set; }
         public virtual DbSet<Catalogue> Catalogue { get; set; }
+        public virtual DbSet<CatalogueInCompany> CatalogueInCompany { get; set; }
         public virtual DbSet<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
         public virtual DbSet<CatalogueInRank> CatalogueInRank { get; set; }
         public virtual DbSet<Company> Company { get; set; }
-        public virtual DbSet<CompanyCatalogue> CompanyCatalogue { get; set; }
         public virtual DbSet<Configuration> Configuration { get; set; }
         public virtual DbSet<ConfigurationRank> ConfigurationRank { get; set; }
         public virtual DbSet<DetailStatistic> DetailStatistic { get; set; }
@@ -102,6 +102,26 @@ namespace TestManagementServices.Models
                 entity.Property(e => e.Name).HasMaxLength(250);
             });
 
+            modelBuilder.Entity<CatalogueInCompany>(entity =>
+            {
+                entity.HasKey(e => e.Cicid)
+                    .HasName("PK_CompanyCatalogue_1");
+
+                entity.Property(e => e.Cicid).HasColumnName("CICId");
+
+                entity.HasOne(d => d.Catalogue)
+                    .WithMany(p => p.CatalogueInCompany)
+                    .HasForeignKey(d => d.CatalogueId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CatalogueInCompany_Catalogue");
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.CatalogueInCompany)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CatalogueInCompany_Company");
+            });
+
             modelBuilder.Entity<CatalogueInConfiguration>(entity =>
             {
                 entity.HasKey(e => e.Cicid);
@@ -153,23 +173,6 @@ namespace TestManagementServices.Models
                 entity.Property(e => e.Name).HasMaxLength(250);
             });
 
-            modelBuilder.Entity<CompanyCatalogue>(entity =>
-            {
-                entity.HasKey(e => new { e.CompanyId, e.CatalogueId });
-
-                entity.HasOne(d => d.Catalogue)
-                    .WithMany(p => p.CompanyCatalogue)
-                    .HasForeignKey(d => d.CatalogueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CompanyCatalogue_Catalogue");
-
-                entity.HasOne(d => d.Company)
-                    .WithMany(p => p.CompanyCatalogue)
-                    .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CompanyCatalogue_Company");
-            });
-
             modelBuilder.Entity<Configuration>(entity =>
             {
                 entity.HasKey(e => e.ConfigId);
@@ -218,6 +221,8 @@ namespace TestManagementServices.Models
 
             modelBuilder.Entity<Question>(entity =>
             {
+                entity.Property(e => e.Cicid).HasColumnName("CICId");
+
                 entity.Property(e => e.CreateAt)
                     .HasColumnName("Create_at")
                     .HasColumnType("date");
@@ -228,10 +233,10 @@ namespace TestManagementServices.Models
                     .HasColumnName("Question")
                     .HasMaxLength(350);
 
-                entity.HasOne(d => d.Catalogue)
+                entity.HasOne(d => d.Cic)
                     .WithMany(p => p.Question)
-                    .HasForeignKey(d => d.CatalogueId)
-                    .HasConstraintName("FK_Question_Catalogue");
+                    .HasForeignKey(d => d.Cicid)
+                    .HasConstraintName("FK_Question_CatalogueInCompany");
             });
 
             modelBuilder.Entity<QuestionInTest>(entity =>

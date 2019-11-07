@@ -23,6 +23,8 @@ namespace TestManagementServices.Model
 
         public const int empRole = 3;
 
+        public const int scaleUpNumb = 100;
+
         
         
     }
