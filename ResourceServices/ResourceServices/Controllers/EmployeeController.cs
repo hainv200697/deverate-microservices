@@ -40,7 +40,7 @@ namespace ResourceServices.Controllers
                 }
                 List<AccountDTO> listEmployee = AccountDAO.GetEmployee(companyId, status);
 
-                return Ok(rm.Success(listEmployee));
+                return Ok(listEmployee);
             }
             catch (Exception ex)
             {
@@ -62,12 +62,12 @@ namespace ResourceServices.Controllers
                 int? companyId = ListAccountGenerate[0].CompanyId;
                 var check = AccountDAO.checkExistedEmail(listemail, companyId);
                 if (check.Count > 0)
-                {
+                {       
                     return BadRequest(check);
                 }
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(ListAccountGenerate), "ListAccountGenerate");
-                return Ok("Create success");
+                return Ok();
             }
             catch (Exception)
             {
@@ -95,8 +95,8 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPut("RemoveEmployee")]
-        public ActionResult RemoveEmployee([FromBody] List<int> listEmpId,bool? status)
+        [HttpPut("UpdateEmployeeStatus")]
+        public ActionResult UpdateEmployeeStatus([FromBody] List<int> listEmpId,bool? status)
         {
             try
             {
