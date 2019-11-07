@@ -33,7 +33,7 @@ namespace TestManagementServices.Service
                 {
                     if (!userIds.Contains(t.AccountId)){
                         userIds.Add(t.AccountId);
-                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : t.Statistic.Last().Point, configuration.Title, configuration.CreateDate));
+                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : RoundDownNumber(t.Statistic.Last().Point.Value, AppConstrain.scaleUpNumb), configuration.Title, configuration.CreateDate));
                     }
                 }
                 return userStatistics;
@@ -127,33 +127,38 @@ namespace TestManagementServices.Service
                 }
                 List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
                 List<CatalogueDTO> catalogues = db.Catalogue.Select(c => new CatalogueDTO(c.CatalogueId, c.Name, 0)).ToList();
+                List<CatalogueInCompany> catalogueInCompanies = db.CatalogueInCompany.Include(c => c.Catalogue).Where(c => c.CompanyId == account.CompanyId).ToList();
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for(int j = 0; j < configurations.Count; j++)
                 {
                     int numberOfTest = configurations[j].Test.ToList().Count();
                     int numberOfFinishedTest = 0;
                     List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
-                    foreach (CatalogueDTO c in catalogues)
-                    {
-                        foreach (CatalogueInConfiguration cif in configurations[j].CatalogueInConfiguration)
-                        {
-                            if(cif.CatalogueId == c.catalogueId)
-                            {
-                                cloneCatalogues.Add(new CatalogueDTO(c.catalogueId, c.name, 0));
-                                break;
-                            }
-                        }
+                    //foreach (CatalogueDTO c in catalogues)
+                    //{
+                    //    foreach (CatalogueInConfiguration cif in configurations[j].CatalogueInConfiguration)
+                    //    {
+                    //        if(cif.CatalogueId == c.catalogueId)
+                    //        {
+                    //            cloneCatalogues.Add(new CatalogueDTO(c.catalogueId, c.name, 0));
+                    //            break;
+                    //        }
+                    //    }
                             
+                    //}
+                    foreach (CatalogueInCompany c in catalogueInCompanies)
+                    {
+                        cloneCatalogues.Add(new CatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0));
                     }
                     GeneralStatisticItemDTO gsi = new GeneralStatisticItemDTO();
                     gsi.configId = configurations[j].ConfigId;
-                    double? totalGPA = 0;
+                    double totalGPA = 0;
                     for(int k = 0; k < statistics.Count; k++)
                     {
                         if(statistics[k].Test.ConfigId == configurations[j].ConfigId)
                         {
                             numberOfFinishedTest += 1;
-                            totalGPA += statistics[k].Point;
+                            totalGPA += statistics[k].Point == null ? 0: statistics[k].Point.Value;
                             List<DetailStatistic> details = statistics[k].DetailStatistic.ToList();
                             for (int m = 0; m < details.Count; m++)
                             {
@@ -162,7 +167,7 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
                                     {
-                                        cloneCatalogues[n].value += details[m].Point / numberOfTest * AppConstrain.scaleUpNumb;
+                                        cloneCatalogues[n].value +=  RoundDownNumber(details[m].Point.Value / numberOfTest, 1);
                                         break;
                                     }
                                 }
@@ -170,7 +175,7 @@ namespace TestManagementServices.Service
                         }
                             
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0: totalGPA / numberOfTest * AppConstrain.scaleUpNumb;
+                    gsi.configGPA = numberOfTest == 0 ? 0:  RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleUpNumb);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -189,6 +194,7 @@ namespace TestManagementServices.Service
             using(DeverateContext db = new DeverateContext())
             {
                 Test test = db.Test.Include(o => o.Config).Include(o => o.Statistic).Where(o => o.TestId == testId).First();
+
                 Statistic statistic = db.Statistic.Include(o => o.Rank).Last(o => o.TestId == test.TestId);
                 var cass = db.ConfigurationRank
                             .Include(cir => cir.Rank)
@@ -196,6 +202,8 @@ namespace TestManagementServices.Service
                             .Where(cir => cir.ConfigId == cir.Config.ConfigId && cir.Config.ConfigId == test.ConfigId)
                             .ToList();
                 List<ConfigurationRank> configurations = cass.ToList();
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+                configurations.ForEach(c => c.WeightPoint = c.WeightPoint * AppConstrain.scaleUpNumb);
                 List<CatalogueInRankDTO> catalogueInRanks = new List<CatalogueInRankDTO>();
                 List<CatalogueDTO> catas = db.Catalogue.Select(o => new CatalogueDTO(o)).ToList();
                 List<ConfigurationRankDTO> configurationRanks = new List<ConfigurationRankDTO>();
@@ -210,7 +218,7 @@ namespace TestManagementServices.Service
                         {
                             if(cir.CatalogueId == c.catalogueId)
                             {
-                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, RoundDownNumber(cir.WeightPoint.Value) * AppConstrain.scaleUpNumb));
+                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, RoundDownNumber(cir.WeightPoint.Value, AppConstrain.scaleUpNumb) ));
                             }
                         }
                     }
@@ -226,13 +234,13 @@ namespace TestManagementServices.Service
                     {
                         if (details[i].catalogueId == catas[j].catalogueId)
                         {
-                            catas[j].overallPoint = RoundDownNumber(details[i].point.Value) * AppConstrain.scaleUpNumb;
+                            catas[j].overallPoint = RoundDownNumber(details[i].point.Value, AppConstrain.scaleUpNumb);
                             break;
                         }
                     }
                 }
-                statistic.Point = Math.Round(statistic.Point.Value, 2) * AppConstrain.scaleUpNumb;
-                return new CandidateResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, RoundDownNumber(statistic.Point.Value) * AppConstrain.scaleUpNumb, statistic.RankId, statistic.Rank.Name);
+                double statisticPoint = RoundDownNumber(statistic.Point.Value, AppConstrain.scaleUpNumb);
+                return new CandidateResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, catalogueInConfigs, statisticPoint, statistic.RankId, statistic.Rank.Name);
             }
         }
 
@@ -285,9 +293,11 @@ namespace TestManagementServices.Service
             }
         }
 
-        public static double RoundDownNumber(double value)
+        public static double RoundDownNumber(double value, int scaleUp)
         {
-            return (Math.Floor(value * 100) / 100);
+
+            double rNumb = Math.Round(value * scaleUp, 1);
+            return rNumb > scaleUp ? scaleUp : rNumb;
         }
     }
 }
