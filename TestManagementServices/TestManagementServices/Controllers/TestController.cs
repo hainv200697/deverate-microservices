@@ -121,6 +121,19 @@ namespace TestManagementServices.Controllers
             }
             return Ok(listQuestion);
         }
+
+        [HttpPost("SendTestCode")]
+        public IActionResult SendTestCode([FromBody]List<int> listestResendCode)
+        {
+            try { 
+                SystemDAO.SendQuizCode(listestResendCode);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
     
 }

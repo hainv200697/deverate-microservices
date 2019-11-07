@@ -17,24 +17,22 @@ namespace ResourceServices.Model
         }
         public CatalogueDTO(Catalogue catalogue)
         {
+            this.name = catalogue.Name;
             this.catalogueId = catalogue.CatalogueId;
             this.isActive = catalogue.IsActive;
-            this.question = catalogue.Question;
-            this.quescount = catalogue.Question.Count;
+            this.type = catalogue.Type;
+            this.description = catalogue.Description;
+        }
+        public CatalogueDTO(Catalogue catalogue,bool? status , int count)
+        {
+            this.name = catalogue.Name;
+            this.quescount = count;
+            this.catalogueId = catalogue.CatalogueId;
+            this.isActive = status;
+            this.type = catalogue.Type;
             this.description = catalogue.Description;
         }
 
-        public CatalogueDTO(Catalogue catalogue, int id)
-        {
-            this.catalogueId = catalogue.CatalogueId;
-            this.name = catalogue.Name;
-            this.isActive = catalogue.IsActive;
-            this.question = catalogue.Question;
-            this.companyId = id;
-            this.type = catalogue.Type;
-            this.quescount = catalogue.Question.Count;
-            this.description = catalogue.Description;
-        }
 
 
         public int catalogueId { get; set; }

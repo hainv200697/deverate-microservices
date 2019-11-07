@@ -722,6 +722,8 @@ namespace TestManagementServices.Service
                 return null;
             }
             
+            test.Status = true;
+            db.SaveChanges();
             List<AnswerDTO> answers = new List<AnswerDTO>();
             List<int?> answerIds = new List<int?>();
             for(int i = 0; i < userTest.questionInTest.Count; i++)
@@ -965,7 +967,7 @@ namespace TestManagementServices.Service
         {
             var config = db.Configuration.Include(z=>z.Test).Where(c => c.Test.Any(x=>x.TestId == testId)).FirstOrDefault();
             var test = config.Test.SingleOrDefault(t => t.TestId == testId);
-            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId);
+            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId,test.Status);
         }
 
         public static UserTest GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo, bool checkCode)
@@ -1016,6 +1018,24 @@ namespace TestManagementServices.Service
             return results;
         }
 
-            
+        public static void SendQuizCode(List<int> listestResendCode)
+        {
+            using(DeverateContext context = new DeverateContext())
+            {
+                List<TestMailDTO> list = context.Test.Include(x => x.AccountId).Include(x=>x.Config).Where(x => listestResendCode.Contains(x.TestId))
+                    .Select(x=> new TestMailDTO(
+                        x.Account.Email,
+                        x.Account.Fullname,
+                        x.Config.Title,
+                        x.Config.StartDate,
+                        x.Config.EndDate,
+                        x.Code,
+                        x.TestId.ToString()
+                        )
+                    )
+                    .ToList();
+                Producer.PublishMessage(JsonConvert.SerializeObject(list), AppConstrain.test_mail);
+            }
+        }
     }
 }
