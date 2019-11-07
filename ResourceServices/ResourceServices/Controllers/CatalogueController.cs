@@ -15,8 +15,7 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class CatalogueController : Controller
     {
-        [HttpGet]
-        [Route("GetAllCatalogue")]
+        [HttpGet("GetAllCatalogue")]
         public ActionResult GetAllCatalogue(int companyId, bool status)
         {
             try
@@ -30,7 +29,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -47,7 +46,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -57,12 +56,12 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = CatalogueDAO.UpdateCatalogue(catalog);
+                var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
                 return Ok(message);
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -72,12 +71,70 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = CatalogueDAO.removeCatalogue(catalog);
+                var message = CatalogueDAO.removeCatalogueDefault(catalog);
                 return Ok(message);
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("GetAllCatalogueDefault")]
+        public ActionResult GetAllCatalogueDefault(bool status)
+        {
+            try
+            {
+                List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogueDefault(status);
+                return Ok(catalogues);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+
+
+        [HttpPost("CreateCatalogueDefault")]
+        public ActionResult CreateCatalogueDefault([FromBody]CatalogueDTO catalog)
+        {
+            try
+            {
+                var message = CatalogueDAO.CreateCatalogueDefault(catalog);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("UpdateCatalogueDefault")]
+        public ActionResult UpdateCatalogueDefault([FromBody]CatalogueDTO catalog)
+        {
+            try
+            {
+                var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("RemoveCatalogueDefault")]
+        public ActionResult RemoveCatalogueDefault([FromBody]List<CatalogueDTO> catalog)
+        {
+            try
+            {
+                var message = CatalogueDAO.removeCatalogueDefault(catalog);
+                return Ok(message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
             }
         }
     }
