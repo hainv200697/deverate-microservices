@@ -106,7 +106,7 @@ namespace ResourceServices.Controllers
                 }
                 var listEmployee = AccountDAO.UpdateEmployeeStatus(listEmpId,status);
 
-                return Ok("Status is changed");
+                return Ok();
             }
             catch (Exception ex)
             {
