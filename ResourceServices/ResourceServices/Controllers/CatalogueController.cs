@@ -29,7 +29,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -46,7 +46,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -61,7 +61,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -76,7 +76,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -90,7 +90,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -106,7 +106,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -120,7 +120,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -134,7 +134,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
     }
