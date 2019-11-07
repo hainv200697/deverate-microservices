@@ -92,7 +92,7 @@ namespace ResourceServices.Service
                 foreach (var cata in catalogue)
                 {
                     CatalogueInCompany cataDb = context.CatalogueInCompany.SingleOrDefault(c => c.CatalogueId == cata.catalogueId && c.CompanyId == cata.companyId);
-                    cataDb.IsActive = cata.isActive;
+                    cataDb.IsActive = cata.isActive.Value;
                     context.SaveChanges();
                 }
                 return Message.removeCatalogueSucceed;
