@@ -18,8 +18,7 @@ namespace ResourceServices.Controllers
     public class QuestionController : Controller
     {
 
-        [HttpGet]
-        [Route("GetQuestionByCatalogue")]
+        [HttpGet("GetQuestionByCatalogue")]
         public ActionResult GetQuestionByCatalogueId(int catalogueId, int companyId,bool status)
         {
             try
@@ -31,47 +30,30 @@ namespace ResourceServices.Controllers
                 }
                 return Ok(ques);
             }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return null;
-            }
-        }
-
-        [HttpGet]
-        [Route("GetQuestionByStatus")]
-        public ActionResult GetQuestionByStatus(bool status,int id)
-        {
-            try
-            {
-                List<QuestionDTO> Questions = QuestionDAO.GetQuestionByStatus(status,id);
-                return Ok(Questions);
-            }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
-        [HttpPost]
-        [Route("CreateQuestion")]
+
+        [HttpPost("CreateQuestion")]
         public ActionResult CreateQuestion([FromBody] List<QuestionDTO> question)
         {
             try
-                    {
+            {
                 var message = QuestionDAO.CreateQuestion(question);
                 return Ok(message);
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
 
 
-        [HttpPut]
-        [Route("UpdateQuestion")]
+        [HttpPut("UpdateQuestion")]
         public ActionResult UpdateQuestion([FromBody]QuestionDTO ques)
         {
             try
@@ -81,12 +63,11 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
-        [HttpPut]
-        [Route("RemoveQuestion")]
+        [HttpPut("RemoveQuestion")]
         public ActionResult RemoveQuestion([FromBody] List<QuestionDTO> ques)
         {
             try
@@ -96,7 +77,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
