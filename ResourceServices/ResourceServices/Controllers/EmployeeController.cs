@@ -86,7 +86,7 @@ namespace ResourceServices.Controllers
                     return BadRequest(check);
                 }
                 Producer producer = new Producer();
-                producer.PublishMessage(JsonConvert.SerializeObject(ListAccountSendPass), "AccountGenerate");
+                producer.PublishMessage(JsonConvert.SerializeObject(ListAccountSendPass), "ResendPassword");
                 return Ok(rm.Success("Password was send to your email!"));
             }
             catch (Exception)
@@ -106,7 +106,7 @@ namespace ResourceServices.Controllers
                 }
                 var listEmployee = AccountDAO.UpdateEmployeeStatus(listEmpId,status);
 
-                return Ok(rm.Success("Status is changed"));
+                return Ok("Status is changed");
             }
             catch (Exception ex)
             {
