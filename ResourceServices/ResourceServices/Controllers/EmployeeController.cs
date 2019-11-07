@@ -29,15 +29,18 @@ namespace ResourceServices.Controllers
             this.context = context;
         }
 
-        [HttpGet]
-        [Route("GetEmployee")]
-        public ActionResult GetEmployeeByCompany(int? id)
+        [HttpGet("GetEmployee")]
+        public ActionResult EmployeeByCompany(int? companyId, bool? status)
         {
             try
             {
-                int? companyId = AccountDAO.GetCompany(id);
-                List<AccountDTO> listEmployee = AccountDAO.GetEmployee(companyId);
-                return Ok(rm.Success(listEmployee));
+                if (companyId == null)
+                {
+                    return BadRequest();
+                }
+                List<AccountDTO> listEmployee = AccountDAO.GetEmployee(companyId, status);
+
+                return Ok(listEmployee);
             }
             catch (Exception ex)
             {
@@ -45,41 +48,69 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("CreateEmployee")]
-        public ActionResult CreateEmployee([FromBody] AccountDTO employee)
+        [HttpPost("CreateEmployee")]
+        public ActionResult CreateEmployee([FromBody] List<MessageAccount> ListAccountGenerate)
         {
             try
             {
-                int? companyId = AccountDAO.GetCompany(employee.accountId);
-                var messageAccount = new MessageAccount(companyId, employee.fullname, employee.email, 3);
+                List<string> listemail = new List<string>();
+                foreach (var emp in ListAccountGenerate)
+                {
+
+                    listemail.Add(emp.Email);
+                }
+                int? companyId = ListAccountGenerate[0].CompanyId;
+                var check = AccountDAO.checkExistedEmail(listemail, companyId);
+                if (check.Count > 0)
+                {       
+                    return BadRequest(check);
+                }
                 Producer producer = new Producer();
-                producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
-                return Ok(rm.Success("Create success"));
+                producer.PublishMessage(JsonConvert.SerializeObject(ListAccountGenerate), "ListAccountGenerate");
+                return Ok();
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
-        [HttpPost]
-        [Route("CreateEmployeeExcel")]
-        public ActionResult CreateEmployeeExcel([FromBody] List<AccountDTO> employees)
+        [HttpPost("ResendPassword")]
+        public ActionResult ResendPassword([FromBody] List<string> ListAccountSendPass, int? companyId)
         {
             try
             {
-                foreach (var employee in employees) { 
-                    int? companyId = AccountDAO.GetCompany(employee.accountId);
-                    var messageAccount = new MessageAccount(companyId, employee.fullname, employee.email, 3);
-                    Producer producer = new Producer();
-                    producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
+                var check = AccountDAO.checkExistedAccount(ListAccountSendPass, companyId);
+                if (check.Count < ListAccountSendPass.Count)
+                {
+                    return BadRequest(check);
                 }
-                return new JsonResult(rm.Success("Create success"));
+                Producer producer = new Producer();
+                producer.PublishMessage(JsonConvert.SerializeObject(ListAccountSendPass), "ResendPassword");
+                return Ok();
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("UpdateEmployeeStatus")]
+        public ActionResult UpdateEmployeeStatus([FromBody] List<int> listEmpId,bool? status)
+        {
+            try
+            {
+                if (listEmpId == null)
+                {
+                    return BadRequest();
+                }
+                AccountDAO.UpdateEmployeeStatus(listEmpId,status);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
             }
         }
     }
