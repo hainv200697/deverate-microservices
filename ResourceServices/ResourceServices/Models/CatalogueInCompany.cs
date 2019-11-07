@@ -13,7 +13,7 @@ namespace ResourceServices.Models
         public int Cicid { get; set; }
         public int CompanyId { get; set; }
         public int CatalogueId { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual Catalogue Catalogue { get; set; }
         public virtual Company Company { get; set; }

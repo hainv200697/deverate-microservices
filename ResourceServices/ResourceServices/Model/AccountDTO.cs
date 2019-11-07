@@ -24,6 +24,7 @@ namespace AuthenServices.Model
         public DateTime? joinDate { get; set; }
         public int? roleId { get; set; }
         public bool? isActive { get; set; }
+        public int? companyId { get; set; }
 
         public AccountDTO()
         {
