@@ -25,8 +25,7 @@ namespace ResourceServices.Service
             {
                 var company = from com in db.Company
                               join acc in db.Account on com.CompanyId equals acc.CompanyId
-                              where com.IsActive == isActive
-                              where acc.RoleId == 2
+                              where com.IsActive == isActive && acc.RoleId == 2
                               select new CompanyDTO(com, acc.Fullname);
                 return company.ToList().OrderByDescending(x => x.companyId).ToList();
             }
