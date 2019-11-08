@@ -119,23 +119,23 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpPut("UpdateAccountRole")]
-        public ActionResult UpdateAccountRole([FromBody] AccountDTO accountChangeRole)
-        {
-            try
-            {
-                if (accountChangeRole == null)
-                {
-                    return BadRequest();
-                }
-                AccountDAO.updateAccountRole(accountChangeRole);
-                return Ok();
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
+        //[HttpPut("UpdateAccountRole")]
+        //public ActionResult UpdateAccountRole([FromBody] AccountDTO accountChangeRole)
+        //{
+        //    try
+        //    {
+        //        if (accountChangeRole == null)
+        //        {
+        //            return BadRequest();
+        //        }
+        //        AccountDAO.updateAccountRole(accountChangeRole);
+        //        return Ok();
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500);
+        //    }
+        //}
 
     }
 }

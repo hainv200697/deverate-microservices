@@ -129,17 +129,17 @@ namespace AuthenServices.Service
 
         }
 
-        public static void updateAccountRole(AccountDTO acc)
-        {
-            using (DeverateContext context = new DeverateContext())
+        //public static void updateAccountRole(AccountDTO acc)
+        //{
+        //    using (DeverateContext context = new DeverateContext())
 
-            {
-                var accountDB = context.Account.SingleOrDefault(x=>x.AccountId == acc.accountId);
-                accountDB.RoleId = acc.roleId;
-                context.Account.Update(accountDB);
-                context.SaveChanges();
-            }
+        //    {
+        //        var accountDB = context.Account.SingleOrDefault(x=>x.AccountId == acc.accountId);
+        //        accountDB.RoleId = acc.roleId;
+        //        context.Account.Update(accountDB);
+        //        context.SaveChanges();
+        //    }
 
-        }
+        //}
     }
 }
