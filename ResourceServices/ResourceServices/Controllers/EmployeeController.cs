@@ -59,6 +59,11 @@ namespace ResourceServices.Controllers
 
                     listemail.Add(emp.Email);
                 }
+                var existedMail = listemail.GroupBy(email => email).Where(g => g.Count() > 1).Select(g => g.Key);
+                if (existedMail != null)
+                {
+                    return BadRequest(existedMail);
+                }
                 int? companyId = ListAccountGenerate[0].CompanyId;
                 var check = AccountDAO.checkExistedEmail(listemail, companyId);
                 if (check.Count > 0)
@@ -113,5 +118,24 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpPut("UpdateAccountRole")]
+        public ActionResult UpdateAccountRole([FromBody] AccountDTO accountChangeRole)
+        {
+            try
+            {
+                if (accountChangeRole == null)
+                {
+                    return BadRequest();
+                }
+                AccountDAO.updateAccountRole(accountChangeRole);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
     }
 }

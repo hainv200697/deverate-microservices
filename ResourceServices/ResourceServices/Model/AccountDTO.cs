@@ -22,7 +22,7 @@ namespace AuthenServices.Model
         public bool? gender { get; set; }
         public string avatar { get; set; }
         public DateTime? joinDate { get; set; }
-        public int? roleId { get; set; }
+        public int roleId { get; set; }
         public bool? isActive { get; set; }
         public int? companyId { get; set; }
 
