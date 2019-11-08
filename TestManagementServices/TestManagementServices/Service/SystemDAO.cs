@@ -154,7 +154,7 @@ namespace TestManagementServices.Service
                 catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, null);
                     totalCataQues += catalogues[i].questions.Count;
                 }
                 int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
@@ -289,7 +289,7 @@ namespace TestManagementServices.Service
                     {
                         return Message.noEmployeeException;
                     }
-                    GenerateQuestions(context, accounts, con);
+                    GenerateQuestions(context, accounts, con, acc.CompanyId);
                     //for (int i = 0; i < accounts.Count; i++)
                     //{
                     //    GenerateQuestion(context, accounts[i].accountId, con);
@@ -304,7 +304,7 @@ namespace TestManagementServices.Service
         }
 
 
-        public static void GenerateQuestions(DeverateContext db, List<AccountDTO> accounts, Configuration config)
+        public static void GenerateQuestions(DeverateContext db, List<AccountDTO> accounts, Configuration config, int? companyId)
         {
             List<QuestionDTO> questions = new List<QuestionDTO>();
             List<QuestionRemain> remainQues = new List<QuestionRemain>();
@@ -325,7 +325,7 @@ namespace TestManagementServices.Service
                 catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
                     totalCataQues += catalogues[i].questions.Count;
                 }
                 int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
@@ -430,7 +430,7 @@ namespace TestManagementServices.Service
         /// <param name="accountId"></param>
         /// <param name="config"></param>
         /// <returns></returns>
-        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, Configuration config)
+        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, Configuration config, int? companyId)
         {
             List<QuestionDTO> questions = new List<QuestionDTO>();
             try
@@ -441,7 +441,7 @@ namespace TestManagementServices.Service
                 catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
                     totalCataQues += catalogues[i].questions.Count;
                 }
                 int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
@@ -605,13 +605,13 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="catalogueId"></param>
         /// <returns></returns>
-        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? catalogueId)
+        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? catalogueId, int? companyId)
         {
             try
             {
                 var ques = from ca in db.CatalogueInCompany
                            join q in db.Question on ca.Cicid equals q.Cicid
-                           where ca.CatalogueId == catalogueId
+                           where ca.CatalogueId == catalogueId && ca.CompanyId == companyId
                            select new QuestionDTO(q.QuestionId, q.Question1, null);
                 List<QuestionDTO> questions = ques.ToList();
                 for (int i = 0; i < questions.Count; i++)
