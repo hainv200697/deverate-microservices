@@ -25,7 +25,7 @@ namespace MailingServices.RabbitMQ
         }
         private void InitRabbitMQ()
         {
-            var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
+            var factory = new ConnectionFactory() { HostName = AppConstrain.hostname };
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();

@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace MailingServices.Model
+namespace AuthenServices.Model
 {
     public class AppConstrain
     {
-        public const string sender = "anhnhse62597@fpt.edu.vn";
-        public const string senderPass = "Darkknightst123";
         public const string hostname = "35.198.215.101";
     }
 }

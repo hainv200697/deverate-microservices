@@ -25,7 +25,10 @@ namespace TestManagementServices.Model
 
         public const int scaleUpNumb = 100;
 
-        
-        
+        public const string hostname = "35.198.215.101";
+
+
+
+
     }
 }
