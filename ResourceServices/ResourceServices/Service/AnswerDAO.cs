@@ -14,7 +14,7 @@ namespace ResourceServices.Service
 
         
 
-        public static List<AnswerDTO> GetAnswerByQuestion(int id, bool status)
+        public static List<AnswerDTO> GetAnswerByQuestion(int? id, bool status)
         {
             using (DeverateContext context = new DeverateContext())
 

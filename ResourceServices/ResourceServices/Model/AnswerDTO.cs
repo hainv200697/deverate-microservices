@@ -28,7 +28,7 @@ namespace ResourceServices.Model
 
         [JsonProperty("AnswerId")]
         public int answerId { get; set; }
-        public int questionId { get; set; }
+        public int? questionId { get; set; }
         public string answer { get; set; }
         public int point { get; set; }
         public bool? isActive { get; set; }
