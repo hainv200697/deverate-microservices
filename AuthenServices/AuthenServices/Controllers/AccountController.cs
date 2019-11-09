@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using AuthenServices.Model;
 using AuthenServices.Models;
 using AuthenServices.RabbitMQ;
@@ -16,7 +13,6 @@ namespace AuthenServices.Controllers
     [Route("[controller]")]
     public class AccountController : Controller
     {
-        ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
         public AccountController(DeverateContext context)
         {
@@ -36,13 +32,12 @@ namespace AuthenServices.Controllers
         }
 
         [HttpPost("CreateManagerAccount")]
-        public ActionResult<IEnumerable<string>> PostCreateManagerAccount([FromBody]MessageAccount account)
+        public ActionResult PostCreateManagerAccount([FromBody]MessageAccount account)
         {
-            var result = AccountDAO.GenerateCompanyAccount(context, account).Split('_');
             Producer producer = new Producer();
-            MessageAccountDTO messageDTO = new MessageAccountDTO(result[0], result[1], account.Email, account.Fullname);
+            MessageAccountDTO messageDTO = AccountDAO.GenerateCompanyAccount(context, account);
             producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
-            return new JsonResult(rm.Success("Login successful", result));
+            return Ok(messageDTO);
         }
 
         [HttpPut("ChangePassword")]
@@ -57,7 +52,21 @@ namespace AuthenServices.Controllers
                 }
                 return BadRequest("Old password is invalid");
             }
-            catch (Exception exe)
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("resend")]
+        public ActionResult ResendPassword([FromBody]List<String> listUsername)
+        {
+            try
+            {
+                AccountDAO.resend(listUsername);
+                return Ok();
+            }
+            catch (Exception)
             {
                 return StatusCode(500);
             }

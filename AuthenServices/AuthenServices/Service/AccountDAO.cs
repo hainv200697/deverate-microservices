@@ -42,7 +42,7 @@ namespace AuthenServices.Service
             }
         }
 
-        public static string GenerateCompanyAccount(DeverateContext context, MessageAccount ms)
+        public static MessageAccountDTO GenerateCompanyAccount(DeverateContext context, MessageAccount ms)
         {
             Account account = new Account();
             var items = ms.Fullname.Split(' ');
@@ -54,24 +54,10 @@ namespace AuthenServices.Service
             List<Account> accounts = context.Account.ToList();
             username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
             username = RemoveVietnameseTone(username);
-            bool includeLowercase = true;
-            bool includeUppercase = true;
-            bool includeNumeric = true;
-            bool includeSpecial = true;
-            bool includeSpaces = false;
-            int lengthOfPassword = 16;
-
-            string password = PasswordGenerator.GeneratePassword(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, lengthOfPassword);
-
-            while (!PasswordGenerator.PasswordIsValid(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, password))
-            {
-                password = PasswordGenerator.GeneratePassword(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, lengthOfPassword);
-            }
-            string salt = BCrypt.Net.BCrypt.GenerateSalt(13);
-            string encodedPassword = BCrypt.Net.BCrypt.HashPassword(password, salt);
 
             account.Username = username.ToUpper();
-            account.Password = encodedPassword;
+            string password = "";
+            account.Password = generatePasswordHash(out password);
             account.Fullname = ms.Fullname;
             account.Email = ms.Email;
             account.Gender = false;
@@ -81,9 +67,44 @@ namespace AuthenServices.Service
             account.IsActive = true;
             context.Account.Add(account);
             context.SaveChanges();
-            return username.ToUpper() + "_" + password;
+            return new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname);
+        }
+
+        private static string generatePasswordHash(out string password)
+        {
+            bool includeLowercase = true;
+            bool includeUppercase = true;
+            bool includeNumeric = true;
+            bool includeSpecial = true;
+            bool includeSpaces = false;
+            int lengthOfPassword = 16;
+
+            password = PasswordGenerator.GeneratePassword(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, lengthOfPassword);
+            while (!PasswordGenerator.PasswordIsValid(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, password))
+            {
+                password = PasswordGenerator.GeneratePassword(includeLowercase, includeUppercase, includeNumeric, includeSpecial, includeSpaces, lengthOfPassword);
+            }
+            string salt = BCrypt.Net.BCrypt.GenerateSalt(13);
+            return BCrypt.Net.BCrypt.HashPassword(password, salt);
+        }
 
 
+        public static List<MessageAccountDTO> resend(List<String> listUsername)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+
+                List<MessageAccountDTO> result = new List<MessageAccountDTO>();
+                List<Account> accounts = db.Account.Where(a => listUsername.Contains(a.Username)).ToList();
+                foreach (Account account in accounts)
+                {
+                    string password = "";
+                    account.Password = generatePasswordHash(out password);
+                    result.Add(new MessageAccountDTO(account.Username, password, account.Email, account.Fullname));
+                }
+                db.SaveChanges();
+                return result;
+            }
         }
 
         public static bool changePassword(ChangePassRequest changePassRequest)

@@ -32,6 +32,8 @@ namespace Deverate
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHostedService>(provider => new Consumer(new DeverateContext(), "AccountGenerate"));
+            services.AddSingleton<IHostedService>(provider => new Consumer(new DeverateContext(), "ListAccountGenerate"));
+            services.AddSingleton<IHostedService>(provider => new Consumer(new DeverateContext(), "ResendPassword"));
             services.AddDiscoveryClient(Configuration);
             services.AddMvc();
             services.AddCors(c =>

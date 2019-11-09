@@ -90,7 +90,7 @@ namespace AuthenServices.Service
 
             {
 
-                var employee = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId == 3 && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                var employee = context.Account.Where(acc => acc.CompanyId == companyId &&( acc.RoleId == 3 || acc.RoleId == 4) && acc.IsActive == status).Select(acc => new AccountDTO(acc));
                 return employee.ToList();
             }
 
@@ -128,5 +128,18 @@ namespace AuthenServices.Service
             }
 
         }
+
+        //public static void updateAccountRole(AccountDTO acc)
+        //{
+        //    using (DeverateContext context = new DeverateContext())
+
+        //    {
+        //        var accountDB = context.Account.SingleOrDefault(x=>x.AccountId == acc.accountId);
+        //        accountDB.RoleId = acc.roleId;
+        //        context.Account.Update(accountDB);
+        //        context.SaveChanges();
+        //    }
+
+        //}
     }
 }
