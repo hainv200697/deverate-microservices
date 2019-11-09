@@ -19,8 +19,7 @@ namespace ResourceServices.Controllers
     {
         
 
-        [HttpGet]
-        [Route("GetAnswerByQuestion")]
+        [HttpGet("GetAnswerByQuestion")]
         public ActionResult GetAnswerByCatalogueId(int id ,bool status)
         {
             try
@@ -28,10 +27,9 @@ namespace ResourceServices.Controllers
                 List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(id, status);
                 return Ok(Answers);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                Console.WriteLine(ex);
-                return null;
+                return StatusCode(500);
             }
         }
 
@@ -39,25 +37,28 @@ namespace ResourceServices.Controllers
 
         
 
-        [HttpPost]
-        [Route("CreateAnswer")]
+        [HttpPost("CreateAnswer")]
         public ActionResult CreateAnswer([FromBody] AnswerDTO answer)
         {
             try
             {
+                List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(answer.questionId, true);
+                if (Answers.Count() > 6)
+                {
+                    return BadRequest();
+                }
                 var message = AnswerDAO.CreateAnswer(answer);
                 AnswerDAO.UpdateMaxPoint(answer.questionId);
                 return Ok(message);
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
 
-        [HttpPut]
-        [Route("UpdateAnswer")]
+        [HttpPut("UpdateAnswer")]
         public ActionResult UpdateAnswer([FromBody]AnswerDTO ans)
         {
             try
@@ -68,7 +69,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -85,7 +86,7 @@ namespace ResourceServices.Controllers
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
