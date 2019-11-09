@@ -84,7 +84,7 @@ namespace TestManagementServices.Service
             {
                 try
                 {
-                    Configuration con = context.Configuration.SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
+                    Configuration con = context.Configuration.Include(c => c.TestOwner).SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
                     if (con.Duration < AppConstrain.minDuration)
                     {
                         return Message.durationExceptopn;
@@ -158,7 +158,7 @@ namespace TestManagementServices.Service
                 catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, config.TestOwner.CompanyId);
                     totalCataQues += catalogues[i].questions == null ? 0: catalogues[i].questions.Count;
                 }
                 if(totalCataQues == 0)
