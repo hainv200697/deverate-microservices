@@ -14,7 +14,7 @@ namespace ResourceServices.Service
 
         
 
-        public static List<AnswerDTO> GetAnswerByQuestion(int id, bool status)
+        public static List<AnswerDTO> GetAnswerByQuestion(int? id, bool status)
         {
             using (DeverateContext context = new DeverateContext())
 
@@ -27,7 +27,7 @@ namespace ResourceServices.Service
         }
 
         
-        public static string CreateAnswer(AnswerDTO ans)
+        public static void CreateAnswer(AnswerDTO ans)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -38,7 +38,6 @@ namespace ResourceServices.Service
                 answer.QuestionId = ans.questionId;
                 context.Answer.Add(answer);
                 context.SaveChanges();
-                return Message.createAnswerSucceed;
             }
 
         }
@@ -54,10 +53,8 @@ namespace ResourceServices.Service
             }
         }
 
-        public static string UpdateAnswer(AnswerDTO ans)
+        public static void UpdateAnswer(AnswerDTO ans)
         {
-            try
-            {
                 using (DeverateContext context = new DeverateContext())
                 {
                     Answer answer = new Answer();
@@ -68,18 +65,12 @@ namespace ResourceServices.Service
                     answer.QuestionId = ans.questionId;
                     context.Answer.Update(answer);
                     context.SaveChanges();
-                    return Message.createAnswerSucceed;
                 }
-            } catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return "{\"message\" : \"Update Answer fail\"}";
-            }
             
 
         }
 
-        public static string removeAnswer(List<AnswerDTO> answer)
+        public static void removeAnswer(List<AnswerDTO> answer)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -87,9 +78,8 @@ namespace ResourceServices.Service
                 {
                     Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.answerId);
                     AnswerDb.IsActive = ans.isActive;
-                    context.SaveChanges();
                 }
-                return Message.removeAnswerSucceed;
+                context.SaveChanges();
             }
         }
 

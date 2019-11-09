@@ -9,7 +9,7 @@ namespace ResourceServices.Model
     {
         public const string createCatalogueSucceed = "{\"message\" : \"Creating catalogue success\"}";
         public const string updateCatalogueSucceed = "{\"message\" : \"Updating catalogue success\"}";
-        public const string removeCatalogueSucceed = "{\"message\" : \"Removed catalogue success\"}";
+        public const string removeCatalogueSucceed = "{\"message\" : \"Change status catalogue success\"}";
         public const string noAvailableEmployee = "No available employee";
 
         public const string createConfigSucceed = "Creating configuration success";

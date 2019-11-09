@@ -33,7 +33,6 @@ namespace AuthenServices.Model
         {
             this.accountId = account.AccountId;
             this.username = account.Username;
-            this.password = account.Password;
             this.fullname = account.Fullname;
             this.phone = account.Phone;
             this.email = account.Email;

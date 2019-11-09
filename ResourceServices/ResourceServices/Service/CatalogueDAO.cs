@@ -16,7 +16,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {  
                 var catalouge = context.CatalogueInCompany.Include(x=>x.Catalogue).Include(x=>x.Question).Where(x => x.IsActive == status && x.CompanyId == companyId)
-                    .Select(x=> new CatalogueDTO(x.Catalogue,x.IsActive,x.Question.Count()))
+                    .Select(x=> new CatalogueDTO(x.Catalogue,x.IsActive,x.Question.Count(ques => ques.IsActive == true)))
                     .ToList();
                 return catalouge;
             }
@@ -32,7 +32,7 @@ namespace ResourceServices.Service
             }
         }
 
-        public static string CreateCatalogue(CatalogueDTO catalogue)
+        public static void CreateCatalogue(CatalogueDTO catalogue)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -49,12 +49,11 @@ namespace ResourceServices.Service
                 cataCom.IsActive = true;
                 context.CatalogueInCompany.Add(cataCom);
                 context.SaveChanges();
-                return Message.createCatalogueSucceed;
             }
 
         }
 
-        public static string CreateCatalogueDefault(CatalogueDTO catalogue)
+        public static void CreateCatalogueDefault(CatalogueDTO catalogue)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -66,12 +65,11 @@ namespace ResourceServices.Service
                 cata.IsActive = true;
                 context.Catalogue.Add(cata);
                 context.SaveChanges();
-                return Message.createCatalogueSucceed;
             }
 
         }
 
-        public static string UpdateCatalogueDefault(CatalogueDTO catalogue)
+        public static void UpdateCatalogueDefault(CatalogueDTO catalogue)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -80,12 +78,11 @@ namespace ResourceServices.Service
                 cata.Name = catalogue.name;
                 cata.IsActive = catalogue.isActive;
                 context.SaveChanges();
-                return Message.updateCatalogueSucceed; 
             }
 
         }
 
-        public static string removeCatalogueDefault(List<CatalogueDTO> catalogue)
+        public static void removeCatalogueDefault(List<CatalogueDTO> catalogue)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -93,9 +90,8 @@ namespace ResourceServices.Service
                 {
                     CatalogueInCompany cataDb = context.CatalogueInCompany.SingleOrDefault(c => c.CatalogueId == cata.catalogueId && c.CompanyId == cata.companyId);
                     cataDb.IsActive = cata.isActive.Value;
-                    context.SaveChanges();
                 }
-                return Message.removeCatalogueSucceed;
+                context.SaveChanges();
             }
         }
     }

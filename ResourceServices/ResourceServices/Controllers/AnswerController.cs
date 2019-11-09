@@ -19,8 +19,7 @@ namespace ResourceServices.Controllers
     {
         
 
-        [HttpGet]
-        [Route("GetAnswerByQuestion")]
+        [HttpGet("GetAnswerByQuestion")]
         public ActionResult GetAnswerByCatalogueId(int id ,bool status)
         {
             try
@@ -28,10 +27,9 @@ namespace ResourceServices.Controllers
                 List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(id, status);
                 return Ok(Answers);
             }
-            catch (Exception ex)
+            catch (Exception )
             {
-                Console.WriteLine(ex);
-                return null;
+                return StatusCode(500);
             }
         }
 
@@ -39,36 +37,39 @@ namespace ResourceServices.Controllers
 
         
 
-        [HttpPost]
-        [Route("CreateAnswer")]
+        [HttpPost("CreateAnswer")]
         public ActionResult CreateAnswer([FromBody] AnswerDTO answer)
         {
             try
             {
-                var message = AnswerDAO.CreateAnswer(answer);
+                List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(answer.questionId, true);
+                if (Answers.Count() > 6)
+                {
+                    return BadRequest();
+                }
+                AnswerDAO.CreateAnswer(answer);
                 AnswerDAO.UpdateMaxPoint(answer.questionId);
-                return Ok(message);
+                return Ok(Message.createAnswerSucceed);
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
 
-        [HttpPut]
-        [Route("UpdateAnswer")]
+        [HttpPut("UpdateAnswer")]
         public ActionResult UpdateAnswer([FromBody]AnswerDTO ans)
         {
             try
             {
-                var message = AnswerDAO.UpdateAnswer(ans);
+                AnswerDAO.UpdateAnswer(ans);
                 AnswerDAO.UpdateMaxPoint(ans.questionId);
-                return Ok(message);
+                return Ok(Message.updateAnswerSucceed);
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
@@ -79,13 +80,13 @@ namespace ResourceServices.Controllers
             try
             {
                 int? id = ans[0].questionId;
-                var message = AnswerDAO.removeAnswer(ans);
+                AnswerDAO.removeAnswer(ans);
                 AnswerDAO.UpdateMaxPoint(id);
-                return Ok(message);
+                return Ok(Message.removeAnswerSucceed);
             }
             catch (Exception)
             {
-                return BadRequest();
+                return StatusCode(500);
             }
         }
 
