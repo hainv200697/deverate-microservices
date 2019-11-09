@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: resource-64c4f59f89-c5xgv 	 	
+  name: resource-5b457f4d5f-dnmdk	 	
 spec:
   type: ClusterIP
   selector:
