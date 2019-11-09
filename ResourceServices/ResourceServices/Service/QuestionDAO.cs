@@ -43,8 +43,8 @@ namespace ResourceServices.Service
                     question.CreateBy = ques.createBy;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
-                    context.SaveChanges();
                 }
+                context.SaveChanges();
             }
 
         }
@@ -76,11 +76,11 @@ namespace ResourceServices.Service
                         {
                             Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == item.answerId);
                             AnswerDb.IsActive = false;
-                            context.SaveChanges();
                         }
                     }
-                    context.SaveChanges();
                 }
+
+                context.SaveChanges();
             }
         }
     }

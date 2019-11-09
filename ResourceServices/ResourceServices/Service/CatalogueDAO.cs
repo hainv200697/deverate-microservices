@@ -90,8 +90,8 @@ namespace ResourceServices.Service
                 {
                     CatalogueInCompany cataDb = context.CatalogueInCompany.SingleOrDefault(c => c.CatalogueId == cata.catalogueId && c.CompanyId == cata.companyId);
                     cataDb.IsActive = cata.isActive.Value;
-                    context.SaveChanges();
                 }
+                context.SaveChanges();
             }
         }
     }

@@ -55,8 +55,6 @@ namespace ResourceServices.Service
 
         public static void UpdateAnswer(AnswerDTO ans)
         {
-            try
-            {
                 using (DeverateContext context = new DeverateContext())
                 {
                     Answer answer = new Answer();
@@ -68,11 +66,6 @@ namespace ResourceServices.Service
                     context.Answer.Update(answer);
                     context.SaveChanges();
                 }
-            } catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return "{\"message\" : \"Update Answer fail\"}";
-            }
             
 
         }
@@ -85,8 +78,8 @@ namespace ResourceServices.Service
                 {
                     Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.answerId);
                     AnswerDb.IsActive = ans.isActive;
-                    context.SaveChanges();
                 }
+                context.SaveChanges();
             }
         }
 
