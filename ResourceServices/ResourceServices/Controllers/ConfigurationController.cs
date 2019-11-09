@@ -59,14 +59,22 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var save = ConfigurationDAO.CreateConfiguration(configuration);
-                if (save == null)
+                if(configuration.type == true)
                 {
-                    return BadRequest("No employee");
+                    var save = ConfigurationDAO.CreateConfiguration(configuration);
+                    if (save == null)
+                    {
+                        return BadRequest("No employee");
+                    }
+                    Producer producer = new Producer();
+                    producer.PublishMessage(save.configId + "", "GenerateTest");
+                    return Ok(rm.Success("Save success"));
                 }
-                Producer producer = new Producer();
-                producer.PublishMessage(save.configId + "", "GenerateTest");
-                return Ok(rm.Success("Save success"));
+                else
+                {
+                    ConfigurationDAO.CreateConfiguration(configuration);
+                    return Ok(rm.Success("Save success"));
+                }
             }
             catch (Exception ex)
             {
