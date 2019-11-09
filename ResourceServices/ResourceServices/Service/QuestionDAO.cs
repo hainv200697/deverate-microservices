@@ -27,7 +27,7 @@ namespace ResourceServices.Service
 
         }
 
-        public static string CreateQuestion(List<QuestionDTO> quest)
+        public static void CreateQuestion(List<QuestionDTO> quest)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -45,13 +45,12 @@ namespace ResourceServices.Service
                     context.Question.Add(question);
                     context.SaveChanges();
                 }
-                return Message.createQuestionSucceed;
             }
 
         }
 
 
-        public static string UpdateQuestion(QuestionDTO ques)
+        public static void UpdateQuestion(QuestionDTO ques)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -59,11 +58,10 @@ namespace ResourceServices.Service
                 question.Question1 = ques.question1;
                 context.Question.Update(question);
                 context.SaveChanges();
-                return Message.updateQuestionSucceed;
             }
         }
 
-        public static string removeQuestion(List<QuestionDTO> Question)
+        public static void removeQuestion(List<QuestionDTO> Question)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -83,7 +81,6 @@ namespace ResourceServices.Service
                     }
                     context.SaveChanges();
                 }
-                return Message.removeQuestionSucceed;
             }
         }
     }

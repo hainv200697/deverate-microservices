@@ -45,8 +45,8 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = CatalogueDAO.CreateCatalogue(catalog);
-                return Ok(message);
+                CatalogueDAO.CreateCatalogue(catalog);
+                return Ok(Message.createCatalogueSucceed);
             }
             catch (Exception)
             {
@@ -64,8 +64,8 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
-                return Ok(message);
+                CatalogueDAO.UpdateCatalogueDefault(catalog);
+                return Ok(Message.updateCatalogueSucceed);
             }
             catch (Exception)
             {
@@ -83,8 +83,8 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = CatalogueDAO.removeCatalogueDefault(catalog);
-                return Ok(message);
+                CatalogueDAO.removeCatalogueDefault(catalog);
+                return Ok(Message.removeCatalogueSucceed);
             }
             catch (Exception)
             {
@@ -117,8 +117,8 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = CatalogueDAO.CreateCatalogueDefault(catalog);
-                return Ok(message);
+                CatalogueDAO.CreateCatalogueDefault(catalog);
+                return Ok(Message.createCatalogueSucceed);
             }
             catch (Exception)
             {
@@ -135,8 +135,8 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
-                return Ok(message);
+                CatalogueDAO.UpdateCatalogueDefault(catalog);
+                return Ok(Message.updateCatalogueSucceed);
             }
             catch (Exception)
             {
@@ -153,8 +153,8 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = CatalogueDAO.removeCatalogueDefault(catalog);
-                return Ok(message);
+                CatalogueDAO.removeCatalogueDefault(catalog);
+                return Ok(Message.removeCatalogueSucceed);
             }
             catch (Exception)
             {

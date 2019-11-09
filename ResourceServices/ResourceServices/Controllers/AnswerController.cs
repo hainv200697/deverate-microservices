@@ -47,9 +47,9 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = AnswerDAO.CreateAnswer(answer);
+                AnswerDAO.CreateAnswer(answer);
                 AnswerDAO.UpdateMaxPoint(answer.questionId);
-                return Ok(message);
+                return Ok(Message.createAnswerSucceed);
             }
             catch (Exception)
             {
@@ -63,9 +63,9 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = AnswerDAO.UpdateAnswer(ans);
+                AnswerDAO.UpdateAnswer(ans);
                 AnswerDAO.UpdateMaxPoint(ans.questionId);
-                return Ok(message);
+                return Ok(Message.updateAnswerSucceed);
             }
             catch (Exception)
             {
@@ -80,9 +80,9 @@ namespace ResourceServices.Controllers
             try
             {
                 int? id = ans[0].questionId;
-                var message = AnswerDAO.removeAnswer(ans);
+                AnswerDAO.removeAnswer(ans);
                 AnswerDAO.UpdateMaxPoint(id);
-                return Ok(message);
+                return Ok(Message.removeAnswerSucceed);
             }
             catch (Exception)
             {

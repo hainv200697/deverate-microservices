@@ -46,8 +46,15 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = QuestionDAO.CreateQuestion(question);
-                return Ok(message);
+                foreach(var item in question)
+                {
+                    if(item.answer.Count() < 3 || item.answer.Count() < 3)
+                    {
+                        return BadRequest();
+                    }
+                }
+                QuestionDAO.CreateQuestion(question);
+                return Ok(Message.createQuestionSucceed);
             }
             catch (Exception)
             {
@@ -66,8 +73,8 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                var message = QuestionDAO.UpdateQuestion(ques);
-                return Ok(message);
+                QuestionDAO.UpdateQuestion(ques);
+                return Ok(Message.updateQuestionSucceed);
             }
             catch (Exception)
             {
@@ -80,8 +87,8 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = QuestionDAO.removeQuestion(ques);
-                return Ok(message);
+                QuestionDAO.removeQuestion(ques);
+                return Ok(Message.removeQuestionSucceed);
             }
             catch (Exception)
             {
