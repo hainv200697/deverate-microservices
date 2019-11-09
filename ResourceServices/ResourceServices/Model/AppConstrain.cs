@@ -18,6 +18,7 @@ namespace ResourceServices.Model
         public const bool includeSpaces = false;
         public const int lengthOfPassword = 16;
 
+        public const string hostname = "35.198.215.101";
 
         public static string RemoveVietnameseTone(string text)
         {

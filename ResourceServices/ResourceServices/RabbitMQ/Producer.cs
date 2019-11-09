@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using RabbitMQ.Client;
+using ResourceServices.Model;
 
 namespace ResourceServices.RabbitMQ
 {
@@ -8,7 +9,7 @@ namespace ResourceServices.RabbitMQ
     {
         public void PublishMessage(string message, string exch)
         {
-            var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
+            var factory = new ConnectionFactory() { HostName = AppConstrain.hostname };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {

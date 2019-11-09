@@ -1,4 +1,5 @@
-﻿using RabbitMQ.Client;
+﻿using AuthenServices.Model;
+using RabbitMQ.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace AuthenServices.RabbitMQ
     {
         public void PublishMessage(string message, string exch)
         {
-            var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
+            var factory = new ConnectionFactory() { HostName = AppConstrain.hostname };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {

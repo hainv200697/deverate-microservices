@@ -25,7 +25,7 @@ namespace TestManagementServices.RabbitMQ
         private void InitRabbitMQ(string exch)
         {
             this.exch = exch;
-            var factory = new ConnectionFactory() { HostName = "35.240.253.45" };
+            var factory = new ConnectionFactory() { HostName = AppConstrain.hostname };
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
