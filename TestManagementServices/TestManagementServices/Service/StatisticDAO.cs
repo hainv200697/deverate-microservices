@@ -71,6 +71,16 @@ namespace TestManagementServices.Service
                         {
                             break;
                         }
+                        int totalEmp = 0;
+                        try
+                        {
+                            totalEmp = configurations[j].Test.Count;
+                        }
+                        catch(Exception e)
+                        {
+                            totalEmp = 0;
+                        }
+                        List<int?> totalOfDidTests = new List<int?>();
                         RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
                         rankStatisticItem.configId = configurations[j].ConfigId;
                         rankStatisticItem.createDate = configurations[j].CreateDate;
@@ -85,6 +95,11 @@ namespace TestManagementServices.Service
                         {
                             if (statistics[k].Test.ConfigId == configurations[j].ConfigId)
                             {
+                                if (!totalOfDidTests.Contains(statistics[k].Test.AccountId))
+                                {
+                                    totalOfDidTests.Add(statistics[k].Test.AccountId);
+                                }
+                                
                                 for(int m = 0; m < cloneRanks.Count; m++)
                                 {
                                     if(statistics[k].RankId == cloneRanks[m].rankId)
@@ -95,6 +110,8 @@ namespace TestManagementServices.Service
                             }
 
                         }
+                        rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count);
+                        rankStatisticItem.totalEmp = new TotalEmpItemDTO(totalEmp);
                         rankStatisticItem.series = cloneRanks;
                         rankStatisticItems.Add(rankStatisticItem);
                         configCount++;
@@ -112,6 +129,8 @@ namespace TestManagementServices.Service
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
                 List<Configuration> configurations = db.Configuration.Include(c => c.TestOwner).Include(c => c.CatalogueInConfiguration)
                                                      .Where(c => c.TestOwner.CompanyId == account.CompanyId).ToList();
+                List<int?> configIds = new List<int?>();
+                configurations.ForEach(c => configIds.Add(c.ConfigId));
                 List<Account> accounts = db.Account.Include(a => a.Configuration).Where(a => a.CompanyId == account.CompanyId).ToList();
                 var result = from t in db.Test
                                     join con in db.Configuration on t.ConfigId equals con.ConfigId
@@ -119,15 +138,36 @@ namespace TestManagementServices.Service
                                     join acc in db.Account on con.TestOwnerId equals acc.AccountId
                                     where acc.CompanyId == account.CompanyId
                                     select t;
-                List<Test> tests = result.ToList();
+                List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
+                                                                  join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
+                                                                  join c in db.Catalogue on cic.CatalogueId equals c.CatalogueId
+                                                                  join cicom in db.CatalogueInCompany on c.CatalogueId equals cicom.CatalogueId
+                                                                  where cicom.CompanyId == account.CompanyId
+                                                                  select cicom).ToList();
+                List<Catalogue> catalogues = db.Catalogue.ToList();
+                catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.Cicid).Select(c => c.First()).ToList();
+                for(int i = 0; i < catalogueInCompanies.Count; i++)
+                {
+                    foreach(Catalogue c in catalogues)
+                    {
+                        if(c.CatalogueId == catalogueInCompanies[i].CatalogueId)
+                        {
+                            catalogueInCompanies[i].Catalogue = c;
+                            break;
+                        }
+                    }
+                }
+                
+                List < Test > tests = result.ToList();
                 List<int?> testIds = new List<int?>();
                 foreach(Test t in tests)
                 {
                     testIds.Add(t.TestId);
                 }
                 List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
-                List<CatalogueDTO> catalogues = db.Catalogue.Select(c => new CatalogueDTO(c.CatalogueId, c.Name, 0)).ToList();
-                List<CatalogueInCompany> catalogueInCompanies = db.CatalogueInCompany.Include(c => c.Catalogue).Where(c => c.CompanyId == account.CompanyId).ToList();
+                
+
+                //List<CatalogueInCompany> catalogueInCompanies = db.CatalogueInCompany.Include(c => c.Catalogue).Where(c => c.CompanyId == account.CompanyId).ToList();
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for(int j = 0; j < configurations.Count; j++)
                 {
@@ -203,7 +243,6 @@ namespace TestManagementServices.Service
                             .ToList();
                 List<ConfigurationRank> configurations = cass.ToList();
                 List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.Catalogue).Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
-                configurations.ForEach(c => c.WeightPoint = c.WeightPoint * AppConstrain.scaleUpNumb);
                 List<CatalogueInRankDTO> catalogueInRanks = new List<CatalogueInRankDTO>();
                 List<CatalogueDTO> catas = db.Catalogue.Select(o => new CatalogueDTO(o)).ToList();
                 List<ConfigurationRankDTO> configurationRanks = new List<ConfigurationRankDTO>();

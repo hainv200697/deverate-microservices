@@ -90,7 +90,7 @@ namespace TestManagementServices.Service
                         return Message.durationExceptopn;
                     }
                     List<CatalogueDTO> catas = GetCatalogueWeights(context, con.ConfigId);
-                    if (catas.Count == 0)
+                    if (catas.Count == 0 || catas == null)
                     {
                         return Message.noCatalogueException;
                     }
@@ -151,15 +151,23 @@ namespace TestManagementServices.Service
             try
             {
                 List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
+                if(catalogues == null || catalogues.Count == 0  )
+                {
+                    return;
+                }
                 catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, null);
-                    totalCataQues += catalogues[i].questions.Count;
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId);
+                    totalCataQues += catalogues[i].questions == null ? 0: catalogues[i].questions.Count;
+                }
+                if(totalCataQues == 0)
+                {
+                    return;
+
                 }
                 int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
                 catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
-                List<Test> tests = db.Test.Where(t => t.ConfigId == config.ConfigId).ToList();
 
                 foreach (ApplicantDTO app in applicants)
                 {
@@ -169,6 +177,10 @@ namespace TestManagementServices.Service
                         quesRe.catalogueId = catalogues[i].catalogueId;
 
                         List<QuestionDTO> totalQues = catalogues[i].questions;
+                        if(totalQues == null || totalQues.Count == 0)
+                        {
+                            continue;
+                        }
                         int quesLenght = totalQues.Count;
                         int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
                         totalQues = Shuffle(totalQues);
@@ -328,6 +340,10 @@ namespace TestManagementServices.Service
                     catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
                     totalCataQues += catalogues[i].questions.Count;
                 }
+                if(totalCataQues == 0)
+                {
+                    return;
+                }
                 int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
                 catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
 
@@ -340,6 +356,11 @@ namespace TestManagementServices.Service
                         quesRe.catalogueId = catalogues[i].catalogueId;
                         
                         List<QuestionDTO> totalQues = catalogues[i].questions;
+                        
+                        if(totalQues == null || totalQues.Count == 0)
+                        {
+                            continue;
+                        }
                         int quesLenght = totalQues.Count;
                         int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
                         totalQues = Shuffle(totalQues);
@@ -660,10 +681,14 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<CatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db, int? totalQuestion, List<CatalogueDTO> catalogues)
         {
+            if(totalQuestion == 0)
+            {
+                return catalogues;
+            }
             int currentQuestion = 0;
             for (int i = 0; i < catalogues.Count; i++)
             {
-                double numberOfQuestion = catalogues[i].weightPoint.Value * totalQuestion.Value;
+                double numberOfQuestion = catalogues[i].weightPoint == null || catalogues[i].weightPoint.Value <= 0 ? 0: catalogues[i].weightPoint.Value * totalQuestion.Value;
                 catalogues[i].numberOfQuestion = Convert.ToInt32(numberOfQuestion);
                 currentQuestion += catalogues[i].numberOfQuestion.Value;
             }
@@ -716,10 +741,10 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
-            Statistic stt = db.Statistic.Where(s => s.TestId == userTest.testId).FirstOrDefault();
+            Statistic stt = db.Statistic.Include(s => s.Rank).Where(s => s.TestId == userTest.testId).FirstOrDefault();
             if(stt != null)
             {
-                return null;
+                return new RankPoint(stt.Rank.Name, stt.Point);
             }
             
             test.Status = true;
@@ -932,8 +957,19 @@ namespace TestManagementServices.Service
                 {
                     if(quess[i].Question.Cicid == cata.Cicid)
                     {
+                        if(quess[i].Question.MaxPoint == null)
+                        {
+                            continue;
+                        }
                         maxPoint += quess[i].Question.MaxPoint;
-                        point += quess[i].Point;
+                        try
+                        {
+                            point += quess[i].Point;
+                        }catch(Exception e)
+                        {
+                            point += 0;
+                        }
+                        
                         quess.RemoveAt(i);
                         if(i != 0)
                         {
