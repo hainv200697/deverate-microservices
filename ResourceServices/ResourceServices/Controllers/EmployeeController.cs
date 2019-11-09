@@ -137,5 +137,23 @@ namespace ResourceServices.Controllers
         //    }
         //}
 
+        [HttpGet("GetAccountByRole")]
+        public ActionResult GetAccountByRole(int? companyId, bool? status, int? role)
+        {
+            try
+            {
+                if (companyId == null || status == null || role == null)
+                {
+                    return BadRequest();
+                }
+                List<AccountDTO> listAccount = AccountDAO.GetAccountByRole(companyId, status, role);
+
+                return Ok(listAccount);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }

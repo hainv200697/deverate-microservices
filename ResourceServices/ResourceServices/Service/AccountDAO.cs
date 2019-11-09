@@ -141,5 +141,15 @@ namespace AuthenServices.Service
         //    }
 
         //}
+
+        public static List<AccountDTO> GetAccountByRole(int? companyId, bool? status,int? role)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                var account = context.Account.Where(acc => acc.CompanyId == companyId &&  acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                return account.ToList();
+            }
+
+        }
     }
 }
