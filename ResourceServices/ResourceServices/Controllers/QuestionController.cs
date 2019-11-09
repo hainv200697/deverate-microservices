@@ -42,6 +42,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (question == null)
+                {
+                    return BadRequest();
+                }
                 var message = QuestionDAO.CreateQuestion(question);
                 return Ok(message);
             }
@@ -58,6 +62,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (ques == null)
+                {
+                    return BadRequest();
+                }
                 var message = QuestionDAO.UpdateQuestion(ques);
                 return Ok(message);
             }

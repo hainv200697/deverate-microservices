@@ -41,6 +41,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (catalog == null)
+                {
+                    return BadRequest();
+                }
                 var message = CatalogueDAO.CreateCatalogue(catalog);
                 return Ok(message);
             }
@@ -56,6 +60,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (catalog == null)
+                {
+                    return BadRequest();
+                }
                 var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
                 return Ok(message);
             }
@@ -71,6 +79,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (catalog == null)
+                {
+                    return BadRequest();
+                }
                 var message = CatalogueDAO.removeCatalogueDefault(catalog);
                 return Ok(message);
             }
@@ -101,6 +113,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (catalog == null)
+                {
+                    return BadRequest();
+                }
                 var message = CatalogueDAO.CreateCatalogueDefault(catalog);
                 return Ok(message);
             }
@@ -115,6 +131,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (catalog == null)
+                {
+                    return BadRequest();
+                }
                 var message = CatalogueDAO.UpdateCatalogueDefault(catalog);
                 return Ok(message);
             }
@@ -129,6 +149,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (catalog == null)
+                {
+                    return BadRequest();
+                }
                 var message = CatalogueDAO.removeCatalogueDefault(catalog);
                 return Ok(message);
             }
