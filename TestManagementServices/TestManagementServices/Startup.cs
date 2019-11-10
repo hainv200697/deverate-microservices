@@ -29,6 +29,9 @@ namespace Deverate
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("HangfireDB")));
+            services.AddHangfireServer();
+            services.AddScoped<IHangfireService, HangfireService>();
             services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_consumer));
             services.AddDiscoveryClient(Configuration);
             services.AddMvc();
@@ -57,8 +60,8 @@ namespace Deverate
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
-            //app.UseHangfireDashboard();
-            //RecurringJob.AddOrUpdate<IHangfireService>("EvaluateRankAllTestNotSubmit", context => context.EvaluateRankAllTestNotSubmit(), "*/1 * * * *", TimeZoneInfo.Utc);
+            app.UseHangfireDashboard();
+            RecurringJob.AddOrUpdate<IHangfireService>("EvaluateRankAllTestNotSubmit", context => context.EvaluateRankAllTestNotSubmit(), Cron.Minutely);
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseDiscoveryClient();
             app.UseHttpsRedirection();

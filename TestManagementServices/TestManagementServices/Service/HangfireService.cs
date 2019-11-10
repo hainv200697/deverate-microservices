@@ -23,7 +23,7 @@ namespace TestManagementServices.Service
                     var tests = context.Test
                         .Include(c => c.Config)
                         //Change Status = Doing
-                        .Where(t => !t.Status && DateTime.Compare(now, t.StartTime.Value.AddMinutes(t.Config.Duration.Value)) > 0 && t.IsActive).ToList();
+                        .Where(t => t.IsActive && t.StartTime != null && !t.Status && DateTime.Compare(now, t.StartTime.Value.AddMinutes(t.Config.Duration.Value)) > 0 && t.IsActive).ToList();
                     foreach(Test test in tests)
                     {
                         TestInfoDTO testInfo = new TestInfoDTO
