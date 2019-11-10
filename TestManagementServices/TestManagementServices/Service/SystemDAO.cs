@@ -741,11 +741,11 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
-            Statistic stt = db.Statistic.Include(s => s.Rank).Where(s => s.TestId == userTest.testId).FirstOrDefault();
-            if(stt != null)
-            {
-                return new RankPoint(stt.Rank.Name, stt.Point);
-            }
+            //Statistic stt = db.Statistic.Include(s => s.Rank).Where(s => s.TestId == userTest.testId).FirstOrDefault();
+            //if(stt != null)
+            //{
+            //    return new RankPoint(stt.Rank.Name, stt.Point);
+            //}
             
             test.Status = true;
             db.SaveChanges();
@@ -769,7 +769,8 @@ namespace TestManagementServices.Service
                 SaveAnswer(userTest);
                 TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
                 totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId, test.Account.CompanyId);
-                List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
+                totalPoint = AppConstrain.RoundDownNumber(totalPoint.Value, AppConstrain.scaleUpNumb);
+                List <ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
                 configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                 ConfigurationRankDTO tmp = new ConfigurationRankDTO();
                 tmp.rankId = configurationRanks[0].rankId.Value;
@@ -894,6 +895,10 @@ namespace TestManagementServices.Service
                 DetailStatistic detail = new DetailStatistic();
                 detail.StatisticId = statisticId;
                 detail.CatalogueId = cataloguePoints[i].catalogueId;
+                if(cataloguePoints[i].cataloguePoint == null || cataloguePoints[i].cataloguePoint < 0 || catalogueWeightPoints[i].weightPoint == null)
+                {
+                    continue;
+                }
                 double? point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint;
                 detail.Point = cataloguePoints[i].cataloguePoint;
                 details.Add(detail);

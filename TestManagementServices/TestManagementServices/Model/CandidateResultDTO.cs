@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -6,6 +7,7 @@ using TestManagementServices.Model;
 
 namespace TestManagementServices.Models
 {
+    [JsonObject("CandidateResultDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CandidateResultDTO
     {
         public int? accountId { get; set; } 

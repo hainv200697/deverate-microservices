@@ -25,6 +25,9 @@ namespace ResourceServices.Model
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
         public List<ConfigurationRank> ConfigurationRank { get; set; }
 
+        public List<CatalogueInConfigDTO> catalogueInConfigs { get; set; }
+        public List<ConfigurationRankDTO> configurationRanks { get; set; }
+
         public ConfigurationDTO()
         {
 
@@ -59,6 +62,24 @@ namespace ResourceServices.Model
             this.TestOwnerName = name;
             this.catalogueInConfigurations = catalogueInConfiguration;
             this.ConfigurationRank = configurationRank;
+        }
+
+
+        public ConfigurationDTO(Configuration configuration, List<CatalogueInConfigDTO> catalogueInConfigs, List<ConfigurationRankDTO> configurationRanks, string name, int a = 0)
+        {
+            this.configId = configuration.ConfigId;
+            this.testOwnerId = configuration.TestOwnerId;
+            this.totalQuestion = configuration.TotalQuestion;
+            this.createDate = configuration.CreateDate;
+            this.startDate = configuration.StartDate.Value.AddHours(7);
+            this.endDate = configuration.EndDate.Value.AddHours(7);
+            this.duration = configuration.Duration;
+            this.isActive = configuration.IsActive;
+            this.title = configuration.Title;
+            this.type = configuration.Type;
+            this.TestOwnerName = name;
+            this.catalogueInConfigs = catalogueInConfigs;
+            this.configurationRanks = configurationRanks;
         }
 
     }

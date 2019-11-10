@@ -19,6 +19,7 @@ namespace ResourceServices.Model
         public const int lengthOfPassword = 16;
 
         public const string hostname = "35.198.215.101";
+        internal static int scaleUpNumb = 100;
 
         public static string RemoveVietnameseTone(string text)
         {

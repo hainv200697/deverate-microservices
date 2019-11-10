@@ -15,6 +15,8 @@ namespace ResourceServices.Model
         public bool? isActive { get; set; }
         public ConfigurationDTO configuration { get; set; }
         public RankDTO rank { get; set; }
+        public List<CatalogueInRankDTO> catalogueInRanks { get; set; }
+        
 
         public ConfigurationRankDTO()
         {
@@ -28,6 +30,10 @@ namespace ResourceServices.Model
             this.rankId = configurationRank.RankId;
             this.weightPoint = configurationRank.WeightPoint;
             this.isActive = configurationRank.IsActive;
+            this.rank = new RankDTO(configurationRank.Rank);
+            List<CatalogueInRankDTO> catalogueIns = new List<CatalogueInRankDTO>();
+            //configurationRank.CatalogueInRank.ToList().ForEach(c => catalogueIns.Add(new CatalogueInRankDTO(c.ConfigurationRank.RankId, c.ConfigurationRank.Rank.Name, c.Catalogue)))
+            this.catalogueInRanks = configurationRank.CatalogueInRank.Select(c => new CatalogueInRankDTO(c)).ToList();
         }
 
         public ConfigurationRankDTO(ConfigurationRank configurationRank, Configuration configuration, Rank rank)
