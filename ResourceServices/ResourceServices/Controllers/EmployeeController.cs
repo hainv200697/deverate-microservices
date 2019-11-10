@@ -60,7 +60,7 @@ namespace ResourceServices.Controllers
                     listemail.Add(emp.Email);
                 }
                 var existedMail = listemail.GroupBy(email => email).Where(g => g.Count() > 1).Select(g => g.Key);
-                if (existedMail != null)
+                if (existedMail.Count() > 0)
                 {
                     return BadRequest(existedMail);
                 }
@@ -137,5 +137,23 @@ namespace ResourceServices.Controllers
         //    }
         //}
 
+        [HttpGet("GetAccountByRole")]
+        public ActionResult GetAccountByRole(int? companyId, bool? status, int? role)
+        {
+            try
+            {
+                if (companyId == null || status == null || role == null)
+                {
+                    return BadRequest();
+                }
+                List<AccountDTO> listAccount = AccountDAO.GetAccountByRole(companyId, status, role);
+
+                return Ok(listAccount);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }
