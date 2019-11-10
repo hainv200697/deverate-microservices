@@ -236,8 +236,10 @@ namespace TestManagementServices.Service
                             .ToList();
                 List<ConfigurationRank> configurations = cass.ToList();
                 List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.Catalogue).Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+                List<int?> catalogueIds = new List<int?>();
+                catalogueInConfigs.ForEach(c => catalogueIds.Add(c.catalogueId));
                 List<CatalogueInRankDTO> catalogueInRanks = new List<CatalogueInRankDTO>();
-                List<CatalogueDTO> catas = db.Catalogue.Select(o => new CatalogueDTO(o)).ToList();
+                List<CatalogueDTO> catas = db.Catalogue.Where(c => catalogueIds.Contains(c.CatalogueId)).Select(o => new CatalogueDTO(o)).ToList();
                 List<ConfigurationRankDTO> configurationRanks = new List<ConfigurationRankDTO>();
                 for(int i = 0; i < configurations.Count; i++)
                 {
@@ -250,7 +252,7 @@ namespace TestManagementServices.Service
                         {
                             if(cir.CatalogueId == c.catalogueId)
                             {
-                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.WeightPoint.Value, AppConstrain.scaleUpNumb) ));
+                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.WeightPoint.Value, 1) ));
                             }
                         }
                     }
@@ -266,12 +268,12 @@ namespace TestManagementServices.Service
                     {
                         if (details[i].catalogueId == catas[j].catalogueId)
                         {
-                            catas[j].overallPoint = AppConstrain.RoundDownNumber(details[i].point.Value, AppConstrain.scaleUpNumb);
+                            catas[j].overallPoint = AppConstrain.RoundDownNumber(details[i].point.Value, 100);
                             break;
                         }
                     }
                 }
-                double statisticPoint = AppConstrain.RoundDownNumber(statistic.Point.Value, AppConstrain.scaleUpNumb);
+                double statisticPoint = AppConstrain.RoundDownNumber(statistic.Point.Value, 1);
                 return new CandidateResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, catalogueInConfigs, statisticPoint, statistic.RankId, statistic.Rank.Name);
             }
         }
