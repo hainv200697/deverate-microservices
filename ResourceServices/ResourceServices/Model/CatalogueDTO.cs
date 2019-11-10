@@ -33,6 +33,16 @@ namespace ResourceServices.Model
             this.description = catalogue.Description;
         }
 
+        public CatalogueDTO(Catalogue catalogue, double? weightPoint)
+        {
+            this.name = catalogue.Name;
+            this.catalogueId = catalogue.CatalogueId;
+            this.type = catalogue.Type;
+            this.description = catalogue.Description;
+            this.weightPoint = weightPoint;
+
+        }
+
 
 
         public int catalogueId { get; set; }
@@ -42,6 +52,7 @@ namespace ResourceServices.Model
         public bool? type { get; set; }
         public string description { get; set; }
         public int quescount { get; set; }
+        public double? weightPoint { get; set; }
 
         public virtual ICollection<Question> question { get; set; }
     }

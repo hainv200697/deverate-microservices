@@ -33,7 +33,7 @@ namespace TestManagementServices.Service
                 {
                     if (!userIds.Contains(t.AccountId)){
                         userIds.Add(t.AccountId);
-                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : RoundDownNumber(t.Statistic.Last().Point.Value, AppConstrain.scaleUpNumb), configuration.Title, configuration.CreateDate));
+                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.Last().Point.Value, AppConstrain.scaleUpNumb), configuration.Title, configuration.CreateDate));
                     }
                 }
                 return userStatistics;
@@ -171,21 +171,10 @@ namespace TestManagementServices.Service
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for(int j = 0; j < configurations.Count; j++)
                 {
-                    int numberOfTest = configurations[j].Test.ToList().Count();
+                    int numberOfTest = configurations[j].Test.Where(t => t.Status == false).ToList().Count();
+                    //int numberOfTest = configurations[j].Test.ToList().Count();
                     int numberOfFinishedTest = 0;
                     List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
-                    //foreach (CatalogueDTO c in catalogues)
-                    //{
-                    //    foreach (CatalogueInConfiguration cif in configurations[j].CatalogueInConfiguration)
-                    //    {
-                    //        if(cif.CatalogueId == c.catalogueId)
-                    //        {
-                    //            cloneCatalogues.Add(new CatalogueDTO(c.catalogueId, c.name, 0));
-                    //            break;
-                    //        }
-                    //    }
-                            
-                    //}
                     foreach (CatalogueInCompany c in catalogueInCompanies)
                     {
                         cloneCatalogues.Add(new CatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0));
@@ -207,7 +196,11 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
                                     {
-                                        cloneCatalogues[n].value +=  RoundDownNumber(details[m].Point.Value / numberOfTest, 1);
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point.Value / numberOfTest, AppConstrain.scaleUpNumb);
+                                        if(cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
+                                        {
+                                            cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
+                                        }
                                         break;
                                     }
                                 }
@@ -215,7 +208,7 @@ namespace TestManagementServices.Service
                         }
                             
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0:  RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleUpNumb);
+                    gsi.configGPA = numberOfTest == 0 ? 0: AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleUpNumb);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -257,7 +250,7 @@ namespace TestManagementServices.Service
                         {
                             if(cir.CatalogueId == c.catalogueId)
                             {
-                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, RoundDownNumber(cir.WeightPoint.Value, AppConstrain.scaleUpNumb) ));
+                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.WeightPoint.Value, AppConstrain.scaleUpNumb) ));
                             }
                         }
                     }
@@ -273,12 +266,12 @@ namespace TestManagementServices.Service
                     {
                         if (details[i].catalogueId == catas[j].catalogueId)
                         {
-                            catas[j].overallPoint = RoundDownNumber(details[i].point.Value, AppConstrain.scaleUpNumb);
+                            catas[j].overallPoint = AppConstrain.RoundDownNumber(details[i].point.Value, AppConstrain.scaleUpNumb);
                             break;
                         }
                     }
                 }
-                double statisticPoint = RoundDownNumber(statistic.Point.Value, AppConstrain.scaleUpNumb);
+                double statisticPoint = AppConstrain.RoundDownNumber(statistic.Point.Value, AppConstrain.scaleUpNumb);
                 return new CandidateResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, catalogueInConfigs, statisticPoint, statistic.RankId, statistic.Rank.Name);
             }
         }
@@ -332,11 +325,6 @@ namespace TestManagementServices.Service
             }
         }
 
-        public static double RoundDownNumber(double value, int scaleUp)
-        {
-
-            double rNumb = Math.Round(value * scaleUp, 1);
-            return rNumb > scaleUp ? scaleUp : rNumb;
-        }
+        
     }
 }

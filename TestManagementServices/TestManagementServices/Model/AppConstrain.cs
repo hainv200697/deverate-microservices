@@ -27,7 +27,12 @@ namespace TestManagementServices.Model
 
         public const string hostname = "35.198.215.101";
 
+        public static double RoundDownNumber(double value, int scaleUp)
+        {
 
+            double rNumb = Math.Round(value * scaleUp, 1);
+            return rNumb > scaleUp ? scaleUp : rNumb;
+        }
 
 
     }

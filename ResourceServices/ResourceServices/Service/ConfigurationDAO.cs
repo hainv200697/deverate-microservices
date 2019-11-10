@@ -75,15 +75,34 @@ namespace ResourceServices.Service
             }
         }
 
-        public static ConfigurationDTO GetConfigurationById(int id)
+        public static ConfigurationDTO GetConfigurationById(int configId)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var configuration = from con in db.Configuration
-                                    where con.ConfigId == id
-                                    join acc in db.Account on con.TestOwnerId equals acc.AccountId
-                                    select new ConfigurationDTO(con, con.CatalogueInConfiguration.ToList(), con.ConfigurationRank.ToList(), acc.Fullname);
-                return configuration.FirstOrDefault();
+                var cass = db.ConfigurationRank
+                            .Include(cir => cir.Config.TestOwner)
+                            .Include(cir => cir.Rank)
+                            .Include(cir => cir.CatalogueInRank)
+                            .Where(cir => cir.ConfigId ==  configId)
+                            .ToList();              
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.Catalogue).Where(c => c.ConfigId == configId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+                List<Catalogue> catalogues = db.Catalogue.ToList();
+                //for(int i = 0; i < cass.Count; i++)
+                //{
+                //    for(int j = 0; j < cass[i].CatalogueInRank.Count; j++)
+                //    {
+                //        for(int k = 0; k < catalogues.Count; k++)
+                //        {
+                //            if(cass[i].CatalogueInRank.ToList()[j].CatalogueId == catalogues[k].CatalogueId)
+                //            {
+                //                cass[i].CatalogueInRank.ToList()[j].Catalogue = catalogues[k];
+                //                break;
+                //            }
+                //        }
+                //    }
+                //}
+                return new ConfigurationDTO(cass[0].Config, cass[0].Config.CatalogueInConfiguration.Select(c => new CatalogueInConfigDTO(c)).ToList(), cass.Select(c => new ConfigurationRankDTO(c)).ToList(), cass[0].Config.TestOwner.Fullname, 0);
+                //return new ConfigurationDTO(cass.Config, cass.Config.CatalogueInConfiguration.ToList(), cass.Config.ConfigurationRank.ToList(), cass.Config.TestOwner.Fullname);
             }
         }
 
