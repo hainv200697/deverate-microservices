@@ -734,81 +734,85 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="userTest"></param>
         /// <returns></returns>
-        public static RankPoint EvaluateRank(DeverateContext db, UserTest userTest)
+        public static RankPoint EvaluateRank(UserTest userTest)
         {
-            Test test = db.Test.Include(t => t.Account).SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
-            if (test == null)
+            using (DeverateContext db = new DeverateContext())
             {
-                return null;
-            }
-            Statistic stt = db.Statistic.Include(s => s.Rank).Where(s => s.TestId == userTest.testId).FirstOrDefault();
-            if(stt != null)
-            {
-                return new RankPoint(stt.Rank.Name, stt.Point);
-            }
-            
-            test.Status = true;
-            db.SaveChanges();
-            List<AnswerDTO> answers = new List<AnswerDTO>();
-            List<int?> answerIds = new List<int?>();
-            for(int i = 0; i < userTest.questionInTest.Count; i++)
-            {
-                answerIds.Add(userTest.questionInTest[i].answerId);
-            }
-            var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
-            Statistic statistic = new Statistic();
-            string rank = "Dev0";
-            double? totalPoint = 0;
-            statistic.TestId = userTest.testId;
-            statistic.IsActive = true;
-            db.Statistic.Add(statistic);
-            db.SaveChanges();
-            if (anss.Count != 0)
-            {
-                anss.ForEach(a => answers.Add(new AnswerDTO(a)));
-                SaveAnswer(userTest);
-                TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-                totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId, test.Account.CompanyId);
-                List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
-                configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
-                ConfigurationRankDTO tmp = new ConfigurationRankDTO();
-                tmp.rankId = configurationRanks[0].rankId.Value;
-                tmp.point = configurationRanks[0].point;
-                foreach (ConfigurationRankDTO cr in configurationRanks)
-                {
-                    if (totalPoint > cr.point)
-                    {
-                        tmp = cr;
-                    }
-                }
-                rank = db.Rank.SingleOrDefault(r => r.RankId == tmp.rankId).Name;
-                if (rank == null)
+                Test test = db.Test.Include(t => t.Account).SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
+                if (test == null)
                 {
                     return null;
                 }
-                statistic.RankId = tmp.rankId;
-                statistic.Point = totalPoint;
-            }
-            else
-            {
-                statistic.RankId = null;
-                statistic.Point = 0;
-            }
-            db.SaveChanges();
+                Statistic stt = db.Statistic.Include(s => s.Rank).Where(s => s.TestId == userTest.testId).FirstOrDefault();
+                if (stt != null)
+                {
+                    return new RankPoint(stt.Rank.Name, stt.Point);
+                }
 
-            return new RankPoint(rank, totalPoint);
+                test.Status = true;
+                db.SaveChanges();
+                List<AnswerDTO> answers = new List<AnswerDTO>();
+                List<int?> answerIds = new List<int?>();
+                for (int i = 0; i < userTest.questionInTest.Count; i++)
+                {
+                    answerIds.Add(userTest.questionInTest[i].answerId);
+                }
+                var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
+                Statistic statistic = new Statistic();
+                string rank = "Dev0";
+                double? totalPoint = 0;
+                statistic.TestId = userTest.testId;
+                statistic.IsActive = true;
+                db.Statistic.Add(statistic);
+                db.SaveChanges();
+                if (anss.Count != 0)
+                {
+                    anss.ForEach(a => answers.Add(new AnswerDTO(a)));
+                    TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
+                    totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId, test.Account.CompanyId);
+                    List<ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
+                    configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
+                    ConfigurationRankDTO tmp = new ConfigurationRankDTO();
+                    tmp.rankId = configurationRanks[0].rankId.Value;
+                    tmp.point = configurationRanks[0].point;
+                    foreach (ConfigurationRankDTO cr in configurationRanks)
+                    {
+                        if (totalPoint > cr.point)
+                        {
+                            tmp = cr;
+                        }
+                    }
+                    rank = db.Rank.SingleOrDefault(r => r.RankId == tmp.rankId).Name;
+                    if (rank == null)
+                    {
+                        return null;
+                    }
+                    statistic.RankId = tmp.rankId;
+                    statistic.Point = totalPoint;
+                }
+                else
+                {
+                    statistic.RankId = null;
+                    statistic.Point = 0;
+                }
+                db.SaveChanges();
 
+                return new RankPoint(rank, totalPoint);
+            }
         }
 
-        public static bool AutoSaveAnswer(DeverateContext db, UserTest userTest)
+        public static bool AutoSaveAnswer(UserTest userTest)
         {
-            Test test = db.Test.SingleOrDefault(c => c.TestId == userTest.testId);
-            if (test.Code != userTest.code)
+            using (DeverateContext context = new DeverateContext())
             {
-                return false;
+                Test test = context.Test.SingleOrDefault(c => c.TestId == userTest.testId);
+                if (test.Code != userTest.code)
+                {
+                    return false;
+                }
+                SaveAnswer(userTest);
+                return true;
             }
-            SaveAnswer(userTest);
-            return true;
         }
 
         public static void SaveAnswer(UserTest userTest)
@@ -990,68 +994,79 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="acccountId"></param>
         /// <returns></returns>
-        public static List<TestInfoDTO> GetAllTestTodayByUsername(DeverateContext db, int? acccountId)
+        public static List<TestInfoDTO> GetAllTestTodayByUsername(int? acccountId)
         {
-            var result = from cf in db.Configuration
-                         join t in db.Test on cf.ConfigId equals t.ConfigId
-                         where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
-                         select new TestInfoDTO(cf.ConfigId, acccountId, t.TestId, cf.Title , null);
-            return result.ToList();
-        }
-
-        public static ConfigurationDTO GetConfig(DeverateContext db, int testId)
-        {
-            var config = db.Configuration.Include(z=>z.Test).Where(c => c.Test.Any(x=>x.TestId == testId)).FirstOrDefault();
-            var test = config.Test.SingleOrDefault(t => t.TestId == testId);
-            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId,test.Status);
-        }
-
-        public static UserTest GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo, bool checkCode)
-        {
-            UserTest testU = new UserTest();
-            Test test = new Test();
-            if (checkCode)
+            using (DeverateContext context = new DeverateContext())
             {
-                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId && t.Code == testInfo.code);
-                if(test == null)
+                var result = from cf in context.Configuration
+                             join t in context.Test on cf.ConfigId equals t.ConfigId
+                             where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
+                             select new TestInfoDTO(cf.ConfigId, acccountId, t.TestId, cf.Title, null);
+                return result.ToList();
+            }
+        }
+
+        public static ConfigurationDTO GetConfig(int testId)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                var config = context.Configuration.Include(z => z.Test).Where(c => c.Test.Any(x => x.TestId == testId)).FirstOrDefault();
+                var test = config.Test.SingleOrDefault(t => t.TestId == testId);
+                return new ConfigurationDTO(config, test.AccountId, test.ApplicantId, test.Status);
+            }
+        }
+
+        public static UserTest GetQuestionInTest(TestInfoDTO testInfo, bool checkCode)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                UserTest testU = new UserTest();
+                Test test = new Test();
+                if (checkCode)
+                {
+                    test = context.Test.SingleOrDefault(t => t.TestId == testInfo.testId && t.Code == testInfo.code);
+                    if (test == null)
+                    {
+                        return null;
+                    }
+                    if (test.StartTime == null)
+                    {
+                        test.StartTime = DateTime.Now;
+                        context.SaveChanges();
+                    }
+                }
+                else
+                {
+                    test = context.Test.SingleOrDefault(t => t.TestId == testInfo.testId);
+                }
+                if (test == null)
                 {
                     return null;
                 }
-                if (test.StartTime == null)
+                var questionInTest = context.QuestionInTest
+                                     .Include(x => x.Question)
+                                     .ThenInclude(y => y.Answer)
+                                     .Where(t => t.TestId == test.TestId);
+                var result = new List<QuestionInTestDTO>();
+                foreach (QuestionInTest item in questionInTest.ToList())
                 {
-                    test.StartTime = DateTime.Now;
-                    db.SaveChanges();
+                    result.Add(new QuestionInTestDTO(item.Qitid, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
                 }
+                testU.accountId = test.AccountId;
+                testU.code = test.Code;
+                testU.testId = test.TestId;
+                testU.startTime = test.StartTime;
+                testU.questionInTest = result;
+                return testU;
             }
-            else
-            {
-                test = db.Test.SingleOrDefault(t => t.TestId == testInfo.testId);
-            }
-            if (test == null)
-            {
-                return null;
-            }
-            var questionInTest = db.QuestionInTest
-                                 .Include(x => x.Question)
-                                 .ThenInclude(y => y.Answer)
-                                 .Where(t => t.TestId == test.TestId);
-            var result = new List<QuestionInTestDTO>();
-            foreach (QuestionInTest item in questionInTest.ToList())
-            {
-                result.Add(new QuestionInTestDTO(item.Qitid, item.Question.Answer.ToList(), item.AnswerId, item.Question.Question1));
-            }
-            testU.accountId = test.AccountId;
-            testU.code = test.Code;
-            testU.testId = test.TestId;
-            testU.startTime = test.StartTime;
-            testU.questionInTest = result;
-            return testU;
         }
 
-        public static List<TestInfoDTO> GetTestByConfig(DeverateContext db, int id)
+        public static List<TestInfoDTO> GetTestByConfig(int id)
         {
-            var results = db.Test.Where(t => t.ConfigId == id).Select(t => new TestInfoDTO(t, t.Config.Title, t.Account.Username)).ToList();
-            return results;
+            using (DeverateContext context = new DeverateContext())
+            {
+                return context.Test.Where(t => t.ConfigId == id).Select(t => new TestInfoDTO(t, t.Config.Title, t.Account.Username)).ToList();
+            }
         }
 
         public static void SendQuizCode(List<int> listestResendCode)

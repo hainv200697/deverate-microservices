@@ -17,30 +17,25 @@ namespace TestManagementServices.Controllers
     public class TestController : Controller
     {
         ResponseMessage rm = new ResponseMessage();
-        DeverateContext context;
 
-        public TestController(DeverateContext context)
-        {
-            this.context = context;
-        }
         [HttpGet("AllMyTestToday/{accountId}")]
         public IActionResult GetAllTestInfoToday(int accountId)
         {
-            List<TestInfoDTO> con = SystemDAO.GetAllTestTodayByUsername(context, accountId);
+            List<TestInfoDTO> con = SystemDAO.GetAllTestTodayByUsername(accountId);
             return Ok(con);
         }
 
         [HttpGet("GetConfig/{testId}")]
         public IActionResult GetConfig(int testId)
         {
-            ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
+            ConfigurationDTO con = SystemDAO.GetConfig(testId);
             return Ok(con);
         }
 
         [HttpPost("MyTest")]
         public IActionResult QueryQuestionInMyTest([FromBody]TestInfoDTO testInfo) 
         {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo,true);
+            var listQuestion = SystemDAO.GetQuestionInTest(testInfo,true);
             if (listQuestion == null)
             {
                 return BadRequest("Code invalid");
@@ -51,7 +46,8 @@ namespace TestManagementServices.Controllers
         [HttpPost("SubmitTest")]
         public IActionResult SubmitTest([FromBody] UserTest userTest)
         {
-            RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
+            SystemDAO.SaveAnswer(userTest);   
+            RankPoint rp = SystemDAO.EvaluateRank(userTest);
             if (rp == null)
             {
                 return BadRequest("Code invalid, Submit fail");
@@ -64,7 +60,7 @@ namespace TestManagementServices.Controllers
         {
             try
             {
-                bool save = SystemDAO.AutoSaveAnswer(context, userTest);
+                bool save = SystemDAO.AutoSaveAnswer(userTest);
                 if (save)
                 {
                    return Ok("{\"message\" : \"Auto Save Success\"}");
@@ -72,7 +68,7 @@ namespace TestManagementServices.Controllers
                 {
                     return BadRequest("{\"message\" : \"Code invalid, Auto Save\"}");
                 }
-            } catch(Exception ex)
+            } catch(Exception)
             {
                 return StatusCode(500);
             }
@@ -81,7 +77,7 @@ namespace TestManagementServices.Controllers
         [HttpGet("GetAllTest")]
         public IActionResult GetTest(int id)
         {
-            List<TestInfoDTO> listTest = SystemDAO.GetTestByConfig(context, id);
+            List<TestInfoDTO> listTest = SystemDAO.GetTestByConfig(id);
 
             return Ok(listTest);
         }
@@ -114,7 +110,7 @@ namespace TestManagementServices.Controllers
         [HttpPost("ManagerInTest")]
         public IActionResult GetQuesionInTest([FromBody]TestInfoDTO testInfo)
         {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo, false);
+            var listQuestion = SystemDAO.GetQuestionInTest(testInfo, false);
             if (listQuestion == null)
             {
                 return BadRequest("Code invalid");

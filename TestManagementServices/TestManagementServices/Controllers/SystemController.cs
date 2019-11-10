@@ -14,12 +14,6 @@ namespace TestManagementServices.Controllers
     public class SystemController : Controller
     {
         ResponseMessage rm = new ResponseMessage();
-        DeverateContext context;
-
-        public SystemController(DeverateContext context)
-        {
-            this.context = context;
-        }
 
         [HttpGet("SendTestMail/{configId}")]
         public ActionResult<IEnumerable<string>> SendTestMail(int? configId)
