@@ -16,7 +16,7 @@ namespace ResourceServices.Model
 
         }
 
-        public CompanyDTO(Company company, string name)
+        public CompanyDTO(Company company, string userName, string email, string fullname)
         {
             this.companyId = company.CompanyId;
             this.name = company.Name;
@@ -25,7 +25,9 @@ namespace ResourceServices.Model
             this.fax = company.Fax;
             this.phone = company.Phone;
             this.isActive = company.IsActive;
-            this.managerName = name;
+            this.managerUserName = userName;
+            this.managerMail = email;
+            this.managerName = fullname;
         }
 
         public CompanyDTO(Company company)
@@ -47,6 +49,8 @@ namespace ResourceServices.Model
         public string fax { get; set; }
         public int? phone { get; set; }
         public bool? isActive { get; set; }
+        public string managerUserName { get; set; }
+        public string managerMail { get; set; }
         public string managerName { get; set; }
     }
 }

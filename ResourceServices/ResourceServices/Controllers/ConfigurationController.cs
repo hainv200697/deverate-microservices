@@ -59,7 +59,7 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                if(configuration.type == true)
+                if(configuration.type.Value)
                 {
                     var save = ConfigurationDAO.CreateConfiguration(configuration);
                     if (save == null)

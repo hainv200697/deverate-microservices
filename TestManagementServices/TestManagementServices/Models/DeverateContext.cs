@@ -303,8 +303,7 @@ namespace TestManagementServices.Models
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Account)
-                    .WithMany
-                    (p => p.Test)
+                    .WithMany(p => p.Test)
                     .HasForeignKey(d => d.AccountId)
                     .HasConstraintName("FK_Test_Account");
 
