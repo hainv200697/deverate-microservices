@@ -23,7 +23,7 @@ namespace TestManagementServices.Model
             this.configId = c.ConfigId;
             this.catalogueId = c.CatalogueId;
             this.catalogueName = c.Catalogue.Name;
-            this.weightPoint = c.WeightPoint * AppConstrain.scaleUpNumb;
+            this.weightPoint = c.WeightPoint;
             this.isActive = c.IsActive;
         }
     }

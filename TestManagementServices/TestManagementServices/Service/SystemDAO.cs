@@ -741,12 +741,12 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
-            //Statistic stt = db.Statistic.Include(s => s.Rank).Where(s => s.TestId == userTest.testId).FirstOrDefault();
-            //if(stt != null)
-            //{
-            //    return new RankPoint(stt.Rank.Name, stt.Point);
-            //}
-            
+            Statistic stt = db.Statistic.Include(s => s.Rank).Where(s => s.TestId == userTest.testId).FirstOrDefault();
+            if (stt != null)
+            {
+                return new RankPoint(stt.Rank.Name, stt.Point);
+            }
+
             test.Status = true;
             db.SaveChanges();
             List<AnswerDTO> answers = new List<AnswerDTO>();
