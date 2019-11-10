@@ -35,13 +35,9 @@ namespace ResourceServices.Service
             {
                 if (configurationDTO.type.Value)
                 {
-                    var result = from a in db.Account
-                                 where a.AccountId == configurationDTO.testOwnerId
-                                 select a.CompanyId;
+                    var result = db.Account.Where(a => a.AccountId == configurationDTO.testOwnerId).Select(a => a.CompanyId);
                     int? companyId = result.First();
-                    var emps = from a in db.Account
-                               where a.CompanyId == companyId && a.IsActive == true && a.RoleId == 3
-                               select new AccountDTO(a);
+                    var emps = db.Account.Where(a => a.CompanyId == companyId && a.IsActive.Value && a.RoleId == 3).Select(a => new AccountDTO(a));
                     if (emps.ToList().Count == 0)
                     {
                         return null;
