@@ -31,7 +31,7 @@ namespace TestManagementServices.Model
         {
 
             double rNumb = Math.Round(value * scaleUp, 1);
-            return rNumb > scaleUp ? scaleUp : rNumb;
+            return rNumb > AppConstrain.scaleUpNumb ? AppConstrain.scaleUpNumb : rNumb;
         }
 
 
