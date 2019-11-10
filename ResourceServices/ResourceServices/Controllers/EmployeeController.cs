@@ -60,7 +60,7 @@ namespace ResourceServices.Controllers
                     listemail.Add(emp.Email);
                 }
                 var existedMail = listemail.GroupBy(email => email).Where(g => g.Count() > 1).Select(g => g.Key);
-                if (existedMail != null)
+                if (existedMail.Count() > 0)
                 {
                     return BadRequest(existedMail);
                 }
