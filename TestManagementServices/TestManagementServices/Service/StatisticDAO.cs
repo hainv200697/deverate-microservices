@@ -21,8 +21,9 @@ namespace TestManagementServices.Service
                 Configuration configuration = db.Configuration.Where(c => c.Account.CompanyId == companyId).LastOrDefault();
                 List<Test> tests = db.Test
                     .Include(t => t.Account)
+                    .Include(t => t.Applicant)
                     .Include(t => t.Statistic)
-                    .Where(t => t.ConfigId == configuration.ConfigId).ToList();
+                    .Where(t => t.ConfigId == configuration.ConfigId && t.Status == "Submitted").ToList();
                 List<UserStatisticDTO> userStatistics = new List<UserStatisticDTO>();
                if(tests.Count == 0 || tests == null)
                 {
@@ -31,9 +32,21 @@ namespace TestManagementServices.Service
                 List<int?> userIds = new List<int?>();
                foreach(Test t in tests)
                 {
+                    if((t.AccountId == null && t.ApplicantId == null) || t.Statistic.ToList().Count == 0)
+                    {
+                        continue;
+                    }
                     if (!userIds.Contains(t.AccountId)){
                         userIds.Add(t.AccountId);
-                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.Last().Point, AppConstrain.scaleUpNumb), configuration.Title, configuration.CreateDate));
+                        if(t.AccountId != null)
+                        {
+                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, configuration.CreateDate));
+                        }
+                        else
+                        {
+                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, configuration.CreateDate));
+                        }
+                        
                     }
                 }
                 return userStatistics;
