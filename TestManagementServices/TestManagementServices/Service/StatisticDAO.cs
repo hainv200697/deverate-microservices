@@ -228,7 +228,11 @@ namespace TestManagementServices.Service
             {
                 Test test = db.Test.Include(o => o.Config).Include(o => o.Statistic).Where(o => o.TestId == testId).First();
 
-                Statistic statistic = db.Statistic.Include(o => o.Rank).Last(o => o.TestId == test.TestId);
+                Statistic statistic = db.Statistic.Include(o => o.Rank).LastOrDefault(o => o.TestId == test.TestId);
+                if(statistic == null)
+                {
+                    return null;
+                }
                 var cass = db.ConfigurationRank
                             .Include(cir => cir.Rank)
                             .Include(cir => cir.CatalogueInRank)
