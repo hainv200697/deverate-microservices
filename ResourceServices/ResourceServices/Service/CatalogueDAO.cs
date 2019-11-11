@@ -39,7 +39,7 @@ namespace ResourceServices.Service
                 Catalogue cata = new Catalogue();
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive;
+                cata.IsActive = catalogue.isActive.Value;
                 cata.Type = true;
                 cata.IsActive = true;
                 context.Catalogue.Add(cata);
@@ -60,7 +60,7 @@ namespace ResourceServices.Service
                 Catalogue cata = new Catalogue();
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive;
+                cata.IsActive = catalogue.isActive.Value;
                 cata.Type = false;
                 cata.IsActive = true;
                 context.Catalogue.Add(cata);
@@ -76,7 +76,7 @@ namespace ResourceServices.Service
                 Catalogue cata = context.Catalogue.SingleOrDefault(c => c.CatalogueId == catalogue.catalogueId);
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive;
+                cata.IsActive = catalogue.isActive.Value;
                 context.SaveChanges();
             }
 

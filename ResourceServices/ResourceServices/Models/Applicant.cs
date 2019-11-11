@@ -13,7 +13,7 @@ namespace ResourceServices.Models
         public int ApplicantId { get; set; }
         public string Fullname { get; set; }
         public string Email { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual ICollection<Test> Test { get; set; }
     }

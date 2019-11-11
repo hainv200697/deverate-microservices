@@ -11,10 +11,10 @@ namespace ResourceServices.Models
         }
 
         public int StatisticId { get; set; }
-        public int? TestId { get; set; }
-        public double? Point { get; set; }
-        public int? RankId { get; set; }
-        public bool? IsActive { get; set; }
+        public int TestId { get; set; }
+        public double Point { get; set; }
+        public int RankId { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual Rank Rank { get; set; }
         public virtual Test Test { get; set; }

@@ -34,13 +34,12 @@ namespace ResourceServices.Service
                 foreach (var ques in quest)
                 {
                     Question question = new Question();
-                    question.Cicid = ques.cicid;
+                    question.Cicid = ques.cicid.Value;
                     question.Question1 = ques.question1;
                     question.IsActive = true;
-                    question.MaxPoint = ques.maxPoint;
-                    question.CreateBy = ques.createBy;
+                    question.MaxPoint = ques.maxPoint.Value;
                     question.Answer = ques.answer;
-                    question.CreateBy = ques.createBy;
+                    question.AccountId = ques.accountId.Value;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
                 }
@@ -68,7 +67,7 @@ namespace ResourceServices.Service
                 foreach (var ques in Question)
                 {
                     Question questionDb = context.Question.SingleOrDefault(c => c.QuestionId == ques.questionId);
-                    questionDb.IsActive = ques.isActive;
+                    questionDb.IsActive = ques.isActive.Value;
                     if (ques.isActive == false)
                     {
                         List<AnswerDTO> answers = context.Answer.Where(answer => answer.QuestionId == questionDb.QuestionId).Select(answer => new AnswerDTO(answer)).ToList();

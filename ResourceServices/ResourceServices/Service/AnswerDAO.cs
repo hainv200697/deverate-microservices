@@ -35,7 +35,7 @@ namespace ResourceServices.Service
                 answer.Answer1 = ans.answer;
                 answer.Point = ans.point;
                 answer.IsActive = true;
-                answer.QuestionId = ans.questionId;
+                answer.QuestionId = ans.questionId.Value;
                 context.Answer.Add(answer);
                 context.SaveChanges();
             }
@@ -62,7 +62,7 @@ namespace ResourceServices.Service
                     answer.Answer1 = ans.answer;
                     answer.Point = ans.point;
                     answer.IsActive = true;
-                    answer.QuestionId = ans.questionId;
+                    answer.QuestionId = ans.questionId.Value;
                     context.Answer.Update(answer);
                     context.SaveChanges();
                 }
@@ -77,7 +77,7 @@ namespace ResourceServices.Service
                 foreach (var ans in answer)
                 {
                     Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.answerId);
-                    AnswerDb.IsActive = ans.isActive;
+                    AnswerDb.IsActive = ans.isActive.Value;
                 }
                 context.SaveChanges();
             }

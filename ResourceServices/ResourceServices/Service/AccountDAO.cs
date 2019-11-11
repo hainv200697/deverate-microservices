@@ -101,7 +101,7 @@ namespace AuthenServices.Service
             using (DeverateContext context = new DeverateContext())
 
             {
-                context.Account.Where(acc => listEmpId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = status);
+                context.Account.Where(acc => listEmpId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = status.Value);
                 context.SaveChanges();
             }
 

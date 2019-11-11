@@ -19,7 +19,7 @@ namespace ResourceServices.Models
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
         public string Code { get; set; }
-        public bool Status { get; set; }
+        public string Status { get; set; }
         public bool IsActive { get; set; }
 
         public virtual Account Account { get; set; }
