@@ -50,13 +50,19 @@ namespace TestManagementServices.Controllers
         [HttpPost("SubmitTest")]
         public IActionResult SubmitTest([FromBody] UserTest userTest)
         {
-            SystemDAO.SaveAnswer(userTest);
-            RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
-            if (rp == null)
+            try
             {
-                return BadRequest("Code invalid, Submit fail");
+                SystemDAO.SaveAnswer(userTest);
+                RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
+                if (rp == null)
+                {
+                    return BadRequest("Code invalid, Submit fail");
+                }
+                return Ok(rp);
+            } catch (Exception e)
+            {
+                return StatusCode(500);
             }
-            return Ok(rp);
         }
 
         [HttpPost("AutoSave")]
@@ -72,7 +78,7 @@ namespace TestManagementServices.Controllers
                 {
                     return BadRequest("{\"message\" : \"Code invalid, Auto Save\"}");
                 }
-            } catch(Exception ex)
+            } catch(Exception)
             {
                 return StatusCode(500);
             }

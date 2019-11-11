@@ -416,10 +416,8 @@ namespace TestManagementServices.Service
                     test.CreateDate = DateTime.Now;
                     test.IsActive = true;
                     test.Status = "Pending";
-                    db.Test.Add(test);
-                    db.SaveChanges();
-
                     test.Code = GenerateCode();
+                    db.Test.Add(test);
                     db.SaveChanges();
                     List<QuestionInTest> questionInTests = new List<QuestionInTest>();
                     for (int i = 0; i < questions.Count; i++)
@@ -764,8 +762,6 @@ namespace TestManagementServices.Service
             double totalPoint = 0;
             statistic.TestId = userTest.testId;
             statistic.IsActive = true;
-            db.Statistic.Add(statistic);
-            db.SaveChanges();
             if (anss.Count != 0)
             {
                 anss.ForEach(a => answers.Add(new AnswerDTO(a)));
@@ -876,12 +872,10 @@ namespace TestManagementServices.Service
             List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(db, answers.testId);
             for(int i = 0; i < defaultCataloguePoints.Count; i++)
             {
-                bool isContain = false;
                 for(int j = 0; j < catalogueWeightPoints.Count; j++)
                 {
                     if(defaultCataloguePoints[i].catalogueId == catalogueWeightPoints[j].catalogueId)
                     {
-                        isContain = true;
                         if (!cataloguePoints.Contains(defaultCataloguePoints[i]))
                         {
                             cataloguePoints.Add(defaultCataloguePoints[i]);
@@ -897,7 +891,7 @@ namespace TestManagementServices.Service
                 DetailStatistic detail = new DetailStatistic();
                 detail.StatisticId = statisticId;
                 detail.CatalogueId = cataloguePoints[i].catalogueId;
-                if(cataloguePoints[i].cataloguePoint == null || cataloguePoints[i].cataloguePoint < 0 || catalogueWeightPoints[i].weightPoint == null)
+                if(cataloguePoints[i].cataloguePoint < 0)
                 {
                     continue;
                 }
