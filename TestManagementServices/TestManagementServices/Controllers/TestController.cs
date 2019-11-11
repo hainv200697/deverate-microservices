@@ -130,7 +130,7 @@ namespace TestManagementServices.Controllers
         public IActionResult SendTestCode([FromBody]List<int> listestResendCode)
         {
             try { 
-                SystemDAO.SendQuizCode(listestResendCode);
+                SystemDAO.SendMailQuizCode(listestResendCode, true);
                 return Ok();
             }
             catch (Exception)

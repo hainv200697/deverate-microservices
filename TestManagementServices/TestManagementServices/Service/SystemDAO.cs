@@ -103,6 +103,12 @@ namespace TestManagementServices.Service
                         return Message.noApplicantException;
                     }
                     GenerateQuestionsForApplicants(context, applicants, con);
+                    List<int> applicantIds = new List<int>();
+                    foreach(ApplicantDTO applicant in applicants)
+                    {
+                        applicantIds.Add(applicant.applicantId);
+                    }
+                    SendMailQuizCode(applicantIds, false);
                 }
                 catch (Exception e)
                 {
@@ -1052,14 +1058,31 @@ namespace TestManagementServices.Service
             return results;
         }
 
-        public static void SendQuizCode(List<int> listestResendCode)
+        public static void SendMailQuizCode(List<int> listestResendCode, bool isEmployee)
         {
-            using(DeverateContext context = new DeverateContext())
+            using (DeverateContext context = new DeverateContext())
             {
-                List<TestMailDTO> list = context.Test.Include(x => x.AccountId).Include(x=>x.Config).Where(x => listestResendCode.Contains(x.TestId))
-                    .Select(x=> new TestMailDTO(
-                        x.Account.Email,
-                        x.Account.Fullname,
+                List<TestMailDTO> list = new List<TestMailDTO>();
+                if (isEmployee)
+                {
+                    list = context.Test.Include(x => x.Account).Include(x => x.Config).Where(x => listestResendCode.Contains(x.TestId))
+                     .Select(x => new TestMailDTO(
+                         x.Account.Email,
+                         x.Account.Fullname,
+                         x.Config.Title,
+                         x.Config.StartDate,
+                         x.Config.EndDate,
+                         x.Code,
+                         x.TestId.ToString()
+                         )
+                     )
+                     .ToList();
+                } else
+                {
+                    list = context.Test.Include(c => c.Config).Include(a => a.Applicant).Where(x => listestResendCode.Contains(x.ApplicantId.Value))
+                    .Select(x => new TestMailDTO(
+                        x.Applicant.Email,
+                        x.Applicant.Fullname,
                         x.Config.Title,
                         x.Config.StartDate,
                         x.Config.EndDate,
@@ -1068,6 +1091,8 @@ namespace TestManagementServices.Service
                         )
                     )
                     .ToList();
+                }
+                 
                 Producer.PublishMessage(JsonConvert.SerializeObject(list), AppConstrain.test_mail);
             }
         }
