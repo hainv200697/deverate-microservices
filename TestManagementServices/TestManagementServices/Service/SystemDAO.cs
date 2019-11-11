@@ -799,6 +799,7 @@ namespace TestManagementServices.Service
                 statistic.RankId = 4;
                 statistic.Point = 0;
             }
+            db.Statistic.Add(statistic);
             db.SaveChanges();
 
             return new RankPoint(rank, totalPoint);
