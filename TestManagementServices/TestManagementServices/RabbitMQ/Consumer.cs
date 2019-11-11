@@ -3,6 +3,7 @@ using Microsoft.Extensions.Hosting;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
+using System;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -45,6 +46,7 @@ namespace TestManagementServices.RabbitMQ
             {
                var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
+                Console.WriteLine(" [x] Receive {0}", message);
                 switch (this.exch)
                 {
                     case AppConstrain.gen_test_consumer:
