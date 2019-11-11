@@ -766,8 +766,8 @@ namespace TestManagementServices.Service
             {
                 anss.ForEach(a => answers.Add(new AnswerDTO(a)));
                 TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-                totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId, test.Account.CompanyId);
-                totalPoint = AppConstrain.RoundDownNumber(totalPoint, AppConstrain.scaleUpNumb);
+                totalPoint = CalculateResultPoint(db, testAnswer, statistic, test.Account.CompanyId);
+                totalPoint = AppConstrain.RoundDownNumber(totalPoint, 1);
                 List <ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
                 configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                 ConfigurationRankDTO tmp = new ConfigurationRankDTO();
@@ -860,7 +860,7 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public static double CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, int statisticId, int? companyId)
+        public static double CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, Statistic statistic, int? companyId)
         {
             double totalPoint = 0;
             List<CataloguePointDTO> defaultCataloguePoints = CalculateCataloguePoints(db, answers, companyId);
@@ -889,7 +889,6 @@ namespace TestManagementServices.Service
             for (int i = 0; i < cataloguePoints.Count; i++)
             {
                 DetailStatistic detail = new DetailStatistic();
-                detail.StatisticId = statisticId;
                 detail.CatalogueId = cataloguePoints[i].catalogueId;
                 if(cataloguePoints[i].cataloguePoint < 0)
                 {
@@ -897,13 +896,13 @@ namespace TestManagementServices.Service
                 }
                 double point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint;
                 detail.Point = cataloguePoints[i].cataloguePoint;
+                detail.IsActive = true;
                 details.Add(detail);
                 totalPoint += point;
             }
             if(details.Count > 0)
             {
-                db.DetailStatistic.AddRange(details);
-                db.SaveChanges();
+                statistic.DetailStatistic = details;
             }
             return totalPoint;
         }
