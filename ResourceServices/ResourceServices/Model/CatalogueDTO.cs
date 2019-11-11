@@ -23,7 +23,7 @@ namespace ResourceServices.Model
             this.type = catalogue.Type;
             this.description = catalogue.Description;
         }
-        public CatalogueDTO(Catalogue catalogue,bool? status , int count)
+        public CatalogueDTO(Catalogue catalogue,bool status , int count)
         {
             this.name = catalogue.Name;
             this.quescount = count;
@@ -48,7 +48,7 @@ namespace ResourceServices.Model
         public int catalogueId { get; set; }
         public string name { get; set; }
         public int companyId { get; set; }
-        public bool? isActive { get; set; }
+        public bool isActive { get; set; }
         public bool? type { get; set; }
         public string description { get; set; }
         public int quescount { get; set; }

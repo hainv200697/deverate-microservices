@@ -39,7 +39,7 @@ namespace ResourceServices.Service
                 Catalogue cata = new Catalogue();
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive.Value;
+                cata.IsActive =true;
                 cata.Type = true;
                 cata.IsActive = true;
                 context.Catalogue.Add(cata);
@@ -60,7 +60,7 @@ namespace ResourceServices.Service
                 Catalogue cata = new Catalogue();
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive.Value;
+                cata.IsActive = catalogue.isActive;
                 cata.Type = false;
                 cata.IsActive = true;
                 context.Catalogue.Add(cata);
@@ -76,7 +76,7 @@ namespace ResourceServices.Service
                 Catalogue cata = context.Catalogue.SingleOrDefault(c => c.CatalogueId == catalogue.catalogueId);
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
-                cata.IsActive = catalogue.isActive.Value;
+                cata.IsActive = catalogue.isActive;
                 context.SaveChanges();
             }
 
@@ -89,7 +89,7 @@ namespace ResourceServices.Service
                 foreach (var cata in catalogue)
                 {
                     CatalogueInCompany cataDb = context.CatalogueInCompany.SingleOrDefault(c => c.CatalogueId == cata.catalogueId && c.CompanyId == cata.companyId);
-                    cataDb.IsActive = cata.isActive.Value;
+                    cataDb.IsActive = cata.isActive;
                 }
                 context.SaveChanges();
             }
