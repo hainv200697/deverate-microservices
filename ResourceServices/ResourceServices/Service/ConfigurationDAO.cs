@@ -73,7 +73,10 @@ namespace ResourceServices.Service
                 else
                 {
                     var config = db.Configuration.Where(c => c.IsActive && !c.Type);
-                    config.ForEachAsync(c => c.IsActive = false);
+                    if(config.Count() != 0)
+                    {
+                        config.ForEachAsync(c => c.IsActive = false);
+                    }
                     Configuration configuration = new Configuration();
                     configuration.AccountId = configurationDTO.testOwnerId.Value;
                     configuration.Title = configurationDTO.title;
