@@ -37,6 +37,7 @@ namespace ResourceServices.Service
                 {
                     var result = db.Account.Where(a => a.AccountId == configurationDTO.testOwnerId).Select(a => a.CompanyId);
                     int? companyId = result.First();
+                    //int companyId = db.Account.FirstOrDefault(a => a.AccountId == configurationDTO.testOwnerId).CompanyId.Value;
                     var emps = db.Account.Where(a => a.CompanyId == companyId && a.IsActive && a.RoleId == 3).Select(a => new AccountDTO(a));
                     if (emps.ToList().Count == 0)
                     {
@@ -73,9 +74,9 @@ namespace ResourceServices.Service
                 else
                 {
                     var config = db.Configuration.Where(c => c.IsActive && !c.Type);
-                    if(config.Count() != 0)
+                    if (config.Count() != 0)
                     {
-                        config.ForEachAsync(c => c.IsActive = false);
+                        config.ToList().ForEach(c => c.IsActive = false);
                     }
                     Configuration configuration = new Configuration();
                     configuration.AccountId = configurationDTO.testOwnerId.Value;
