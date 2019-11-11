@@ -741,7 +741,7 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static RankPoint EvaluateRank(DeverateContext db, UserTest userTest)
         {
-            Test test = db.Test.Include(t => t.Account).SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
+            Test test = db.Test.Include(t => t.Account).Include(t => t.Config.Account).SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
             if (test == null)
             {
                 return null;
@@ -770,7 +770,9 @@ namespace TestManagementServices.Service
             {
                 anss.ForEach(a => answers.Add(new AnswerDTO(a)));
                 TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-                totalPoint = CalculateResultPoint(db, testAnswer, statistic, test.Account.CompanyId);
+                totalPoint = CalculateResultPoint(db, testAnswer, statistic, test.Config.Account.CompanyId);
+
+
                 totalPoint = AppConstrain.RoundDownNumber(totalPoint, 1);
                 List <ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
                 configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
