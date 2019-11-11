@@ -36,7 +36,7 @@ namespace ResourceServices.Model
         public ConfigurationDTO(Configuration configuration)
         {
             this.configId = configuration.ConfigId;
-            this.testOwnerId = configuration.TestOwnerId;
+            this.testOwnerId = configuration.AccountId;
             this.title = configuration.Title;
             this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
@@ -50,7 +50,7 @@ namespace ResourceServices.Model
         public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<ConfigurationRank> configurationRank, string name)
         {
             this.configId = configuration.ConfigId;
-            this.testOwnerId = configuration.TestOwnerId;
+            this.testOwnerId = configuration.AccountId;
             this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate.Value.AddHours(7);
@@ -68,7 +68,7 @@ namespace ResourceServices.Model
         public ConfigurationDTO(Configuration configuration, List<CatalogueInConfigDTO> catalogueInConfigs, List<ConfigurationRankDTO> configurationRanks, string name, int a = 0)
         {
             this.configId = configuration.ConfigId;
-            this.testOwnerId = configuration.TestOwnerId;
+            this.testOwnerId = configuration.AccountId;
             this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate.Value.AddHours(7);

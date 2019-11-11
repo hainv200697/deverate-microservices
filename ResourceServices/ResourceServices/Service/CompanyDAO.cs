@@ -63,9 +63,9 @@ namespace ResourceServices.Service
                 com.CreateAt = DateTime.Now;
                 com.Fax = companyData.CompanyDTO.fax;
                 com.Phone = companyData.CompanyDTO.phone;
-                com.IsActive = companyData.CompanyDTO.isActive;
+                com.IsActive = companyData.CompanyDTO.isActive.Value;
                 var result = db.Company.Add(com);
-                var cata = db.Catalogue.Where(x => x.IsActive.Value && !x.Type.Value).ToList();
+                var cata = db.Catalogue.Where(x => x.IsActive && !x.Type).ToList();
                 // add all catalogue to companyCatalogue
                 List<CatalogueInCompany> catalogueInCompany = new List<CatalogueInCompany>();
                 foreach(Catalogue catalogue in cata)
@@ -92,7 +92,7 @@ namespace ResourceServices.Service
                 com.Address = company.address;
                 com.Fax = company.fax;
                 com.Phone = company.phone;
-                com.IsActive = company.isActive;
+                com.IsActive = company.isActive.Value;
                 db.SaveChanges();
                 return null;
             }
@@ -108,7 +108,7 @@ namespace ResourceServices.Service
                     com = db.Company.SingleOrDefault(co => co.CompanyId == item.companyId);
                     com.Name = item.name;
                     com.Address = item.address;
-                    com.IsActive = item.isActive;
+                    com.IsActive = item.isActive.Value;
                 }
                 db.SaveChanges();
                 return null;

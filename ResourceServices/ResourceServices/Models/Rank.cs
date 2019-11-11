@@ -15,7 +15,7 @@ namespace ResourceServices.Models
         public string Name { get; set; }
         public DateTime? CreateAt { get; set; }
         public DateTime? UpdateAt { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual ICollection<ConfigurationRank> ConfigurationRank { get; set; }
         public virtual ICollection<Statistic> Statistic { get; set; }

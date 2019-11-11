@@ -52,17 +52,25 @@ namespace ResourceServices.Models
 
                 entity.Property(e => e.Avatar).HasMaxLength(250);
 
-                entity.Property(e => e.Email).HasMaxLength(250);
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
-                entity.Property(e => e.Fullname).HasMaxLength(250);
+                entity.Property(e => e.Fullname)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.JoinDate).HasColumnType("date");
 
-                entity.Property(e => e.Password).HasMaxLength(250);
+                entity.Property(e => e.Password)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.Phone).HasMaxLength(250);
 
-                entity.Property(e => e.Username).HasMaxLength(250);
+                entity.Property(e => e.Username)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.Account)
@@ -79,27 +87,35 @@ namespace ResourceServices.Models
             modelBuilder.Entity<Answer>(entity =>
             {
                 entity.Property(e => e.Answer1)
+                    .IsRequired()
                     .HasColumnName("Answer")
                     .HasMaxLength(250);
 
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.Answer)
                     .HasForeignKey(d => d.QuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Answer_Question");
             });
 
             modelBuilder.Entity<Applicant>(entity =>
             {
-                entity.Property(e => e.Email).HasMaxLength(250);
+                entity.Property(e => e.Email)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
-                entity.Property(e => e.Fullname).HasMaxLength(250);
+                entity.Property(e => e.Fullname)
+                    .IsRequired()
+                    .HasMaxLength(250);
             });
 
             modelBuilder.Entity<Catalogue>(entity =>
             {
                 entity.Property(e => e.Description).HasMaxLength(250);
 
-                entity.Property(e => e.Name).HasMaxLength(250);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250);
             });
 
             modelBuilder.Entity<CatalogueInCompany>(entity =>
@@ -150,17 +166,21 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Catalogue)
                     .WithMany(p => p.CatalogueInRank)
                     .HasForeignKey(d => d.CatalogueId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CatalogueInRank_Catalogue");
 
                 entity.HasOne(d => d.ConfigurationRank)
                     .WithMany(p => p.CatalogueInRank)
                     .HasForeignKey(d => d.ConfigurationRankId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CatalogueInRank_ConfigurationRank");
             });
 
             modelBuilder.Entity<Company>(entity =>
             {
-                entity.Property(e => e.Address).HasMaxLength(250);
+                entity.Property(e => e.Address)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.CreateAt)
                     .HasColumnName("Create_At")
@@ -170,7 +190,9 @@ namespace ResourceServices.Models
                     .HasColumnName("FAX")
                     .HasMaxLength(50);
 
-                entity.Property(e => e.Name).HasMaxLength(250);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250);
             });
 
             modelBuilder.Entity<Configuration>(entity =>
@@ -183,11 +205,14 @@ namespace ResourceServices.Models
 
                 entity.Property(e => e.StartDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Title).HasMaxLength(250);
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
-                entity.HasOne(d => d.TestOwner)
+                entity.HasOne(d => d.Account)
                     .WithMany(p => p.Configuration)
-                    .HasForeignKey(d => d.TestOwnerId)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Configuration_Account");
             });
 
@@ -196,11 +221,13 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.ConfigId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ConfigurationRank_Configuration");
 
                 entity.HasOne(d => d.Rank)
                     .WithMany(p => p.ConfigurationRank)
                     .HasForeignKey(d => d.RankId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ConfigurationRank_Rank");
             });
 
@@ -211,11 +238,13 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Catalogue)
                     .WithMany(p => p.DetailStatistic)
                     .HasForeignKey(d => d.CatalogueId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DetailStatistic_Catalogue");
 
                 entity.HasOne(d => d.Statistic)
                     .WithMany(p => p.DetailStatistic)
                     .HasForeignKey(d => d.StatisticId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DetailStatistic_Statistic");
             });
 
@@ -227,15 +256,21 @@ namespace ResourceServices.Models
                     .HasColumnName("Create_at")
                     .HasColumnType("date");
 
-                entity.Property(e => e.CreateBy).HasColumnName("Create_by");
-
                 entity.Property(e => e.Question1)
+                    .IsRequired()
                     .HasColumnName("Question")
                     .HasMaxLength(350);
+
+                entity.HasOne(d => d.Account)
+                    .WithMany(p => p.Question)
+                    .HasForeignKey(d => d.AccountId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Question_Account");
 
                 entity.HasOne(d => d.Cic)
                     .WithMany(p => p.Question)
                     .HasForeignKey(d => d.Cicid)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Question_CatalogueInCompany");
             });
 
@@ -253,11 +288,13 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.QuestionInTest)
                     .HasForeignKey(d => d.QuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_QuestionInTest_Question");
 
                 entity.HasOne(d => d.Test)
                     .WithMany(p => p.QuestionInTest)
                     .HasForeignKey(d => d.TestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_QuestionInTest_Test");
             });
 
@@ -267,7 +304,9 @@ namespace ResourceServices.Models
                     .HasColumnName("Create_at")
                     .HasColumnType("datetime");
 
-                entity.Property(e => e.Name).HasMaxLength(250);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.UpdateAt)
                     .HasColumnName("Update_at")
@@ -276,7 +315,9 @@ namespace ResourceServices.Models
 
             modelBuilder.Entity<Role>(entity =>
             {
-                entity.Property(e => e.Description).HasMaxLength(350);
+                entity.Property(e => e.Description)
+                    .IsRequired()
+                    .HasMaxLength(350);
             });
 
             modelBuilder.Entity<Statistic>(entity =>
@@ -284,23 +325,31 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Rank)
                     .WithMany(p => p.Statistic)
                     .HasForeignKey(d => d.RankId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Statistic_Rank");
 
                 entity.HasOne(d => d.Test)
                     .WithMany(p => p.Statistic)
                     .HasForeignKey(d => d.TestId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Statistic_Test");
             });
 
             modelBuilder.Entity<Test>(entity =>
             {
-                entity.Property(e => e.Code).HasMaxLength(250);
+                entity.Property(e => e.Code)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.FinishTime).HasColumnType("datetime");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
+
+                entity.Property(e => e.Status)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.HasOne(d => d.Account)
                     .WithMany(p => p.Test)

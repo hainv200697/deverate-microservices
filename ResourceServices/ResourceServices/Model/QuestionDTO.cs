@@ -25,7 +25,7 @@ namespace ResourceServices.Model
             this.maxPoint = ques.MaxPoint;
             this.creatAt = ques.CreateAt;
             this.isActive = ques.IsActive;
-            this.createBy = ques.CreateBy;
+            this.accountId = ques.AccountId;
             this.answer = ans;
         }
 
@@ -37,7 +37,7 @@ namespace ResourceServices.Model
             this.maxPoint = ques.MaxPoint;
             this.creatAt = ques.CreateAt;
             this.isActive = ques.IsActive;
-            this.createBy = ques.CreateBy;
+            this.accountId = ques.AccountId;
         }
 
         public QuestionDTO(List<Question> question, string cataName,int cicid)
@@ -53,7 +53,7 @@ namespace ResourceServices.Model
         public int? cicid { get; set; }
         public string question1 { get; set; }
         public int? maxPoint { get; set; }
-        public int? createBy { get; set; }
+        public int? accountId { get; set; }
         public bool? isActive { get; set; }
         public DateTime? creatAt { get; set; }
         public string catalogueName { get; set; }
