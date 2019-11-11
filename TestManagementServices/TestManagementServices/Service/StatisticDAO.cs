@@ -18,7 +18,7 @@ namespace TestManagementServices.Service
                 {
                     return null;
                 }
-                Configuration configuration = db.Configuration.Where(c => c.TestOwner.CompanyId == companyId).LastOrDefault();
+                Configuration configuration = db.Configuration.Where(c => c.Account.CompanyId == companyId).LastOrDefault();
                 List<Test> tests = db.Test
                     .Include(t => t.Account)
                     .Include(t => t.Statistic)
@@ -33,7 +33,7 @@ namespace TestManagementServices.Service
                 {
                     if (!userIds.Contains(t.AccountId)){
                         userIds.Add(t.AccountId);
-                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.Last().Point.Value, AppConstrain.scaleUpNumb), configuration.Title, configuration.CreateDate));
+                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.Last().Point, AppConstrain.scaleUpNumb), configuration.Title, configuration.CreateDate));
                     }
                 }
                 return userStatistics;
@@ -49,7 +49,7 @@ namespace TestManagementServices.Service
                 List<Account> accounts = db.Account.Include(a => a.Configuration).ThenInclude(Configuration=> Configuration.CatalogueInConfiguration).Where(a => a.CompanyId == account.CompanyId).ToList();
                 var result = from t in db.Test
                              join con in db.Configuration on t.ConfigId equals con.ConfigId
-                             join acc in db.Account on con.TestOwnerId equals acc.AccountId
+                             join acc in db.Account on con.AccountId equals acc.AccountId
                              where acc.CompanyId == account.CompanyId
                              select t;
                 List<Test> tests = result.ToList();
@@ -127,15 +127,15 @@ namespace TestManagementServices.Service
             using(DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Configuration> configurations = db.Configuration.Include(c => c.TestOwner).Include(c => c.CatalogueInConfiguration)
-                                                     .Where(c => c.TestOwner.CompanyId == account.CompanyId).ToList();
+                List<Configuration> configurations = db.Configuration.Include(c => c.Account).Include(c => c.CatalogueInConfiguration)
+                                                     .Where(c => c.Account.CompanyId == account.CompanyId).ToList();
                 List<int?> configIds = new List<int?>();
                 configurations.ForEach(c => configIds.Add(c.ConfigId));
                 List<Account> accounts = db.Account.Include(a => a.Configuration).Where(a => a.CompanyId == account.CompanyId).ToList();
                 var result = from t in db.Test
                                     join con in db.Configuration on t.ConfigId equals con.ConfigId
                                     join cif in db.CatalogueInConfiguration on con.ConfigId equals cif.ConfigId
-                                    join acc in db.Account on con.TestOwnerId equals acc.AccountId
+                                    join acc in db.Account on con.AccountId equals acc.AccountId
                                     where acc.CompanyId == account.CompanyId
                                     select t;
                 List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
@@ -171,7 +171,7 @@ namespace TestManagementServices.Service
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for(int j = 0; j < configurations.Count; j++)
                 {
-                    int numberOfTest = configurations[j].Test.Where(t => t.Status == false).ToList().Count();
+                    int numberOfTest = configurations[j].Test.Where(t => t.Status == "Pending").ToList().Count();
                     //int numberOfTest = configurations[j].Test.ToList().Count();
                     int numberOfFinishedTest = 0;
                     List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
@@ -187,7 +187,7 @@ namespace TestManagementServices.Service
                         if(statistics[k].Test.ConfigId == configurations[j].ConfigId)
                         {
                             numberOfFinishedTest += 1;
-                            totalGPA += statistics[k].Point == null ? 0: statistics[k].Point.Value;
+                            totalGPA += statistics[k].Point;
                             List<DetailStatistic> details = statistics[k].DetailStatistic.ToList();
                             for (int m = 0; m < details.Count; m++)
                             {
@@ -196,7 +196,7 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
                                     {
-                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point.Value / numberOfTest, AppConstrain.scaleUpNumb);
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleUpNumb);
                                         if(cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
                                         {
                                             cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
@@ -252,7 +252,7 @@ namespace TestManagementServices.Service
                         {
                             if(cir.CatalogueId == c.catalogueId)
                             {
-                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.WeightPoint.Value, 1) ));
+                                catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.WeightPoint, 1) ));
                             }
                         }
                     }
@@ -273,7 +273,7 @@ namespace TestManagementServices.Service
                         }
                     }
                 }
-                double statisticPoint = AppConstrain.RoundDownNumber(statistic.Point.Value, 1);
+                double statisticPoint = AppConstrain.RoundDownNumber(statistic.Point, 1);
                 return new CandidateResultDTO(test.AccountId, configurationRanks,  catas,  catalogueInRanks, catalogueInConfigs, statisticPoint, statistic.RankId, statistic.Rank.Name);
             }
         }

@@ -16,8 +16,8 @@ namespace TestManagementServices.Models
         public int CatalogueId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public bool? Type { get; set; }
-        public bool? IsActive { get; set; }
+        public bool Type { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual ICollection<CatalogueInCompany> CatalogueInCompany { get; set; }
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }

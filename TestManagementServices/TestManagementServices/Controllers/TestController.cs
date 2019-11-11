@@ -16,7 +16,6 @@ namespace TestManagementServices.Controllers
     [Route("api/[controller]")]
     public class TestController : Controller
     {
-        ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
 
         public TestController(DeverateContext context)
@@ -51,6 +50,7 @@ namespace TestManagementServices.Controllers
         [HttpPost("SubmitTest")]
         public IActionResult SubmitTest([FromBody] UserTest userTest)
         {
+            SystemDAO.SaveAnswer(userTest);
             RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
             if (rp == null)
             {
@@ -97,8 +97,6 @@ namespace TestManagementServices.Controllers
         [HttpGet("GetRankStatistic")]
         public IActionResult GetRankStatistic(int? accountId)
         {
-
-
             return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
         }
 

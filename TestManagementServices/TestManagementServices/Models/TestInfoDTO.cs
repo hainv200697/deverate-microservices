@@ -36,7 +36,7 @@ namespace TestManagementServices.Models
             this.code = test.Code;
             this.title = configTitle;
             this.accountName = name;
-            this.isActive = test.Status;
+            this.isActive = test.IsActive;
         }
     }
 }

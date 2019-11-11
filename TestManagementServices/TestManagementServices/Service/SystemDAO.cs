@@ -84,7 +84,7 @@ namespace TestManagementServices.Service
             {
                 try
                 {
-                    Configuration con = context.Configuration.Include(c => c.TestOwner).SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
+                    Configuration con = context.Configuration.Include(c => c.Account).SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
                     if (con.Duration < AppConstrain.minDuration)
                     {
                         return Message.durationExceptopn;
@@ -158,7 +158,7 @@ namespace TestManagementServices.Service
                 catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, config.TestOwner.CompanyId);
+                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, config.Account.CompanyId);
                     totalCataQues += catalogues[i].questions == null ? 0: catalogues[i].questions.Count;
                 }
                 if(totalCataQues == 0)
@@ -166,7 +166,7 @@ namespace TestManagementServices.Service
                     return;
 
                 }
-                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
+                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
                 catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
 
                 foreach (ApplicantDTO app in applicants)
@@ -234,6 +234,7 @@ namespace TestManagementServices.Service
                     test.ApplicantId = app.applicantId;
                     test.CreateDate = DateTime.Now;
                     test.IsActive = true;
+                    test.Status = "Pending";
                     db.Test.Add(test);
                     db.SaveChanges();
 
@@ -290,7 +291,7 @@ namespace TestManagementServices.Service
                     {
                         return Message.numberQuestionExceptopn;
                     }
-                    Account acc = context.Account.SingleOrDefault(o => o.AccountId == con.TestOwnerId);
+                    Account acc = context.Account.SingleOrDefault(o => o.AccountId == con.AccountId);
 
 
                     var emps = from a in context.Account
@@ -344,7 +345,7 @@ namespace TestManagementServices.Service
                 {
                     return;
                 }
-                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
+                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
                 catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
 
 
@@ -414,6 +415,7 @@ namespace TestManagementServices.Service
                     test.AccountId = acc.accountId;
                     test.CreateDate = DateTime.Now;
                     test.IsActive = true;
+                    test.Status = "Pending";
                     db.Test.Add(test);
                     db.SaveChanges();
 
@@ -465,7 +467,7 @@ namespace TestManagementServices.Service
                     catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
                     totalCataQues += catalogues[i].questions.Count;
                 }
-                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion.Value;
+                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
                 catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
                 List<QuestionRemain> remainQues = new List<QuestionRemain>();
                 for (int i = 0; i < catalogues.Count; i++)
@@ -528,6 +530,7 @@ namespace TestManagementServices.Service
                 test.AccountId = accountId;
                 test.CreateDate = DateTime.Now;
                 test.IsActive = true;
+                test.Status = "Pending";
                 db.Test.Add(test);
                 db.SaveChanges();
 
@@ -747,7 +750,7 @@ namespace TestManagementServices.Service
                 return new RankPoint(stt.Rank.Name, stt.Point);
             }
 
-            test.Status = true;
+            test.Status = "Submitted";
             db.SaveChanges();
             List<AnswerDTO> answers = new List<AnswerDTO>();
             List<int?> answerIds = new List<int?>();
@@ -758,7 +761,7 @@ namespace TestManagementServices.Service
             var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
             Statistic statistic = new Statistic();
             string rank = "Dev0";
-            double? totalPoint = 0;
+            double totalPoint = 0;
             statistic.TestId = userTest.testId;
             statistic.IsActive = true;
             db.Statistic.Add(statistic);
@@ -766,14 +769,13 @@ namespace TestManagementServices.Service
             if (anss.Count != 0)
             {
                 anss.ForEach(a => answers.Add(new AnswerDTO(a)));
-                SaveAnswer(userTest);
                 TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
                 totalPoint = CalculateResultPoint(db, testAnswer, statistic.StatisticId, test.Account.CompanyId);
-                totalPoint = AppConstrain.RoundDownNumber(totalPoint.Value, AppConstrain.scaleUpNumb);
+                totalPoint = AppConstrain.RoundDownNumber(totalPoint, AppConstrain.scaleUpNumb);
                 List <ConfigurationRankDTO> configurationRanks = GetRankPoint(db, testAnswer);
                 configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                 ConfigurationRankDTO tmp = new ConfigurationRankDTO();
-                tmp.rankId = configurationRanks[0].rankId.Value;
+                tmp.rankId = configurationRanks[0].rankId;
                 tmp.point = configurationRanks[0].point;
                 foreach (ConfigurationRankDTO cr in configurationRanks)
                 {
@@ -792,7 +794,7 @@ namespace TestManagementServices.Service
             }
             else
             {
-                statistic.RankId = null;
+                statistic.RankId = 4;
                 statistic.Point = 0;
             }
             db.SaveChanges();
@@ -862,9 +864,9 @@ namespace TestManagementServices.Service
         /// <param name="db"></param>
         /// <param name="answers"></param>
         /// <returns></returns>
-        public static double? CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, int? statisticId, int? companyId)
+        public static double CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, int statisticId, int? companyId)
         {
-            double? totalPoint = 0;
+            double totalPoint = 0;
             List<CataloguePointDTO> defaultCataloguePoints = CalculateCataloguePoints(db, answers, companyId);
             if (answers.testId == null)
             {
@@ -899,7 +901,7 @@ namespace TestManagementServices.Service
                 {
                     continue;
                 }
-                double? point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint;
+                double point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint;
                 detail.Point = cataloguePoints[i].cataloguePoint;
                 details.Add(detail);
                 totalPoint += point;
@@ -955,8 +957,8 @@ namespace TestManagementServices.Service
 
             foreach (CatalogueInCompany cata in cataInCompany)
             {
-                float? point = 0;
-                float? maxPoint = 0;
+                float point = 0;
+                float maxPoint = 0;
                 
                 for(int i = 0; i < quess.Count; i++)
                 {
@@ -970,7 +972,7 @@ namespace TestManagementServices.Service
                         try
                         {
                             point += quess[i].Point;
-                        }catch(Exception e)
+                        }catch(Exception)
                         {
                             point += 0;
                         }
@@ -983,7 +985,7 @@ namespace TestManagementServices.Service
                         
                     }
                 }
-                float? cataloguePoint = maxPoint == 0 ? 0: (point / maxPoint);
+                float cataloguePoint = maxPoint == 0 ? 0: (point / maxPoint);
                 cataloguePoints.Add(new CataloguePointDTO(cata.CatalogueId  , cataloguePoint));
             }
             return cataloguePoints;
@@ -1008,7 +1010,7 @@ namespace TestManagementServices.Service
         {
             var config = db.Configuration.Include(z=>z.Test).Where(c => c.Test.Any(x=>x.TestId == testId)).FirstOrDefault();
             var test = config.Test.SingleOrDefault(t => t.TestId == testId);
-            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId,test.Status);
+            return new ConfigurationDTO(config,test.AccountId, test.ApplicantId, test.Status);
         }
 
         public static UserTest GetQuestionInTest(DeverateContext db, TestInfoDTO testInfo, bool checkCode)

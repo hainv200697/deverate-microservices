@@ -9,9 +9,9 @@ namespace TestManagementServices.Model
     public class ConfigurationRankDTO
     {
         public int? configurationRankId { get; set; }
-        public int? rankId { get; set; }
+        public int rankId { get; set; }
         public double? point { get; set; }
-        public bool? isActive { get; set; }
+        public bool isActive { get; set; }
         public ConfigurationRankDTO() { }
         public ConfigurationRankDTO(ConfigurationRank configuration)
         {

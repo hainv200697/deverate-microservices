@@ -7,10 +7,10 @@ namespace TestManagementServices.Model
 {
     public class CatalogueWeightPointDTO
     {
-        public int? catalogueId { get; set; }
-        public double? weightPoint { get; set; }
+        public int catalogueId { get; set; }
+        public double weightPoint { get; set; }
         public CatalogueWeightPointDTO() { }
-        public CatalogueWeightPointDTO(int? catalogueId, double? weightPoint)
+        public CatalogueWeightPointDTO(int catalogueId, double weightPoint)
         {
             this.catalogueId = catalogueId;
             this.weightPoint = weightPoint;
