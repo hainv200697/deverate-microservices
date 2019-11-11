@@ -50,6 +50,7 @@ namespace AuthenServices.RabbitMQ
             {
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
+                Console.WriteLine(" [x] Receive {0}", message);
                 Producer producer = new Producer();
                 switch (this.exch)
                 {
