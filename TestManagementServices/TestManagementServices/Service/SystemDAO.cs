@@ -235,10 +235,8 @@ namespace TestManagementServices.Service
                     test.CreateDate = DateTime.Now;
                     test.IsActive = true;
                     test.Status = "Pending";
-                    db.Test.Add(test);
-                    db.SaveChanges();
-
                     test.Code = GenerateCode();
+                    db.Test.Add(test);
                     db.SaveChanges();
                     List<QuestionInTest> questionInTests = new List<QuestionInTest>();
                     for (int i = 0; i < questions.Count; i++)

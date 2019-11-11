@@ -35,6 +35,7 @@ namespace Deverate
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_consumer));
+            services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_applicant));
             services.AddDiscoveryClient(Configuration);
             services.AddMvc();
             services.AddCors(c =>
