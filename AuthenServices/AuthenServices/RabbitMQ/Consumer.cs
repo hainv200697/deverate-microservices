@@ -72,7 +72,6 @@ namespace AuthenServices.RabbitMQ
                         var listResendAccount = AccountDAO.resend(listSendPass);
                         foreach (MessageAccountDTO msAccount in listResendAccount)
                         {
-
                             producer.PublishMessage(message: JsonConvert.SerializeObject(msAccount), "AccountToEmail");
                         }
                         break;

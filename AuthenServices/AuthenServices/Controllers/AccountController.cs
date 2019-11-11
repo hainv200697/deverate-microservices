@@ -63,7 +63,12 @@ namespace AuthenServices.Controllers
         {
             try
             {
-                AccountDAO.resend(listUsername);
+                var listResendAccount = AccountDAO.resend(listUsername);
+                Producer producer = new Producer();
+                foreach (MessageAccountDTO msAccount in listResendAccount)
+                {
+                    producer.PublishMessage(message: JsonConvert.SerializeObject(msAccount), "AccountToEmail");
+                }
                 return Ok();
             }
             catch (Exception)
