@@ -16,7 +16,6 @@ namespace TestManagementServices.Controllers
     [Route("api/[controller]")]
     public class TestController : Controller
     {
-        ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
 
         public TestController(DeverateContext context)
@@ -51,12 +50,19 @@ namespace TestManagementServices.Controllers
         [HttpPost("SubmitTest")]
         public IActionResult SubmitTest([FromBody] UserTest userTest)
         {
-            RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
-            if (rp == null)
+            try
             {
-                return BadRequest("Code invalid, Submit fail");
+                SystemDAO.SaveAnswer(userTest);
+                RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
+                if (rp == null)
+                {
+                    return BadRequest("Code invalid, Submit fail");
+                }
+                return Ok(rp);
+            } catch (Exception e)
+            {
+                return StatusCode(500);
             }
-            return Ok(rp);
         }
 
         [HttpPost("AutoSave")]
@@ -72,7 +78,7 @@ namespace TestManagementServices.Controllers
                 {
                     return BadRequest("{\"message\" : \"Code invalid, Auto Save\"}");
                 }
-            } catch(Exception ex)
+            } catch(Exception)
             {
                 return StatusCode(500);
             }
@@ -97,8 +103,6 @@ namespace TestManagementServices.Controllers
         [HttpGet("GetRankStatistic")]
         public IActionResult GetRankStatistic(int? accountId)
         {
-
-
             return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
         }
 
