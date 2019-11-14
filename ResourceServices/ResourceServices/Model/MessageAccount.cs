@@ -11,12 +11,12 @@ namespace ResourceServices.Model
         public string Fullname { get; set; }
         public string Email { get; set; }
         public string Address { get; set; }
-        public int Phone { get; set; }
+        public string Phone { get; set; }
         public int Role { get; set; }
         public bool Gender { get; set; }
 
 
-        public MessageAccount(int? companyId, string fullname, string email, int role,string address, bool gender, int phone)
+        public MessageAccount(int? companyId, string fullname, string email, int role,string address, bool gender, string phone)
         {
             CompanyId = companyId;
             Fullname = fullname;
