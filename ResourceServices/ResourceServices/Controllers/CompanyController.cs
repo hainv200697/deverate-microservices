@@ -78,7 +78,7 @@ namespace ResourceServices.Controllers
             {
                 var company = CompanyDAO.CreateCompany(companyDataDTO);
                 var account = companyDataDTO.AccountDTO;
-                var messageAccount = new MessageAccount(company.CompanyId, account.fullname, account.email, 2);
+                var messageAccount = new MessageAccount(company.CompanyId, account.fullname, account.email, 2,account.address,account.gender,account.phone);
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
 
