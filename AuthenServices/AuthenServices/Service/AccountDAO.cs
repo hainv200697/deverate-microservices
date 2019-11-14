@@ -60,7 +60,9 @@ namespace AuthenServices.Service
             account.Password = generatePasswordHash(out password);
             account.Fullname = ms.Fullname;
             account.Email = ms.Email;
-            account.Gender = false;
+            account.Gender = ms.Gender;
+            account.Address = ms.Address;
+            account.Phone = ms.Phone;
             account.JoinDate = DateTime.Now;
             account.RoleId = ms.Role;
             account.CompanyId = ms.CompanyId;
