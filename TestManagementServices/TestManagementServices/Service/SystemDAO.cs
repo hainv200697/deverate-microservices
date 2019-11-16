@@ -83,32 +83,6 @@ namespace TestManagementServices.Service
             return questions;
         }
 
-        /// <summary>
-        /// Tạo bài test dựa trên file config cho applicant
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="config"></param>
-        /// <returns></returns>
-        public static string GenerateSampleTest(SampleConfigDTO con)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                {
-                    if (con.duration < AppConstrain.minDuration)
-                    {
-                        return Message.durationExceptopn;
-                    }
-                    if(con.catalogueInSamples == null)
-                    {
-                        return Message.noCatalogueException;
-                    }
-
-                    GenerateQuestionsForSampleTest(context, con);
-                }
-                return null;
-            }
-        }
-
         public static List<QuestionDTO> GenerateQuestionsForSampleTest(DeverateContext db, SampleConfigDTO con)
         {
 
