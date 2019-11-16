@@ -138,6 +138,21 @@ namespace TestManagementServices.Controllers
                 return StatusCode(500);
             }
         }
+
+
+        [HttpPost("GenerateSampleTest")]
+        public IActionResult SendTestCode([FromBody]SampleConfigDTO sample)
+        {
+            try
+            {
+                
+                return Ok(SystemDAO.GenerateQuestionsForSampleTest(context, sample));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
     
 }

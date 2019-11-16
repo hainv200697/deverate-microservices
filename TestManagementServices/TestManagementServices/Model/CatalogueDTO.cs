@@ -34,6 +34,16 @@ namespace TestManagementServices.Model
             this.isActive = isActive;
         }
 
+        public CatalogueDTO(int? catalogueId, string name, int? numberOfQuestion, double? weightPoint,
+            List<Question> questionList)
+        {
+            this.catalogueId = catalogueId;
+            this.name = name;
+            this.numberOfQuestion = numberOfQuestion;
+            this.weightPoint = weightPoint;
+            this.questionList = questionList;
+        }
+
         public CatalogueDTO(int? catalogueId, string name, double? overallPoint, double? thresholdPoint)
         {
             this.catalogueId = catalogueId;
@@ -64,6 +74,7 @@ namespace TestManagementServices.Model
         /// </summary>
         public double? value { get; set; }
         public List<QuestionDTO> questions { get; set; }
+        public List<Question> questionList { get; set; }
         public bool? isActive { get; set; }
     }
 }

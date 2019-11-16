@@ -17,6 +17,8 @@ namespace TestManagementServices.Model
         public const string noEmployeeException = "There'is no available employee";
         public const string noApplicantException = "There'is no applicant";
 
+
+
         public const string sendMailSucceed = "Send test mail succeed";
     }
 }
