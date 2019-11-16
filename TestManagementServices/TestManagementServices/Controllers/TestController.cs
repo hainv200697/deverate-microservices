@@ -146,7 +146,7 @@ namespace TestManagementServices.Controllers
             try
             {
                 
-                return Ok(SystemDAO.GenerateSampleTest(sample));
+                return Ok(SystemDAO.GenerateQuestionsForSampleTest(context, sample));
             }
             catch (Exception)
             {
