@@ -4,7 +4,9 @@ spring:
 
 server:
   port: 8760
-
+zuul:
+  sensitive-headers:
+  - Cookie,Set-Cookie
 eureka:
   client:
     serviceUrl:
@@ -17,12 +19,12 @@ hystrix:
         isolation:
           strategy: THREAD  
           thread:
-            timeoutInMilliseconds: 300000
+            timeoutInMilliseconds: 30000
 
 
 ribbon:
-  ReadTimeout: 300000
-  connection-timeout: 300000
+  ReadTimeout: 60000
+  connection-timeout: 3000
   eureka:
     enabled: true
 
