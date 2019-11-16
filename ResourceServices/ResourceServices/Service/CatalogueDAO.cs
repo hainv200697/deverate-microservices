@@ -88,6 +88,19 @@ namespace ResourceServices.Service
             {
                 foreach (var cata in catalogue)
                 {
+                    Catalogue cataDb = context.Catalogue.SingleOrDefault(c => c.CatalogueId == cata.catalogueId);
+                    cataDb.IsActive = cata.isActive;
+                }
+                context.SaveChanges();
+            }
+        }
+
+        public static void removeCatalogue(List<CatalogueDTO> catalogue)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                foreach (var cata in catalogue)
+                {
                     CatalogueInCompany cataDb = context.CatalogueInCompany.SingleOrDefault(c => c.CatalogueId == cata.catalogueId && c.CompanyId == cata.companyId);
                     cataDb.IsActive = cata.isActive;
                 }

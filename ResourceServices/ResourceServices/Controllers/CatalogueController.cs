@@ -83,7 +83,7 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                CatalogueDAO.removeCatalogueDefault(catalog);
+                CatalogueDAO.removeCatalogue(catalog);
                 return Ok(Message.removeCatalogueSucceed);
             }
             catch (Exception)
