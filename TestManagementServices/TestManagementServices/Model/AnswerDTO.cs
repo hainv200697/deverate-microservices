@@ -11,12 +11,14 @@ namespace TestManagementServices.Model
     [JsonObject("AnswerDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class AnswerDTO
     {
-        [JsonProperty("AnswerId")]
-        public int? AnswerId { get; set; }
-        [JsonProperty("Point")]
-        public int? Point { get; set; }
-        [JsonProperty("IsActive")]
-        public bool? IsActive { get; set; }
+        [JsonProperty("answerId")]
+        public int? answerId { get; set; }
+        [JsonProperty("answer")]
+        public string answer { get; set; }
+        [JsonProperty("point")]
+        public int? point { get; set; }
+        [JsonProperty("isActive")]
+        public bool? isActive { get; set; }
         public AnswerDTO()
         {
 
@@ -24,9 +26,10 @@ namespace TestManagementServices.Model
 
         public AnswerDTO(Answer answer)
         {
-            this.AnswerId = answer.AnswerId;
-            this.Point = answer.Point;
-            this.IsActive = answer.IsActive;
+            this.answerId = answer.AnswerId;
+            this.answer = answer.Answer1;
+            this.point = answer.Point;
+            this.isActive = answer.IsActive;
         }
 
 
