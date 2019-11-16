@@ -28,7 +28,6 @@ namespace TestManagementServices.Service
         {
             using(DeverateContext db = new DeverateContext())
             {
-                try
                 {
                     var result = from c in db.Configuration
                                  join t in db.Test on c.ConfigId equals t.ConfigId
@@ -43,10 +42,6 @@ namespace TestManagementServices.Service
                     List<TestMailDTO> mails = result.ToList();
                     string message = JsonConvert.SerializeObject(mails);
                     Producer.PublishMessage(message, AppConstrain.test_mail);
-                }
-                catch(Exception e)
-                {
-                    File.WriteAllText(AppConstrain.logFile, e.Message);
                 }
                 return Message.sendMailSucceed;
             }
@@ -98,7 +93,6 @@ namespace TestManagementServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                try
                 {
                     if (con.duration < AppConstrain.minDuration)
                     {
@@ -109,11 +103,7 @@ namespace TestManagementServices.Service
                         return Message.noCatalogueException;
                     }
 
-                    //GenerateQuestionsForApplicants(context, applicants, con);
-                }
-                catch (Exception e)
-                {
-                    File.WriteAllText(AppConstrain.logFile, e.Message);
+                    GenerateQuestionsForSampleTest(context, con);
                 }
                 return null;
             }
@@ -130,9 +120,6 @@ namespace TestManagementServices.Service
             Random rand = new Random();
             int totalCataQues = 0;
 
-
-            try
-            {
                 List<int?> cicIds = new List<int?>();
                 con.catalogueInSamples.ForEach(c => cicIds.Add(c.cicId));
                 List<CatalogueInCompany> catalogueIns = db.CatalogueInCompany.Include(c => c.Catalogue).Include(c => c.Question).ThenInclude(c => c.Answer).Where(c => cicIds.Contains(c.Cicid)).ToList();
@@ -227,13 +214,6 @@ namespace TestManagementServices.Service
                 }
                 questions = fillQues(remainQues, totalOfQues, questions);
                 questions = Shuffle(questions);
-
-
-            }
-            catch (Exception e)
-            {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
-            }
             return questions;
         }
 
@@ -247,8 +227,6 @@ namespace TestManagementServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                try
-                {
                     Configuration con = context.Configuration.Include(c => c.Account).SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
                     if (con.Duration < AppConstrain.minDuration)
                     {
@@ -274,11 +252,6 @@ namespace TestManagementServices.Service
                         applicantIds.Add(applicant.applicantId);
                     }
                     SendMailQuizCode(applicantIds, false);
-                }
-                catch (Exception e)
-                {
-                    File.WriteAllText(AppConstrain.logFile, e.Message);
-                }
                 return null;
             }
         }
@@ -319,331 +292,37 @@ namespace TestManagementServices.Service
             int totalCataQues = 0;
 
 
-            try
+            List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
+            if(catalogues == null || catalogues.Count == 0  )
             {
-                List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
-                if(catalogues == null || catalogues.Count == 0  )
-                {
-                    return;
-                }
-                catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
-                for (int i = 0; i < catalogues.Count; i++)
-                {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, config.Account.CompanyId);
-                    totalCataQues += catalogues[i].questions == null ? 0: catalogues[i].questions.Count;
-                }
-                if(totalCataQues == 0)
-                {
-                    return;
-
-                }
-                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
-                catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
-
-                foreach (ApplicantDTO app in applicants)
-                {
-                    for (int i = 0; i < catalogues.Count; i++)
-                    {
-                        QuestionRemain quesRe = new QuestionRemain();
-                        quesRe.catalogueId = catalogues[i].catalogueId;
-
-                        List<QuestionDTO> totalQues = catalogues[i].questions;
-                        if(totalQues == null || totalQues.Count == 0)
-                        {
-                            continue;
-                        }
-                        int quesLenght = totalQues.Count;
-                        int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
-                        totalQues = Shuffle(totalQues);
-                        for (int j = 0; j < numbOfQues; j++)
-                        {
-                            if (!quesIds.Contains(totalQues[j].questionId))
-                            {
-                                quesIds.Add(totalQues[j].questionId);
-                                questions.Add(totalQues[j]);
-                                if (numbOfQues != quesLenght)
-                                {
-                                    choosedQues.Add(totalQues[j]);
-                                }
-                            }
-                            else
-                            {
-                                j--;
-                            }
-                        }
-                        quesRe.curNumbQues = numbOfQues;
-                        quesRe.numbCataQues = catalogues[i].questions.Count;
-
-                        if (numbOfQues != quesLenght)
-                        {
-                            for (int k = 0; k < quesLenght; k++)
-                            {
-                                bool isContainQues = false;
-                                for (int m = 0; m < choosedQues.Count; m++)
-                                {
-                                    if (choosedQues[m].questionId == totalQues[k].questionId)
-                                    {
-                                        isContainQues = true;
-                                        break;
-                                    }
-                                }
-                                if (isContainQues == false)
-                                {
-                                    unchoosedQues.Add(totalQues[k]);
-                                }
-                            }
-                        }
-                        quesRe.unchoosedQues = unchoosedQues;
-                        quesRe.weightPoint = catalogues[i].weightPoint;
-                        remainQues.Add(quesRe);
-                    }
-                    questions = fillQues(remainQues, totalOfQues, questions);
-                    questions = Shuffle(questions);
-
-                    Test test = new Test();
-                    test.ConfigId = config.ConfigId;
-                    test.ApplicantId = app.applicantId;
-                    test.CreateDate = DateTime.Now;
-                    test.IsActive = true;
-                    test.Status = "Pending";
-                    test.Code = GenerateCode();
-                    db.Test.Add(test);
-                    db.SaveChanges();
-                    List<QuestionInTest> questionInTests = new List<QuestionInTest>();
-                    for (int i = 0; i < questions.Count; i++)
-                    {
-                        QuestionInTest inTest = new QuestionInTest();
-                        inTest.TestId = test.TestId;
-                        inTest.QuestionId = questions[i].questionId;
-                        inTest.IsActive = true;
-                        questionInTests.Add(inTest);
-
-                    }
-                    db.QuestionInTest.AddRange(questionInTests);
-                    db.SaveChanges();
-                    questions = new List<QuestionDTO>();
-                    remainQues = new List<QuestionRemain>();
-                    unchoosedQues = new List<QuestionDTO>();
-                    choosedQues = new List<QuestionDTO>();
-                    quesIds = new List<int?>();
-                }
+                return;
             }
-            catch (Exception e)
+            catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+            for (int i = 0; i < catalogues.Count; i++)
             {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
+                catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, config.Account.CompanyId);
+                totalCataQues += catalogues[i].questions == null ? 0: catalogues[i].questions.Count;
             }
-        }
-
-        /// <summary>
-        /// Tạo bài test dựa trên file config cho employee
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="config"></param>
-        /// <returns></returns>
-        public static string GenerateTest(string configId)
-        {
-            using (DeverateContext context = new DeverateContext())
+            if(totalCataQues == 0)
             {
-                try
-                {
-                    Configuration con = context.Configuration.SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
-                    if (con.Duration < AppConstrain.minDuration)
-                    {
-                        return Message.durationExceptopn;
-                    }
-                    List<CatalogueDTO> catas = GetCatalogueWeights(context, con.ConfigId);
-                    if (catas.Count == 0)
-                    {
-                        return Message.noCatalogueException;
-                    }
-                    if (con.TotalQuestion < catas.Count)
-                    {
-                        return Message.numberQuestionExceptopn;
-                    }
-                    Account acc = context.Account.SingleOrDefault(o => o.AccountId == con.AccountId);
+                return;
 
-
-                    var emps = from a in context.Account
-                               where a.CompanyId == acc.CompanyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
-                               select new AccountDTO(a);
-                    List<AccountDTO> accounts = emps.ToList();
-                    if (accounts.Count == 0)
-                    {
-                        return Message.noEmployeeException;
-                    }
-                    GenerateQuestions(context, accounts, con, acc.CompanyId);
-                    //for (int i = 0; i < accounts.Count; i++)
-                    //{
-                    //    GenerateQuestion(context, accounts[i].accountId, con);
-                    //}
-                }
-                catch (Exception e)
-                {
-                    File.WriteAllText(AppConstrain.logFile, e.Message);
-                }
-                return null;
             }
-        }
+            int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
+            catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
 
-
-        public static void GenerateQuestions(DeverateContext db, List<AccountDTO> accounts, Configuration config, int? companyId)
-        {
-            List<QuestionDTO> questions = new List<QuestionDTO>();
-            List<QuestionRemain> remainQues = new List<QuestionRemain>();
-            List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
-            List<QuestionDTO> choosedQues = new List<QuestionDTO>();
-            List<int?> quesIds = new List<int?>();
-            Random rand = new Random();
-            int totalCataQues = 0;
-
-            List<int?> accountIds = new List<int?>();
-            accounts.ForEach(a => accountIds.Add(a.accountId));
-            List<Test> tests = db.Test.Where(t => t.ConfigId == config.ConfigId).ToList();
-            tests = removeAvailableTests(accountIds, tests);
-            db.SaveChanges();
-            try
+            foreach (ApplicantDTO app in applicants)
             {
-                List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
-                catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
-                for (int i = 0; i < catalogues.Count; i++)
-                {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
-                    totalCataQues += catalogues[i].questions.Count;
-                }
-                if(totalCataQues == 0)
-                {
-                    return;
-                }
-                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
-                catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
-
-
-                foreach (AccountDTO acc in accounts)
-                {
-                    for (int i = 0; i < catalogues.Count; i++)
-                    {
-                        QuestionRemain quesRe = new QuestionRemain();
-                        quesRe.catalogueId = catalogues[i].catalogueId;
-                        
-                        List<QuestionDTO> totalQues = catalogues[i].questions;
-                        
-                        if(totalQues == null || totalQues.Count == 0)
-                        {
-                            continue;
-                        }
-                        int quesLenght = totalQues.Count;
-                        int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
-                        totalQues = Shuffle(totalQues);
-                        for (int j = 0; j < numbOfQues; j++)
-                        {
-                            if (!quesIds.Contains(totalQues[j].questionId))
-                            {
-                                quesIds.Add(totalQues[j].questionId);
-                                questions.Add(totalQues[j]);
-                                if (numbOfQues != quesLenght)
-                                {
-                                    choosedQues.Add(totalQues[j]);
-                                }
-                            }
-                            else
-                            {
-                                j--;
-                            }
-                        }
-                        quesRe.curNumbQues = numbOfQues;
-                        quesRe.numbCataQues = catalogues[i].questions.Count;
-                        
-                        if (numbOfQues != quesLenght)
-                        {
-                            for (int k = 0; k < quesLenght; k++)
-                            {
-                                bool isContainQues = false;
-                                for (int m = 0; m < choosedQues.Count; m++)
-                                {
-                                    if (choosedQues[m].questionId == totalQues[k].questionId)
-                                    {
-                                        isContainQues = true;
-                                        break;
-                                    }
-                                }
-                                if (isContainQues == false)
-                                {
-                                    unchoosedQues.Add(totalQues[k]);
-                                }
-                            }
-                        }
-                        quesRe.unchoosedQues = unchoosedQues;
-                        quesRe.weightPoint = catalogues[i].weightPoint;
-                        remainQues.Add(quesRe);
-                    }
-                    questions = fillQues(remainQues, totalOfQues, questions);
-                    questions = Shuffle(questions);
-
-                    Test test = new Test();
-                    test.ConfigId = config.ConfigId;
-                    test.AccountId = acc.accountId;
-                    test.CreateDate = DateTime.Now;
-                    test.IsActive = true;
-                    test.Status = "Pending";
-                    test.Code = GenerateCode();
-                    db.Test.Add(test);
-                    db.SaveChanges();
-                    List<QuestionInTest> questionInTests = new List<QuestionInTest>();
-                    for (int i = 0; i < questions.Count; i++)
-                    {
-                        QuestionInTest inTest = new QuestionInTest();
-                        inTest.TestId = test.TestId;
-                        inTest.QuestionId = questions[i].questionId;
-                        inTest.IsActive = true;
-                        questionInTests.Add(inTest);
-                        
-                    }
-                    db.QuestionInTest.AddRange(questionInTests);
-                    db.SaveChanges();
-                    questions = new List<QuestionDTO>();
-                    remainQues = new List<QuestionRemain>();
-                    unchoosedQues = new List<QuestionDTO>();
-                    choosedQues = new List<QuestionDTO>();
-                    quesIds = new List<int?>();
-                }
-            }
-            catch (Exception e)
-            {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
-            }
-        }
-
-        /// <summary>
-        /// Tạo bài kiểm tra cho người dùng dưa trên config
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="accountId"></param>
-        /// <param name="config"></param>
-        /// <returns></returns>
-        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, Configuration config, int? companyId)
-        {
-            List<QuestionDTO> questions = new List<QuestionDTO>();
-            try
-            {
-                Random rand = new Random();
-                int totalCataQues = 0;
-                List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
-                catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
-                for (int i = 0; i < catalogues.Count; i++)
-                {
-                    catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
-                    totalCataQues += catalogues[i].questions.Count;
-                }
-                int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
-                catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
-                List<QuestionRemain> remainQues = new List<QuestionRemain>();
                 for (int i = 0; i < catalogues.Count; i++)
                 {
                     QuestionRemain quesRe = new QuestionRemain();
                     quesRe.catalogueId = catalogues[i].catalogueId;
-                    List<int?> quesIds = new List<int?>();
+
                     List<QuestionDTO> totalQues = catalogues[i].questions;
-                    List<QuestionDTO> choosedQues = new List<QuestionDTO>();
+                    if(totalQues == null || totalQues.Count == 0)
+                    {
+                        continue;
+                    }
                     int quesLenght = totalQues.Count;
                     int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
                     totalQues = Shuffle(totalQues);
@@ -665,7 +344,7 @@ namespace TestManagementServices.Service
                     }
                     quesRe.curNumbQues = numbOfQues;
                     quesRe.numbCataQues = catalogues[i].questions.Count;
-                    List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
+
                     if (numbOfQues != quesLenght)
                     {
                         for (int k = 0; k < quesLenght; k++)
@@ -694,31 +373,293 @@ namespace TestManagementServices.Service
 
                 Test test = new Test();
                 test.ConfigId = config.ConfigId;
-                test.AccountId = accountId;
+                test.ApplicantId = app.applicantId;
                 test.CreateDate = DateTime.Now;
                 test.IsActive = true;
                 test.Status = "Pending";
+                test.Code = GenerateCode();
                 db.Test.Add(test);
                 db.SaveChanges();
-
-                test.Code = GenerateCode();
-                db.SaveChanges();
-
+                List<QuestionInTest> questionInTests = new List<QuestionInTest>();
                 for (int i = 0; i < questions.Count; i++)
                 {
                     QuestionInTest inTest = new QuestionInTest();
                     inTest.TestId = test.TestId;
                     inTest.QuestionId = questions[i].questionId;
                     inTest.IsActive = true;
-                    db.QuestionInTest.Add(inTest);
-                    db.SaveChanges();
-                }
+                    questionInTests.Add(inTest);
 
+                }
+                db.QuestionInTest.AddRange(questionInTests);
+                db.SaveChanges();
+                questions = new List<QuestionDTO>();
+                remainQues = new List<QuestionRemain>();
+                unchoosedQues = new List<QuestionDTO>();
+                choosedQues = new List<QuestionDTO>();
+                quesIds = new List<int?>();
             }
-            catch (Exception e)
+        }
+
+        /// <summary>
+        /// Tạo bài test dựa trên file config cho employee
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static string GenerateTest(string configId)
+        {
+            using (DeverateContext context = new DeverateContext())
             {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
+                Configuration con = context.Configuration.SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
+                if (con.Duration < AppConstrain.minDuration)
+                {
+                    return Message.durationExceptopn;
+                }
+                List<CatalogueDTO> catas = GetCatalogueWeights(context, con.ConfigId);
+                if (catas.Count == 0)
+                {
+                    return Message.noCatalogueException;
+                }
+                if (con.TotalQuestion < catas.Count)
+                {
+                    return Message.numberQuestionExceptopn;
+                }
+                Account acc = context.Account.SingleOrDefault(o => o.AccountId == con.AccountId);
+
+
+                var emps = from a in context.Account
+                            where a.CompanyId == acc.CompanyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
+                            select new AccountDTO(a);
+                List<AccountDTO> accounts = emps.ToList();
+                if (accounts.Count == 0)
+                {
+                    return Message.noEmployeeException;
+                }
+                GenerateQuestions(context, accounts, con, acc.CompanyId);
+                return null;
             }
+        }
+
+
+        public static void GenerateQuestions(DeverateContext db, List<AccountDTO> accounts, Configuration config, int? companyId)
+        {
+            List<QuestionDTO> questions = new List<QuestionDTO>();
+            List<QuestionRemain> remainQues = new List<QuestionRemain>();
+            List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
+            List<QuestionDTO> choosedQues = new List<QuestionDTO>();
+            List<int?> quesIds = new List<int?>();
+            Random rand = new Random();
+            int totalCataQues = 0;
+
+            List<int?> accountIds = new List<int?>();
+            accounts.ForEach(a => accountIds.Add(a.accountId));
+            List<Test> tests = db.Test.Where(t => t.ConfigId == config.ConfigId).ToList();
+            tests = removeAvailableTests(accountIds, tests);
+            db.SaveChanges();
+            List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
+            catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+            for (int i = 0; i < catalogues.Count; i++)
+            {
+                catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
+                totalCataQues += catalogues[i].questions.Count;
+            }
+            if(totalCataQues == 0)
+            {
+                return;
+            }
+            int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
+            catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
+
+
+            foreach (AccountDTO acc in accounts)
+            {
+                for (int i = 0; i < catalogues.Count; i++)
+                {
+                    QuestionRemain quesRe = new QuestionRemain();
+                    quesRe.catalogueId = catalogues[i].catalogueId;
+                        
+                    List<QuestionDTO> totalQues = catalogues[i].questions;
+                        
+                    if(totalQues == null || totalQues.Count == 0)
+                    {
+                        continue;
+                    }
+                    int quesLenght = totalQues.Count;
+                    int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
+                    totalQues = Shuffle(totalQues);
+                    for (int j = 0; j < numbOfQues; j++)
+                    {
+                        if (!quesIds.Contains(totalQues[j].questionId))
+                        {
+                            quesIds.Add(totalQues[j].questionId);
+                            questions.Add(totalQues[j]);
+                            if (numbOfQues != quesLenght)
+                            {
+                                choosedQues.Add(totalQues[j]);
+                            }
+                        }
+                        else
+                        {
+                            j--;
+                        }
+                    }
+                    quesRe.curNumbQues = numbOfQues;
+                    quesRe.numbCataQues = catalogues[i].questions.Count;
+                        
+                    if (numbOfQues != quesLenght)
+                    {
+                        for (int k = 0; k < quesLenght; k++)
+                        {
+                            bool isContainQues = false;
+                            for (int m = 0; m < choosedQues.Count; m++)
+                            {
+                                if (choosedQues[m].questionId == totalQues[k].questionId)
+                                {
+                                    isContainQues = true;
+                                    break;
+                                }
+                            }
+                            if (isContainQues == false)
+                            {
+                                unchoosedQues.Add(totalQues[k]);
+                            }
+                        }
+                    }
+                    quesRe.unchoosedQues = unchoosedQues;
+                    quesRe.weightPoint = catalogues[i].weightPoint;
+                    remainQues.Add(quesRe);
+                }
+                questions = fillQues(remainQues, totalOfQues, questions);
+                questions = Shuffle(questions);
+
+                Test test = new Test();
+                test.ConfigId = config.ConfigId;
+                test.AccountId = acc.accountId;
+                test.CreateDate = DateTime.Now;
+                test.IsActive = true;
+                test.Status = "Pending";
+                test.Code = GenerateCode();
+                db.Test.Add(test);
+                db.SaveChanges();
+                List<QuestionInTest> questionInTests = new List<QuestionInTest>();
+                for (int i = 0; i < questions.Count; i++)
+                {
+                    QuestionInTest inTest = new QuestionInTest();
+                    inTest.TestId = test.TestId;
+                    inTest.QuestionId = questions[i].questionId;
+                    inTest.IsActive = true;
+                    questionInTests.Add(inTest);
+                        
+                }
+                db.QuestionInTest.AddRange(questionInTests);
+                db.SaveChanges();
+                questions = new List<QuestionDTO>();
+                remainQues = new List<QuestionRemain>();
+                unchoosedQues = new List<QuestionDTO>();
+                choosedQues = new List<QuestionDTO>();
+                quesIds = new List<int?>();
+            }
+        }
+
+        /// <summary>
+        /// Tạo bài kiểm tra cho người dùng dưa trên config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="accountId"></param>
+        /// <param name="config"></param>
+        /// <returns></returns>
+        public static List<QuestionDTO> GenerateQuestion(DeverateContext db, int? accountId, Configuration config, int? companyId)
+        {
+            List<QuestionDTO> questions = new List<QuestionDTO>();
+            Random rand = new Random();
+            int totalCataQues = 0;
+            List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
+            catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+            for (int i = 0; i < catalogues.Count; i++)
+            {
+                catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
+                totalCataQues += catalogues[i].questions.Count;
+            }
+            int totalOfQues = config.TotalQuestion > totalCataQues ? totalCataQues : config.TotalQuestion;
+            catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
+            List<QuestionRemain> remainQues = new List<QuestionRemain>();
+            for (int i = 0; i < catalogues.Count; i++)
+            {
+                QuestionRemain quesRe = new QuestionRemain();
+                quesRe.catalogueId = catalogues[i].catalogueId;
+                List<int?> quesIds = new List<int?>();
+                List<QuestionDTO> totalQues = catalogues[i].questions;
+                List<QuestionDTO> choosedQues = new List<QuestionDTO>();
+                int quesLenght = totalQues.Count;
+                int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
+                totalQues = Shuffle(totalQues);
+                for (int j = 0; j < numbOfQues; j++)
+                {
+                    if (!quesIds.Contains(totalQues[j].questionId))
+                    {
+                        quesIds.Add(totalQues[j].questionId);
+                        questions.Add(totalQues[j]);
+                        if (numbOfQues != quesLenght)
+                        {
+                            choosedQues.Add(totalQues[j]);
+                        }
+                    }
+                    else
+                    {
+                        j--;
+                    }
+                }
+                quesRe.curNumbQues = numbOfQues;
+                quesRe.numbCataQues = catalogues[i].questions.Count;
+                List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
+                if (numbOfQues != quesLenght)
+                {
+                    for (int k = 0; k < quesLenght; k++)
+                    {
+                        bool isContainQues = false;
+                        for (int m = 0; m < choosedQues.Count; m++)
+                        {
+                            if (choosedQues[m].questionId == totalQues[k].questionId)
+                            {
+                                isContainQues = true;
+                                break;
+                            }
+                        }
+                        if (isContainQues == false)
+                        {
+                            unchoosedQues.Add(totalQues[k]);
+                        }
+                    }
+                }
+                quesRe.unchoosedQues = unchoosedQues;
+                quesRe.weightPoint = catalogues[i].weightPoint;
+                remainQues.Add(quesRe);
+            }
+            questions = fillQues(remainQues, totalOfQues, questions);
+            questions = Shuffle(questions);
+
+            Test test = new Test();
+            test.ConfigId = config.ConfigId;
+            test.AccountId = accountId;
+            test.CreateDate = DateTime.Now;
+            test.IsActive = true;
+            test.Status = "Pending";
+            db.Test.Add(test);
+            db.SaveChanges();
+
+            test.Code = GenerateCode();
+            db.SaveChanges();
+
+            for (int i = 0; i < questions.Count; i++)
+            {
+                QuestionInTest inTest = new QuestionInTest();
+                inTest.TestId = test.TestId;
+                inTest.QuestionId = questions[i].questionId;
+                inTest.IsActive = true;
+                db.QuestionInTest.Add(inTest);
+                db.SaveChanges();
+            }
+
 
             return questions;
         }
@@ -798,23 +739,18 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? catalogueId, int? companyId)
         {
-            try
+
+            var ques = from ca in db.CatalogueInCompany
+                        join q in db.Question on ca.Cicid equals q.Cicid
+                        where ca.CatalogueId == catalogueId && ca.CompanyId == companyId
+                        select new QuestionDTO(q.QuestionId, q.Question1, null);
+            List<QuestionDTO> questions = ques.ToList();
+            for (int i = 0; i < questions.Count; i++)
             {
-                var ques = from ca in db.CatalogueInCompany
-                           join q in db.Question on ca.Cicid equals q.Cicid
-                           where ca.CatalogueId == catalogueId && ca.CompanyId == companyId
-                           select new QuestionDTO(q.QuestionId, q.Question1, null);
-                List<QuestionDTO> questions = ques.ToList();
-                for (int i = 0; i < questions.Count; i++)
-                {
-                    questions[i].answers = GetAnswerOfQuestion(db, questions[i].questionId);
-                }
-                return questions;
+                questions[i].answers = GetAnswerOfQuestion(db, questions[i].questionId);
             }
-            catch (Exception e)
-            {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
-            }
+            return questions;
+
             return null;
         }
 
@@ -826,18 +762,13 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<AnswerDTO> GetAnswerOfQuestion(DeverateContext db, int? questionId)
         {
-            try
-            {
-                var answers = from q in db.Question
-                              join a in db.Answer on q.QuestionId equals a.QuestionId
-                              where q.QuestionId == questionId
-                              select new AnswerDTO(a);
-                return answers.ToList();
-            }
-            catch (Exception e)
-            {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
-            }
+
+            var answers = from q in db.Question
+                            join a in db.Answer on q.QuestionId equals a.QuestionId
+                            where q.QuestionId == questionId
+                            select new AnswerDTO(a);
+            return answers.ToList();
+
             return null;
 
         }
@@ -875,24 +806,16 @@ namespace TestManagementServices.Service
         /// <returns></returns>
         public static List<CatalogueDTO> GetCatalogueWeights(DeverateContext db, int? configId)
         {
-
-
-            try
+            var result = from cf in db.Configuration
+                            join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
+                            where cf.ConfigId == configId
+                            select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, null, cif.Catalogue.IsActive);
+            if (result.ToList().Count == 0)
             {
-                var result = from cf in db.Configuration
-                             join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
-                             where cf.ConfigId == configId
-                             select new CatalogueDTO(cif.CatalogueId, cif.Catalogue.Name, 0, cif.WeightPoint, null, cif.Catalogue.IsActive);
-                if (result.ToList().Count == 0)
-                {
-                    return null;
-                }
-                return result.ToList();
+                return null;
             }
-            catch (Exception e)
-            {
-                File.WriteAllText(AppConstrain.logFile, e.Message);
-            }
+            return result.ToList();
+
             return null;
         }
 
