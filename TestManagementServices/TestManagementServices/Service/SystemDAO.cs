@@ -325,7 +325,7 @@ namespace TestManagementServices.Service
                 Test test = new Test();
                 test.ConfigId = config.ConfigId;
                 test.ApplicantId = app.applicantId;
-                test.CreateDate = DateTime.Now;
+                test.CreateDate = DateTime.UtcNow;
                 test.IsActive = true;
                 test.Status = "Pending";
                 test.Code = GenerateCode();
@@ -480,7 +480,7 @@ namespace TestManagementServices.Service
                 Test test = new Test();
                 test.ConfigId = config.ConfigId;
                 test.AccountId = acc.accountId;
-                test.CreateDate = DateTime.Now;
+                test.CreateDate = DateTime.UtcNow;
                 test.IsActive = true;
                 test.Status = "Pending";
                 test.Code = GenerateCode();
@@ -579,7 +579,7 @@ namespace TestManagementServices.Service
             Test test = new Test();
             test.ConfigId = config.ConfigId;
             test.AccountId = accountId;
-            test.CreateDate = DateTime.Now;
+            test.CreateDate = DateTime.UtcNow;
             test.IsActive = true;
             test.Status = "Pending";
             db.Test.Add(test);
@@ -940,7 +940,7 @@ namespace TestManagementServices.Service
         {
             var result = from cf in db.Configuration
                          join t in db.Test on cf.ConfigId equals t.ConfigId
-                         where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.Now && DateTime.Now <= cf.EndDate
+                         where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.UtcNow && DateTime.UtcNow <= cf.EndDate
                          select new TestInfoDTO(cf.ConfigId, acccountId, t.TestId, cf.Title , null);
             return result.ToList();
         }
@@ -965,7 +965,7 @@ namespace TestManagementServices.Service
                 }
                 if (test.StartTime == null)
                 {
-                    test.StartTime = DateTime.Now;
+                    test.StartTime = DateTime.UtcNow;
                     db.SaveChanges();
                 }
             }

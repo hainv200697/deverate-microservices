@@ -10,19 +10,42 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
-        public static List<UserStatisticDTO> GetOverallPointStatisticByCompanyId(int? companyId)
+        public static List<UserStatisticDTO> GetOverallPointStatisticByCompanyId(int? companyId, int? configId, bool? isEmployee)
         {
             using(DeverateContext db = new DeverateContext())
             {
-                if(companyId == null)
+                if(companyId == null && configId == null)
                 {
                     return null;
                 }
-                Configuration configuration = db.Configuration.Where(c => c.Account.CompanyId == companyId).LastOrDefault();
+
+                Configuration configuration = null;
+                if(configId != null)
+                {
+                    configuration = db.Configuration.Where(c => c.ConfigId == configId).FirstOrDefault();
+                    if(configuration == null)
+                    {
+                        return null;
+                    }
+                }
+                else
+                {
+                    if(isEmployee == null)
+                    {
+                        configuration = db.Configuration.Where(c => c.Account.CompanyId == companyId && c.Type == true).LastOrDefault();
+                    }
+                    else
+                    {
+                        configuration = db.Configuration.Where(c => c.Account.CompanyId == companyId && c.Type == isEmployee).LastOrDefault();
+                    }
+                    
+                }
+                
                 List<Test> tests = db.Test
                     .Include(t => t.Account)
                     .Include(t => t.Applicant)
                     .Include(t => t.Statistic)
+                    .ThenInclude(t => t.Rank)
                     .Where(t => t.ConfigId == configuration.ConfigId && t.Status == "Submitted").ToList();
                 List<UserStatisticDTO> userStatistics = new List<UserStatisticDTO>();
                if(tests.Count == 0 || tests == null)
@@ -38,13 +61,30 @@ namespace TestManagementServices.Service
                     }
                     if (!userIds.Contains(t.AccountId)){
                         userIds.Add(t.AccountId);
+                        Rank r = t.Statistic.First().Rank;
                         if(t.AccountId != null)
                         {
-                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, configuration.CreateDate));
+                            if(r != null)
+                            {
+                                userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, t.Statistic.First().Rank.Name, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
+                            }
+                            else
+                            {
+                                userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, "DEV0", (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
+                            }
+                            
                         }
                         else
                         {
-                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Fullname, t.StartTime, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, configuration.CreateDate));
+                            if (r != null)
+                            {
+                                userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, t.Statistic.First().Rank.Name, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
+                            }
+                            else
+                            {
+                                userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, "DEV0", (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
+                            }
+                            
                         }
                         
                     }

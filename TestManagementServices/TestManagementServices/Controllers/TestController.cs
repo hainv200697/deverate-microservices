@@ -107,11 +107,11 @@ namespace TestManagementServices.Controllers
         }
 
         [HttpGet("GetOverallPointStatistic")]
-        public IActionResult GetOverallPointStatistic(int? companyId)
+        public IActionResult GetOverallPointStatistic(int? companyId, int? configId, bool isEmployee)
         {
 
 
-            return Ok(StatisticDAO.GetOverallPointStatisticByCompanyId(companyId));
+            return Ok(StatisticDAO.GetOverallPointStatisticByCompanyId(companyId, configId, isEmployee));
         }
 
 
