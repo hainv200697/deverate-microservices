@@ -18,11 +18,12 @@ namespace TestManagementServices.Model
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }
         public int duration { get; set; }
+        public int timeRemaining { get; set; }
         public bool isActive { get; set; }
         public string status { get; set; }
 
         public ConfigurationDTO() { }
-        public ConfigurationDTO(Configuration config, int? accountId, int? applicantId, string status)
+        public ConfigurationDTO(Configuration config, Test test)
         {
             this.title = config.Title;
             this.configId = config.ConfigId;
@@ -33,9 +34,16 @@ namespace TestManagementServices.Model
             this.endDate = config.EndDate;
             this.duration = config.Duration;
             this.isActive = config.IsActive;
-            this.accountId = accountId;
-            this.applicantId = applicantId;
-            this.status = status;
+            this.accountId = test.AccountId;
+            this.applicantId = test.ApplicantId;
+            this.status = test.Status;
+            if (test.StartTime == null)
+            {
+                this.timeRemaining = config.Duration * 60;
+            }
+            else {
+                this.timeRemaining = (int) Math.Floor(test.StartTime.Value.AddMinutes(config.Duration).Subtract(DateTime.UtcNow).TotalSeconds);
+            }
         }
 
     }

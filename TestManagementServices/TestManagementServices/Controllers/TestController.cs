@@ -33,13 +33,18 @@ namespace TestManagementServices.Controllers
         public IActionResult GetConfig(int testId)
         {
             ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
+            if (con.timeRemaining <= 10)
+            {
+                SystemDAO.AutoSubmit(testId);
+                con = SystemDAO.GetConfig(context, testId);
+            }
             return Ok(con);
         }
 
         [HttpPost("MyTest")]
         public IActionResult QueryQuestionInMyTest([FromBody]TestInfoDTO testInfo) 
         {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo,true);
+            var listQuestion = SystemDAO.GetQuestionInTest(testInfo,true);
             if (listQuestion == null)
             {
                 return BadRequest("Code invalid");
@@ -53,7 +58,7 @@ namespace TestManagementServices.Controllers
             try
             {
                 SystemDAO.SaveAnswer(userTest);
-                RankPoint rp = SystemDAO.EvaluateRank(context, userTest);
+                RankPoint rp = SystemDAO.EvaluateRank(userTest);
                 if (rp == null)
                 {
                     return BadRequest("Code invalid, Submit fail");
@@ -118,7 +123,7 @@ namespace TestManagementServices.Controllers
         [HttpPost("ManagerInTest")]
         public IActionResult GetQuesionInTest([FromBody]TestInfoDTO testInfo)
         {
-            var listQuestion = SystemDAO.GetQuestionInTest(context, testInfo, false);
+            var listQuestion = SystemDAO.GetQuestionInTest(testInfo, false);
             if (listQuestion == null)
             {
                 return BadRequest("Code invalid");

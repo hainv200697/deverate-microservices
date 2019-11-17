@@ -38,5 +38,14 @@ namespace TestManagementServices.Models
             this.accountName = name;
             this.isActive = test.IsActive;
         }
+
+        public TestInfoDTO(Test test)
+        {
+            this.configId = test.ConfigId;
+            this.accountId = test.AccountId;
+            this.testId = test.TestId;
+            this.code = test.Code;
+            this.isActive = test.IsActive;
+        }
     }
 }
