@@ -59,7 +59,7 @@ namespace TestManagementServices.Controllers
                     return BadRequest("Code invalid, Submit fail");
                 }
                 return Ok(rp);
-            } catch (Exception e)
+            } catch (Exception)
             {
                 return StatusCode(500);
             }

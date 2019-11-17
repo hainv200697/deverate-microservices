@@ -179,8 +179,6 @@ namespace TestManagementServices.Service
                 }
                 List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
                 
-
-                //List<CatalogueInCompany> catalogueInCompanies = db.CatalogueInCompany.Include(c => c.Catalogue).Where(c => c.CompanyId == account.CompanyId).ToList();
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for(int j = 0; j < configurations.Count; j++)
                 {
