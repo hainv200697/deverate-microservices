@@ -19,26 +19,23 @@ namespace ResourceServices.Service
         }
 
 
-        public static List<CompanyDTO> GetAllCompany(bool isActive)
+        public static List<CompanyDTO> GetAllCompany()
         {
             using (DeverateContext db = new DeverateContext())
             {
                 var company = from com in db.Company
                               join acc in db.Account on com.CompanyId equals acc.CompanyId
-                              where com.IsActive == isActive && acc.RoleId == 2
+                              where acc.RoleId == 2
                               select new CompanyDTO(com, acc.Username, acc.Email, acc.Fullname);
                 return company.ToList().OrderByDescending(x => x.companyId).ToList();
             }
         }
 
-        public static CompanyDTO GetCompanyById(int? id)
+        public static CompanyDataDTO GetCompanyById(int? id)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var company = from com in db.Company
-                              where com.CompanyId == id
-                              select new CompanyDTO(com);
-                return company.FirstOrDefault();
+                return db.Company.Include(x => x.Account).Where(x => x.CompanyId == id).Select(x => new CompanyDataDTO(x, x.Account.FirstOrDefault())).FirstOrDefault();
             }
         }
 
@@ -60,10 +57,10 @@ namespace ResourceServices.Service
                 Company com = new Company();
                 com.Address = companyData.CompanyDTO.address;
                 com.Name = companyData.CompanyDTO.name;
-                com.CreateAt = DateTime.Now;
+                com.CreateAt = DateTime.UtcNow;
                 com.Fax = companyData.CompanyDTO.fax;
                 com.Phone = companyData.CompanyDTO.phone;
-                com.IsActive = companyData.CompanyDTO.isActive.Value;
+                com.IsActive = companyData.CompanyDTO.isActive.Value;  
                 var result = db.Company.Add(com);
                 var cata = db.Catalogue.Where(x => x.IsActive && !x.Type).ToList();
                 // add all catalogue to companyCatalogue
@@ -98,18 +95,11 @@ namespace ResourceServices.Service
             }
         }
 
-        public static string DisableCompany(List<CompanyDTO> company)
+        public static string DisableCompany(List<int> company, bool? status)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                Company com;
-                foreach (var item in company)
-                {
-                    com = db.Company.SingleOrDefault(co => co.CompanyId == item.companyId);
-                    com.Name = item.name;
-                    com.Address = item.address;
-                    com.IsActive = item.isActive.Value;
-                }
+                db.Company.Where(x => company.Contains(x.CompanyId)).ToList().ForEach(x => x.IsActive = status.Value);
                 db.SaveChanges();
                 return null;
             }

@@ -27,11 +27,11 @@ namespace ResourceServices.Controllers
 
         [Route("GetAllCompany")]
         [HttpGet]
-        public ActionResult<IEnumerable<string>> GetAllCompany(bool isActive)
+        public ActionResult<IEnumerable<string>> GetAllCompany()
         {
             try
             {
-                List<CompanyDTO> com = CompanyDAO.GetAllCompany(isActive);
+                List<CompanyDTO> com = CompanyDAO.GetAllCompany();
                 return Ok(rm.Success(com));
             }
             catch (Exception)
@@ -40,13 +40,13 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [Route("GetAllCompanyById")]
+        [Route("GetCompanyById")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompanyById(int id)
         {
             try
             {
-                CompanyDTO com = CompanyDAO.GetCompanyById(id);
+                CompanyDataDTO com = CompanyDAO.GetCompanyById(id);
                 return Ok(rm.Success(com));
             }
             catch (Exception)
@@ -107,11 +107,11 @@ namespace ResourceServices.Controllers
 
         [Route("DisableCompany")]
         [HttpPut]
-        public IActionResult PutDisableCompany([FromBody] List<CompanyDTO> company)
+        public IActionResult PutDisableCompany([FromBody] List<int> company, bool? status)
         {
             try
             {
-                string message = CompanyDAO.DisableCompany(company);
+                string message = CompanyDAO.DisableCompany(company, status);
                 return Ok(rm.Success(message));
             }
             catch (Exception)
