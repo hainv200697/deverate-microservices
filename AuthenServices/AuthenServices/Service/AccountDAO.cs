@@ -81,6 +81,7 @@ namespace AuthenServices.Service
                 account.RoleId = ms.Role;
                 account.CompanyId = ms.CompanyId;
                 account.IsActive = true;
+                context.Account.Add(account);
                 context.SaveChanges();
                 return new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname);
             } catch (Exception ex)
