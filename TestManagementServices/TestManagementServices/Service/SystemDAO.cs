@@ -938,10 +938,7 @@ namespace TestManagementServices.Service
                         maxPoint += quess[i].Question.MaxPoint;
                         point += quess[i].Point;
                         quess.RemoveAt(i);
-                        if(i != 0)
-                        {
-                            i--;
-                        }
+                        i--;
                         
                     }
                 }
