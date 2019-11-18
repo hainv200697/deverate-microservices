@@ -49,7 +49,6 @@ namespace AuthenServices.Service
         {
             try
             {
-                Account account = new Account();
                 var items = ms.Fullname.Split(' ');
                 string username = items[items.Length - 1];
                 for (int i = 0; i < items.Length - 1; i++)
@@ -69,6 +68,7 @@ namespace AuthenServices.Service
                 username = username.ToUpper() + AppConstrain.newestAccount;
                 username = RemoveVietnameseTone(username);
 
+                Account account = new Account();
                 account.Username = username.ToUpper();
                 string password = "";
                 account.Password = generatePasswordHash(out password);
@@ -81,7 +81,6 @@ namespace AuthenServices.Service
                 account.RoleId = ms.Role;
                 account.CompanyId = ms.CompanyId;
                 account.IsActive = true;
-                context.Account.Add(account);
                 context.SaveChanges();
                 return new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname);
             } catch (Exception ex)

@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using AuthenServices.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.Generation.Processors.Security;
@@ -42,14 +35,14 @@ namespace Deverate
             services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_consumer));
             services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_applicant));
 
-            //swwagger
+            //swagger
             services.AddOpenApiDocument(config =>
             {
                 config.PostProcess = document =>
                 {
                     document.Info.Version = "v1";
-                    document.Info.Title = string.Format($"Authen Service");
-                    document.Info.Description = string.Format($"Developer Documentation Page For Authen Service");
+                    document.Info.Title = string.Format($"TestManagement Service");
+                    document.Info.Description = string.Format($"Developer Documentation Page For TestManagement Service");
                 };
                 config.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
                 {
