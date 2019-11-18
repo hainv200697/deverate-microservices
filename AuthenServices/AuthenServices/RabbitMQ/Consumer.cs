@@ -57,7 +57,10 @@ namespace AuthenServices.RabbitMQ
                     case "AccountGenerate":
                         var messageAccount = JsonConvert.DeserializeObject<MessageAccount>(message);
                         MessageAccountDTO messageDTO = AccountDAO.GenerateCompanyAccount(context, messageAccount);
-                        producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
+                        if (messageDTO != null)
+                        {
+                            producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
+                        }
                         break;
                     case "ListAccountGenerate":
                         var listmessageAccount = JsonConvert.DeserializeObject<List<MessageAccount>>(message);
@@ -65,7 +68,10 @@ namespace AuthenServices.RabbitMQ
                         {
 
                             MessageAccountDTO msAccountDTO = AccountDAO.GenerateCompanyAccount(context, msAccount);
-                            producer.PublishMessage(message: JsonConvert.SerializeObject(msAccountDTO), "AccountToEmail");
+                            if (msAccount != null)
+                            {
+                                producer.PublishMessage(message: JsonConvert.SerializeObject(msAccountDTO), "AccountToEmail");
+                            }
                         }
                         break;
                     case "ResendPassword":

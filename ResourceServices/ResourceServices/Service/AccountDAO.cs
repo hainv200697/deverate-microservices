@@ -29,7 +29,7 @@ namespace AuthenServices.Service
             {
                 result = BCrypt.Net.BCrypt.Verify(password, account.Password);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

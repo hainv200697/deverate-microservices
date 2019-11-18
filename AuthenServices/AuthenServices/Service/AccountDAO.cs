@@ -49,30 +49,26 @@ namespace AuthenServices.Service
         {
             try
             {
-
-
-            
-            
-                Account account = new Account();
                 var items = ms.Fullname.Split(' ');
                 string username = items[items.Length - 1];
                 for (int i = 0; i < items.Length - 1; i++)
                 {
                     username += items[i].ElementAt(0);
                 }
-                          if(AppConstrain.newestAccount == null)
-            {
-                List<Account> accounts = context.Account.ToList();
-                AppConstrain.newestAccount = (accounts[accounts.Count - 1].AccountId + 1);
-            }
-            else
-            {
-                AppConstrain.newestAccount++;
-            }
+                if(AppConstrain.newestAccount == null)
+                {
+                    List<Account> accounts = context.Account.ToList();
+                    AppConstrain.newestAccount = (accounts[accounts.Count - 1].AccountId + 1);
+                }
+                else
+                {
+                    AppConstrain.newestAccount++;
+                }
 
                 username = username.ToUpper() + AppConstrain.newestAccount;
                 username = RemoveVietnameseTone(username);
 
+                Account account = new Account();
                 account.Username = username.ToUpper();
                 string password = "";
                 account.Password = generatePasswordHash(out password);
@@ -85,7 +81,6 @@ namespace AuthenServices.Service
                 account.RoleId = ms.Role;
                 account.CompanyId = ms.CompanyId;
                 account.IsActive = true;
-                context.Account.Add(account);
                 context.SaveChanges();
                 return new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname);
             } catch (Exception ex)

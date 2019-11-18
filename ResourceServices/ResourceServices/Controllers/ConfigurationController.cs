@@ -76,7 +76,7 @@ namespace ResourceServices.Controllers
                     return Ok(rm.Success("Save success"));
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
