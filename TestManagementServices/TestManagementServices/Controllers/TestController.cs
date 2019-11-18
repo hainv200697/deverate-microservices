@@ -33,7 +33,7 @@ namespace TestManagementServices.Controllers
         public IActionResult GetConfig(int testId)
         {
             ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
-            if (con.timeRemaining <= 10)
+            if (con.status == "Doing" && con.timeRemaining <= 10)
             {
                 SystemDAO.AutoSubmit(testId);
                 con = SystemDAO.GetConfig(context, testId);

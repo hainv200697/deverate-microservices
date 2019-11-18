@@ -42,7 +42,13 @@ namespace TestManagementServices.Model
                 this.timeRemaining = config.Duration * 60;
             }
             else {
-                this.timeRemaining = (int) Math.Floor(test.StartTime.Value.AddMinutes(config.Duration).Subtract(DateTime.UtcNow).TotalSeconds);
+                if (test.Status == "Submitted" || test.Status == "Expired")
+                {
+                    this.timeRemaining = 0;
+                } else
+                {
+                    this.timeRemaining = (int)Math.Floor(test.StartTime.Value.AddMinutes(config.Duration).Subtract(DateTime.UtcNow).TotalSeconds);
+                }
             }
         }
 
