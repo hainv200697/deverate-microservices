@@ -13,7 +13,7 @@ namespace ResourceServices.Model
         public int? cicId { get; set; }
         public int? configId { get; set; }
         public int? catalogueId { get; set; }
-        [JsonProperty("name")]
+        [JsonProperty(PropertyName = "name")]
         public string catalogueName { get; set; }
         public double? weightPoint { get; set; }
         public bool? isActive { get; set; }

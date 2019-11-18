@@ -40,12 +40,12 @@ namespace ResourceServices.Controllers
 
         [Route("GetConfigurationById")]
         [HttpGet]
-        public ActionResult<IEnumerable<string>> GetConfigurationById(int id)
+        public ActionResult GetConfigurationById(int id)
         {
             try
             {
                 ConfigurationDTO con = ConfigurationDAO.GetConfigurationById(id);
-                return Ok(rm.Success(con));
+                return Ok(con);
             }
             catch (Exception)
             {
