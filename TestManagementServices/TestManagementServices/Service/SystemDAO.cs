@@ -80,15 +80,18 @@ namespace TestManagementServices.Service
             List<int?> cicIds = new List<int?>();
             con.catalogueInSamples.ForEach(c => cicIds.Add(c.cicId));
             List<CatalogueInCompany> catalogueIns = db.CatalogueInCompany.Include(c => c.Catalogue).Include(c => c.Question).ThenInclude(c => c.Answer).Where(c => cicIds.Contains(c.Cicid)).ToList();
+            List<Question> cloneQuesList = new List<Question>();
             foreach(CatalogueInCompany cic in catalogueIns)
             {
                 for(int i = 0; i < cic.Question.ToList().Count; i++)
                 {
-                    if(cic.Question.ToList()[i].IsActive == false)
+                    if(cic.Question.ToList()[i].IsActive == true)
                     {
-                        cic.Question.ToList().RemoveAt(i);
+                        cloneQuesList.Add(cic.Question.ToList()[i]);
                     }
                 }
+                cic.Question = cloneQuesList;
+                cloneQuesList = new List<Question>();
             }
             if(catalogueIns.Count == 0)
             {
@@ -935,10 +938,7 @@ namespace TestManagementServices.Service
                         maxPoint += quess[i].Question.MaxPoint;
                         point += quess[i].Point;
                         quess.RemoveAt(i);
-                        if(i != 0)
-                        {
-                            i--;
-                        }
+                        i--;
                         
                     }
                 }
