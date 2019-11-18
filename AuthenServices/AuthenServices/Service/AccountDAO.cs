@@ -16,8 +16,12 @@ namespace AuthenServices.Service
         public static string CheckLogin(DeverateContext context, string username, string password)
         {
             username = username.ToUpper();
-            Account account = context.Account.Include(a => a.Role).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
+            Account account = context.Account.Include(a => a.Role).Include(a => a.Company).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
             if (account == null)
+            {
+                return null;
+            }
+            if(account.Company.IsActive == false)
             {
                 return null;
             }
@@ -45,6 +49,10 @@ namespace AuthenServices.Service
         {
             try
             {
+
+
+            
+            
                 Account account = new Account();
                 var items = ms.Fullname.Split(' ');
                 string username = items[items.Length - 1];
@@ -52,8 +60,17 @@ namespace AuthenServices.Service
                 {
                     username += items[i].ElementAt(0);
                 }
+                          if(AppConstrain.newestAccount == null)
+            {
                 List<Account> accounts = context.Account.ToList();
-                username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
+                AppConstrain.newestAccount = (accounts[accounts.Count - 1].AccountId + 1);
+            }
+            else
+            {
+                AppConstrain.newestAccount++;
+            }
+
+                username = username.ToUpper() + AppConstrain.newestAccount;
                 username = RemoveVietnameseTone(username);
 
                 account.Username = username.ToUpper();
