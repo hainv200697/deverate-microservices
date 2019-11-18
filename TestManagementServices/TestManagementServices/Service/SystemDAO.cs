@@ -77,100 +77,110 @@ namespace TestManagementServices.Service
             Random rand = new Random();
             int totalCataQues = 0;
 
-                List<int?> cicIds = new List<int?>();
-                con.catalogueInSamples.ForEach(c => cicIds.Add(c.cicId));
-                List<CatalogueInCompany> catalogueIns = db.CatalogueInCompany.Include(c => c.Catalogue).Include(c => c.Question).ThenInclude(c => c.Answer).Where(c => cicIds.Contains(c.Cicid)).ToList();
-                if(catalogueIns.Count == 0)
+            List<int?> cicIds = new List<int?>();
+            con.catalogueInSamples.ForEach(c => cicIds.Add(c.cicId));
+            List<CatalogueInCompany> catalogueIns = db.CatalogueInCompany.Include(c => c.Catalogue).Include(c => c.Question).ThenInclude(c => c.Answer).Where(c => cicIds.Contains(c.Cicid)).ToList();
+            foreach(CatalogueInCompany cic in catalogueIns)
+            {
+                for(int i = 0; i < cic.Question.ToList().Count; i++)
                 {
-                    return null;
-                }
-                List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
-                for(int i = 0; i < catalogueIns.Count; i++)
-                {
-                    for(int j = 0; j < con.catalogueInSamples.Count; j++)
+                    if(cic.Question.ToList()[i].IsActive == false)
                     {
-                        if(con.catalogueInSamples[j].cicId == catalogueIns[i].Cicid)
+                        cic.Question.ToList().RemoveAt(i);
+                    }
+                }
+            }
+            if(catalogueIns.Count == 0)
+            {
+                return null;
+            }
+            List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
+            for(int i = 0; i < catalogueIns.Count; i++)
+            {
+                for(int j = 0; j < con.catalogueInSamples.Count; j++)
+                {
+                    if(con.catalogueInSamples[j].cicId == catalogueIns[i].Cicid)
+                    {
+                        catalogues.Add(new CatalogueDTO(catalogueIns[i].CatalogueId, catalogueIns[i].Catalogue.Name, 0, con.catalogueInSamples[j].weightPoint, catalogueIns[i].Question.ToList()));
+                        totalCataQues += catalogueIns[i].Question.ToList().Count;
+                    }
+                }
+            }
+            if (catalogues == null || catalogues.Count == 0)
+            {
+                return null;
+            }
+
+            if (totalCataQues == 0)
+            {
+                return null;
+
+            }
+            catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+
+            int totalOfQues = con.totalQuestion.Value > totalCataQues ? totalCataQues : con.totalQuestion.Value;
+            catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
+
+
+            for (int i = 0; i < catalogues.Count; i++)
+            {
+                QuestionRemain quesRe = new QuestionRemain();
+                quesRe.catalogueId = catalogues[i].catalogueId;
+
+                List<Question> totalQues = catalogues[i].questionList;
+                if (totalQues == null || totalQues.Count == 0)
+                {
+                    continue;
+                }
+                int quesLenght = totalQues.Count;
+                int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
+                totalQues = ShuffleQuestion(totalQues);
+                for (int j = 0; j < numbOfQues; j++)
+                {
+                    if (!quesIds.Contains(totalQues[j].QuestionId))
+                    {
+                        quesIds.Add(totalQues[j].QuestionId);
+                        List<AnswerDTO> answers = totalQues[j].Answer.Select(a => new AnswerDTO(a)).ToList();
+                        questions.Add(new QuestionDTO(totalQues[j].QuestionId, totalQues[j].Question1, answers));
+                        if (numbOfQues != quesLenght)
                         {
-                            catalogues.Add(new CatalogueDTO(catalogueIns[i].CatalogueId, catalogueIns[i].Catalogue.Name, 0, con.catalogueInSamples[j].weightPoint, catalogueIns[i].Question.ToList()));
-                            totalCataQues += catalogueIns[i].Question.ToList().Count;
+                            choosedQues.Add(new QuestionDTO(totalQues[j].QuestionId, answers));
                         }
                     }
-                }
-                if (catalogues == null || catalogues.Count == 0)
-                {
-                    return null;
-                }
-
-                if (totalCataQues == 0)
-                {
-                    return null;
-
-                }
-                catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
-
-                int totalOfQues = con.totalQuestion.Value > totalCataQues ? totalCataQues : con.totalQuestion.Value;
-                catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
-
-
-                for (int i = 0; i < catalogues.Count; i++)
-                {
-                    QuestionRemain quesRe = new QuestionRemain();
-                    quesRe.catalogueId = catalogues[i].catalogueId;
-
-                    List<Question> totalQues = catalogues[i].questionList;
-                    if (totalQues == null || totalQues.Count == 0)
+                    else
                     {
-                        continue;
+                        j--;
                     }
-                    int quesLenght = totalQues.Count;
-                    int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
-                    totalQues = ShuffleQuestion(totalQues);
-                    for (int j = 0; j < numbOfQues; j++)
+                }
+                quesRe.curNumbQues = numbOfQues;
+                quesRe.numbCataQues = catalogues[i].questionList.Count;
+
+                if (numbOfQues != quesLenght)
+                {
+                    for (int k = 0; k < quesLenght; k++)
                     {
-                        if (!quesIds.Contains(totalQues[j].QuestionId))
+                        List<AnswerDTO> answers = totalQues[k].Answer.Select(a => new AnswerDTO(a)).ToList();
+                        bool isContainQues = false;
+                        for (int m = 0; m < choosedQues.Count; m++)
                         {
-                            quesIds.Add(totalQues[j].QuestionId);
-                            List<AnswerDTO> answers = totalQues[j].Answer.Select(a => new AnswerDTO(a)).ToList();
-                            questions.Add(new QuestionDTO(totalQues[j].QuestionId, totalQues[j].Question1, answers));
-                            if (numbOfQues != quesLenght)
+                            if (choosedQues[m].questionId == totalQues[k].QuestionId)
                             {
-                                choosedQues.Add(new QuestionDTO(totalQues[j].QuestionId, answers));
+                                isContainQues = true;
+                                break;
                             }
                         }
-                        else
+                        if (isContainQues == false)
                         {
-                            j--;
+                            unchoosedQues.Add(new QuestionDTO(totalQues[k].QuestionId, totalQues[k].Question1, answers));
                         }
                     }
-                    quesRe.curNumbQues = numbOfQues;
-                    quesRe.numbCataQues = catalogues[i].questionList.Count;
-
-                    if (numbOfQues != quesLenght)
-                    {
-                        for (int k = 0; k < quesLenght; k++)
-                        {
-                            List<AnswerDTO> answers = totalQues[k].Answer.Select(a => new AnswerDTO(a)).ToList();
-                            bool isContainQues = false;
-                            for (int m = 0; m < choosedQues.Count; m++)
-                            {
-                                if (choosedQues[m].questionId == totalQues[k].QuestionId)
-                                {
-                                    isContainQues = true;
-                                    break;
-                                }
-                            }
-                            if (isContainQues == false)
-                            {
-                                unchoosedQues.Add(new QuestionDTO(totalQues[k].QuestionId, totalQues[k].Question1, answers));
-                            }
-                        }
-                    }
-                    quesRe.unchoosedQues = unchoosedQues;
-                    quesRe.weightPoint = catalogues[i].weightPoint;
-                    remainQues.Add(quesRe);
                 }
-                questions = fillQues(remainQues, totalOfQues, questions);
-                questions = Shuffle(questions);
+                quesRe.unchoosedQues = unchoosedQues;
+                quesRe.weightPoint = catalogues[i].weightPoint;
+                remainQues.Add(quesRe);
+            }
+            questions = fillQues(remainQues, totalOfQues, questions);
+            questions = Shuffle(questions);
             return questions;
         }
 
@@ -670,7 +680,7 @@ namespace TestManagementServices.Service
 
             var ques = from ca in db.CatalogueInCompany
                         join q in db.Question on ca.Cicid equals q.Cicid
-                        where ca.CatalogueId == catalogueId && ca.CompanyId == companyId
+                        where ca.CatalogueId == catalogueId && ca.CompanyId == companyId && q.IsActive == true
                         select new QuestionDTO(q.QuestionId, q.Question1, null);
             List<QuestionDTO> questions = ques.ToList();
             for (int i = 0; i < questions.Count; i++)
@@ -685,7 +695,7 @@ namespace TestManagementServices.Service
 
             var answers = from q in db.Question
                             join a in db.Answer on q.QuestionId equals a.QuestionId
-                            where q.QuestionId == questionId
+                            where q.QuestionId == questionId && q.IsActive == true
                             select new AnswerDTO(a);
             return answers.ToList();
 
