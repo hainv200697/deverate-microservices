@@ -57,9 +57,6 @@ namespace TestManagementServices.RabbitMQ
                         SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
                         break;
                 }
-                
-                //var messageAccountDTO = JsonConvert.DeserializeObject<MessageAccountDTO>(message);
-                //EmailSender.SendMailAsync(messageAccountDTO.Email, "Welcome To DEVERATE", "Username: " + messageAccountDTO.Username + ", Password: " + messageAccountDTO.Password);
             };
             channel.BasicConsume(queue: queueName,
                                  autoAck: false,
