@@ -1,22 +1,22 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: testmanagement
+  name: authenticate
 spec:
   replicas: 1
   selector:
     matchLabels:
-      component: testmanagement
+      component: authenticate
   template:
     metadata:
       labels:
-        component: testmanagement
+        component: authenticate
     spec:
       containers:
       - env:
         - name: SPRING_EUREKA
           value: http://eureka-cluster-ip-service:8761/eureka
-        image: asia.gcr.io/sunny-airfoil-258516/test:1.0.5
-        name: testmanagement
+        image: asia.gcr.io/sunny-airfoil-258516/authenticate:1.0.7
+        name: authenticate
         ports:
         - containerPort: 80

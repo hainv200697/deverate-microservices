@@ -21,7 +21,7 @@ namespace AuthenServices.Service
             {
                 return null;
             }
-            if(account.Company.IsActive == false)
+            if(account.RoleId != 1 && account.Company.IsActive == false)
             {
                 return null;
             }

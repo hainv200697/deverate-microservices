@@ -22,13 +22,20 @@ namespace AuthenServices.Controllers
         [HttpPost("Login")]
         public ActionResult<IEnumerable<string>> PostAuthenUser([FromBody]AccountDTO account)
         {
-
-            string token = AccountDAO.CheckLogin(context, account.Username, account.Password);
-            if (token == null)
+            try
             {
-                return BadRequest("Invalid username or password");
+                string token = AccountDAO.CheckLogin(context, account.Username, account.Password);
+                if (token == null)
+                {
+                    return BadRequest("Invalid username or password");
+                }
+                return Ok(new TokenResponse { Token = token });
             }
-            return Ok(new TokenResponse { Token = token});
+            catch(Exception ex)
+            {
+                Console.WriteLine("Error " + ex);
+                return StatusCode(500);
+            }
         }
 
         [HttpPost("CreateManagerAccount")]
