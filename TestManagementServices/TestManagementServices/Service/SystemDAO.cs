@@ -970,6 +970,7 @@ namespace TestManagementServices.Service
                     if (test.StartTime == null)
                     {
                         test.StartTime = DateTime.UtcNow;
+                        test.Status = "Doing";
                         context.SaveChanges();
                     }
                 }
