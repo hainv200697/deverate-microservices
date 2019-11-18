@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 
 namespace AuthenServices.Service
@@ -44,32 +43,40 @@ namespace AuthenServices.Service
 
         public static MessageAccountDTO GenerateCompanyAccount(DeverateContext context, MessageAccount ms)
         {
-            Account account = new Account();
-            var items = ms.Fullname.Split(' ');
-            string username = items[items.Length - 1];
-            for (int i = 0; i < items.Length - 1; i++)
+            try
             {
-                username += items[i].ElementAt(0);
-            }
-            List<Account> accounts = context.Account.ToList();
-            username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
-            username = RemoveVietnameseTone(username);
+                Account account = new Account();
+                var items = ms.Fullname.Split(' ');
+                string username = items[items.Length - 1];
+                for (int i = 0; i < items.Length - 1; i++)
+                {
+                    username += items[i].ElementAt(0);
+                }
+                List<Account> accounts = context.Account.ToList();
+                username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
+                username = RemoveVietnameseTone(username);
 
-            account.Username = username.ToUpper();
-            string password = "";
-            account.Password = generatePasswordHash(out password);
-            account.Fullname = ms.Fullname;
-            account.Email = ms.Email;
-            account.Gender = ms.Gender;
-            account.Address = ms.Address;
-            account.Phone = ms.Phone;
-            account.JoinDate = DateTime.Now;
-            account.RoleId = ms.Role;
-            account.CompanyId = ms.CompanyId;
-            account.IsActive = true;
-            context.Account.Add(account);
-            context.SaveChanges();
-            return new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname);
+                account.Username = username.ToUpper();
+                string password = "";
+                account.Password = generatePasswordHash(out password);
+                account.Fullname = ms.Fullname;
+                account.Email = ms.Email;
+                account.Gender = ms.Gender;
+                account.Address = ms.Address;
+                account.Phone = ms.Phone;
+                account.JoinDate = DateTime.UtcNow;
+                account.RoleId = ms.Role;
+                account.CompanyId = ms.CompanyId;
+                account.IsActive = true;
+                context.Account.Add(account);
+                context.SaveChanges();
+                return new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname);
+            } catch (Exception ex)
+            {
+                Console.WriteLine("Generate Account for " + ms.Fullname + " fail");
+                Console.WriteLine("Error " + ex);
+                return null;
+            }
         }
 
         private static string generatePasswordHash(out string password)
