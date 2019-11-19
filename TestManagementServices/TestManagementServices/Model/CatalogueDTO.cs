@@ -61,7 +61,7 @@ namespace TestManagementServices.Model
         {
             this.configId = configId;
         }
-        [JsonProperty("CatalogueId")]
+        [JsonProperty("catalogueId")]
         public int? catalogueId { get; set; }
         public int? configId { get; set; }
         public string name { get; set; }
