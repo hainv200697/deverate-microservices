@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TestManagementServices.Model
 {
-    [JsonObject("AccountDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject("SampleTestDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class SampleTestDTO
     {
         public List<CatalogueDTO> catalogues { get; set; }
