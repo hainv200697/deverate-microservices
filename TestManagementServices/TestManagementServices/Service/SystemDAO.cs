@@ -77,9 +77,9 @@ namespace TestManagementServices.Service
             Random rand = new Random();
             int totalCataQues = 0;
 
-            List<int?> cicIds = new List<int?>();
-            con.catalogueInSamples.ForEach(c => cicIds.Add(c.cicId));
-            List<CatalogueInCompany> catalogueIns = db.CatalogueInCompany.Include(c => c.Catalogue).Include(c => c.Question).ThenInclude(c => c.Answer).Where(c => cicIds.Contains(c.Cicid)).ToList();
+            List<int?> cIds = new List<int?>();
+            con.catalogueInSamples.ForEach(c => cIds.Add(c.cicId));
+            List<CatalogueInCompany> catalogueIns = db.CatalogueInCompany.Include(c => c.Catalogue).Include(c => c.Question).ThenInclude(c => c.Answer).Where(c => cIds.Contains(c.Catalogue.CatalogueId) && c.CompanyId == con.companyId).ToList();
             List<Question> cloneQuesList = new List<Question>();
             foreach(CatalogueInCompany cic in catalogueIns)
             {
@@ -102,7 +102,7 @@ namespace TestManagementServices.Service
             {
                 for(int j = 0; j < con.catalogueInSamples.Count; j++)
                 {
-                    if(con.catalogueInSamples[j].cicId == catalogueIns[i].Cicid)
+                    if(con.catalogueInSamples[j].cicId == catalogueIns[i].CatalogueId)
                     {
                         catalogues.Add(new CatalogueDTO(catalogueIns[i].CatalogueId, catalogueIns[i].Catalogue.Name, 0, con.catalogueInSamples[j].weightPoint, catalogueIns[i].Question.ToList()));
                         totalCataQues += catalogueIns[i].Question.ToList().Count;
