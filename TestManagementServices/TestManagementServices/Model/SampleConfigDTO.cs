@@ -12,6 +12,7 @@ namespace TestManagementServices.Model
     {
         public int? totalQuestion { get; set; }
         public int? duration { get; set; }
+        public int companyId { get; set; }
         [JsonProperty("catalogueInConfigurations")]
         public List<CatalogueInSampleTestDTO> catalogueInSamples { get; set; }
 
