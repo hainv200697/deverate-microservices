@@ -66,7 +66,7 @@ namespace TestManagementServices.Service
             return questions;
         }
 
-        public static List<QuestionDTO> GenerateQuestionsForSampleTest(DeverateContext db, SampleConfigDTO con)
+        public static SampleTestDTO GenerateQuestionsForSampleTest(DeverateContext db, SampleConfigDTO con)
         {
 
             List<QuestionDTO> questions = new List<QuestionDTO>();
@@ -119,7 +119,7 @@ namespace TestManagementServices.Service
                 return null;
 
             }
-            catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+            catalogues = catalogues.OrderBy(o => o.weightPoint).ToList();
 
             int totalOfQues = con.totalQuestion.Value > totalCataQues ? totalCataQues : con.totalQuestion.Value;
             catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
@@ -144,7 +144,7 @@ namespace TestManagementServices.Service
                     {
                         quesIds.Add(totalQues[j].QuestionId);
                         List<AnswerDTO> answers = totalQues[j].Answer.Select(a => new AnswerDTO(a)).ToList();
-                        questions.Add(new QuestionDTO(totalQues[j].QuestionId, totalQues[j].Question1, answers));
+                        questions.Add(new QuestionDTO(totalQues[j].QuestionId, totalQues[j].Question1, totalQues[j].Cic.CatalogueId, answers));
                         if (numbOfQues != quesLenght)
                         {
                             choosedQues.Add(new QuestionDTO(totalQues[j].QuestionId, answers));
@@ -184,7 +184,12 @@ namespace TestManagementServices.Service
             }
             questions = fillQues(remainQues, totalOfQues, questions);
             questions = Shuffle(questions);
-            return questions;
+            for(int i = 0; i < catalogues.Count; i++)
+            {
+                catalogues[i].questionList = null;
+
+            }
+            return new SampleTestDTO(catalogues, questions);
         }
 
         public static string GenerateTestForApplicants(string configId, List<ApplicantDTO> applicants)
@@ -261,7 +266,7 @@ namespace TestManagementServices.Service
             {
                 return;
             }
-            catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+            catalogues = catalogues.OrderBy(o => o.weightPoint).ToList();
             for (int i = 0; i < catalogues.Count; i++)
             {
                 catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, config.Account.CompanyId);
@@ -415,7 +420,7 @@ namespace TestManagementServices.Service
             tests = removeAvailableTests(accountIds, tests);
             db.SaveChanges();
             List<CatalogueDTO> catalogues = GetCatalogueWeights(db, config.ConfigId);
-            catalogues = catalogues.OrderByDescending(o => o.weightPoint).ToList();
+            catalogues = catalogues.OrderBy(o => o.weightPoint).ToList();
             for (int i = 0; i < catalogues.Count; i++)
             {
                 catalogues[i].questions = GetQuestionOfCatalogue(db, catalogues[i].catalogueId, companyId);
@@ -715,6 +720,10 @@ namespace TestManagementServices.Service
             {
                 double numberOfQuestion = catalogues[i].weightPoint == null || catalogues[i].weightPoint.Value <= 0 ? 0: catalogues[i].weightPoint.Value * totalQuestion.Value / AppConstrain.scaleUpNumb;
                 catalogues[i].numberOfQuestion = Convert.ToInt32(numberOfQuestion);
+                if(catalogues[i].numberOfQuestion == 0)
+                {
+                    catalogues[i].numberOfQuestion = 1;
+                }
                 currentQuestion += catalogues[i].numberOfQuestion.Value;
             }
             int dif = currentQuestion - totalQuestion.Value;
