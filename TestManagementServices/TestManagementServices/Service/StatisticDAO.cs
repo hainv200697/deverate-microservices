@@ -40,7 +40,10 @@ namespace TestManagementServices.Service
                     }
                     
                 }
-                
+                if(configuration == null)
+                {
+                    return null;
+                }
                 List<Test> tests = db.Test
                     .Include(t => t.Account)
                     .Include(t => t.Applicant)
