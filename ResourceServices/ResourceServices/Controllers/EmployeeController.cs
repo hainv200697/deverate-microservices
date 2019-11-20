@@ -155,5 +155,33 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpGet("GetProfile")]
+        public ActionResult GetAccountByAccountId(int accountId)
+        {
+            try
+            {
+                ProfileDTO profile = AccountDAO.GetProfile(accountId);
+                return Ok(profile);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("UpdateProfile")]
+        public ActionResult UpdateProfile([FromBody] ProfileDTO profile)
+        {
+            try
+            {
+                AccountDAO.UpdateProfile(profile);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }
