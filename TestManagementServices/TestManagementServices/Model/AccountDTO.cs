@@ -45,5 +45,14 @@ namespace AuthenServices.Model
             this.companyId = account.CompanyId;
             this.isActive = account.IsActive;
         }
+        public AccountDTO(string username,string fullname,string phone,string email,string address,bool gender)
+        {
+            this.username = username;
+            this.fullname = fullname;
+            this.phone = phone;
+            this.email = email;
+            this.address = address;
+            this.gender = gender;
+        }
     }
 }
