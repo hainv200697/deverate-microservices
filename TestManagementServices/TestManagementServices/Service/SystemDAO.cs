@@ -174,7 +174,7 @@ namespace TestManagementServices.Service
                         }
                         if (isContainQues == false)
                         {
-                            unchoosedQues.Add(new QuestionDTO(totalQues[k].QuestionId, totalQues[k].Question1, answers));
+                            unchoosedQues.Add(new QuestionDTO(totalQues[k].QuestionId, totalQues[k].Question1, totalQues[k].Cic.CatalogueId, answers));
                         }
                     }
                 }
