@@ -55,17 +55,9 @@ namespace AuthenServices.Service
                 {
                     username += items[i].ElementAt(0);
                 }
-                if(AppConstrain.newestAccount == null)
-                {
-                    List<Account> accounts = context.Account.ToList();
-                    AppConstrain.newestAccount = (accounts[accounts.Count - 1].AccountId + 1);
-                }
-                else
-                {
-                    AppConstrain.newestAccount++;
-                }
+                List<Account> accounts = context.Account.ToList();
 
-                username = username.ToUpper() + AppConstrain.newestAccount;
+                username = username.ToUpper() + (accounts[accounts.Count - 1].AccountId + 1);
                 username = RemoveVietnameseTone(username);
 
                 Account account = new Account();
