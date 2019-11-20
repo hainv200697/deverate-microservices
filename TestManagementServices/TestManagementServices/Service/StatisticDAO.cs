@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AuthenServices.Model;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -384,7 +385,13 @@ namespace TestManagementServices.Service
                 return testHistories;
             }
         }
-
-        
+        public static AccountDTO GetAccountByTestId(int testId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                return db.Test.Include(x => x.Account).Where(x => x.TestId == testId).Select(x => new AccountDTO(x.Account.Username, x.Account.Fullname, x.Account.Phone, x.Account.Email, x.Account.Address, x.Account.Gender.Value)).FirstOrDefault();
+            }
+        }
     }
+
 }

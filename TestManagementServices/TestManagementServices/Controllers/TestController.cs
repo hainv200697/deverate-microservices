@@ -165,6 +165,20 @@ namespace TestManagementServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpGet("GetAccountByTestId")]
+        public IActionResult GetAccountByTestId(int testId)
+        {
+            try
+            {
+
+                return Ok(StatisticDAO.GetAccountByTestId(testId));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
     
 }
