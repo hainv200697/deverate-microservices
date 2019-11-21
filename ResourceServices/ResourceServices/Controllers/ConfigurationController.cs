@@ -40,11 +40,11 @@ namespace ResourceServices.Controllers
 
         [Route("GetConfigurationForApplicant")]
         [HttpGet]
-        public ActionResult GetConfigurationForApplicant(bool isActive, int companyId)
+        public ActionResult GetConfigurationForApplicant(bool type, int companyId)
         {
             try
             {
-                List<ConfigurationDTO> con = ConfigurationDAO.GetAllConfigurationForApplicant(isActive, companyId);
+                List<ConfigurationDTO> con = ConfigurationDAO.GetAllConfigurationForApplicant(type, companyId);
                 return Ok(con);
             }
             catch (Exception)
