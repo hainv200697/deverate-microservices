@@ -92,6 +92,56 @@ namespace AuthenServices.Service
             }
         }
 
+        public static List<MessageAccountDTO> GenerateCompanyAccount(List<MessageAccount> listAccountGenerate)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                List<MessageAccountDTO> result = new List<MessageAccountDTO>();
+                List<Account> accountsSave = new List<Account>();
+                foreach(MessageAccount ms in listAccountGenerate)
+                {
+                    var items = ms.Fullname.Split(' ');
+                    string username = items[items.Length - 1];
+                    for (int i = 0; i < items.Length - 1; i++)
+                    {
+                        username += items[i].ElementAt(0);
+                    }
+                    if (AppConstrain.newestAccount == null)
+                    {
+                        List<Account> accounts = context.Account.ToList();
+                        AppConstrain.newestAccount = accounts.Count + 1;
+                    }
+                    else
+                    {
+                        AppConstrain.newestAccount++;
+                    }
+
+                    username = username.ToUpper() + AppConstrain.newestAccount;
+                    username = RemoveVietnameseTone(username);
+
+                    Account account = new Account();
+                    account.Username = username.ToUpper();
+                    string password = "";
+                    account.Password = generatePasswordHash(out password);
+                    account.Fullname = ms.Fullname;
+                    account.Email = ms.Email;
+                    account.Gender = ms.Gender;
+                    account.Address = ms.Address;
+                    account.Phone = ms.Phone;
+                    account.JoinDate = DateTime.UtcNow;
+                    account.RoleId = ms.Role;
+                    account.CompanyId = ms.CompanyId;
+                    account.IsActive = true;
+
+                    accountsSave.Add(account);
+                    result.Add(new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname));
+                }
+                context.Account.AddRange(accountsSave);
+                context.SaveChanges();
+                return result;
+            }
+        }
+
         private static string generatePasswordHash(out string password)
         {
             bool includeLowercase = true;
@@ -158,6 +208,16 @@ namespace AuthenServices.Service
             result = Regex.Replace(result, "ỳ|ý|ỵ|ỷ|ỹ|/g", "y");
             result = Regex.Replace(result, "đ", "d");
             return result;
+        }
+
+        public static List<string> checkExistedEmail(List<string> listemail, int? companyId)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                var check = context.Account.Where(x => listemail.Contains(x.Email) && x.CompanyId == companyId).Select(x => x.Email).ToList();
+                return check;
+            }
+
         }
     }
 }
