@@ -20,6 +20,9 @@ namespace TestManagementServices.Model
         public const string gen_test_applicant = "GenerateApplicantTest";
         public const string test_mail = "TestEmployeeToEmail";
 
+        public const string applicantDoTest = "Applicants did test";
+        public const string totalApplicantDoTest = "Total applicants";
+
         public const int minDuration = 5;
 
         public const int empRole = 3;

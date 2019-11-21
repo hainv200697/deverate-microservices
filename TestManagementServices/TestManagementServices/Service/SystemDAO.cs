@@ -957,6 +957,7 @@ namespace TestManagementServices.Service
                     if (ids.Contains(ans[i].QuestionId))
                     {
                         ans.RemoveAt(i);
+                        i--;
                     }
                     else
                     {
