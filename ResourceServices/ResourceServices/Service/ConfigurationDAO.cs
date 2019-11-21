@@ -18,6 +18,13 @@ namespace ResourceServices.Service
             this.context = context;
         }
 
+        public static List<ConfigurationDTO> GetAllConfigurationForApplicant(bool isActive, int companyId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                return db.Configuration.Include(a => a.Account).Where(c => c.Account.CompanyId == companyId && c.IsActive == isActive).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
+            }
+        }
 
         public static List<ConfigurationDTO> GetAllConfiguration(bool type, int companyId)
         {
