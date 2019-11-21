@@ -11,6 +11,99 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
+        public static GeneralStatisticDTO GetGeneralStatisticOfApplicantByTestOwnerId(int? testOwnerId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
+                List<Configuration> configurations = db.Configuration.Include(c => c.Account).Include(c => c.Test).Include(c => c.CatalogueInConfiguration)
+                                                     .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == false).ToList();
+                List<int?> configIds = new List<int?>();
+                configurations.ForEach(c => configIds.Add(c.ConfigId));
+                List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
+                                                                 join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
+                                                                 join c in db.Catalogue on cic.CatalogueId equals c.CatalogueId
+                                                                 join cicom in db.CatalogueInCompany on c.CatalogueId equals cicom.CatalogueId
+                                                                 where cicom.CompanyId == account.CompanyId
+                                                                 select cicom).ToList();
+                List<Catalogue> catalogues = db.Catalogue.ToList();
+                catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.Cicid).Select(c => c.First()).ToList();
+                for (int i = 0; i < catalogueInCompanies.Count; i++)
+                {
+                    foreach (Catalogue c in catalogues)
+                    {
+                        if (c.CatalogueId == catalogueInCompanies[i].CatalogueId)
+                        {
+                            catalogueInCompanies[i].Catalogue = c;
+                            break;
+                        }
+                    }
+                }
+
+                List<int?> testIds = new List<int?>();
+                for (int i = 0; i < configurations.Count; i++)
+                {
+                    for (int j = 0; j < configurations[i].Test.Count; j++)
+                    {
+                        testIds.Add(configurations[i].Test.ToList()[j].TestId);
+                    }
+                }
+                List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
+
+                List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
+                for (int j = 0; j < configurations.Count; j++)
+                {
+                    int numberOfTest = configurations[j].Test.Where(t => t.Status == "Submitted").ToList().Count();
+                    int totalTest = configurations[j].Test.ToList().Count;
+                    int numberOfFinishedTest = 0;
+                    List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
+                    foreach (CatalogueInCompany c in catalogueInCompanies)
+                    {
+                        cloneCatalogues.Add(new CatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0));
+                    }
+                    GeneralStatisticItemDTO gsi = new GeneralStatisticItemDTO();
+                    gsi.configId = configurations[j].ConfigId;
+                    double totalGPA = 0;
+                    for (int k = 0; k < statistics.Count; k++)
+                    {
+                        if (statistics[k].Test.ConfigId == configurations[j].ConfigId)
+                        {
+                            numberOfFinishedTest += 1;
+                            totalGPA += statistics[k].Point;
+                            List<DetailStatistic> details = statistics[k].DetailStatistic.ToList();
+                            for (int m = 0; m < details.Count; m++)
+                            {
+
+                                for (int n = 0; n < cloneCatalogues.Count; n++)
+                                {
+                                    if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
+                                    {
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleUpNumb);
+                                        if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
+                                        {
+                                            cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleUpNumb);
+                    gsi.series = cloneCatalogues;
+                    gsi.createDate = configurations[j].CreateDate;
+                    gsi.endDate = configurations[j].EndDate;
+                    gsi.name = configurations[j].Title;
+                    gsi.numberOfFinishedTest = numberOfFinishedTest > totalTest ? totalTest : numberOfFinishedTest;
+                    gsi.totalTest = totalTest;
+                    generalStatisticItems.Add(gsi);
+
+                }
+
+                return new GeneralStatisticDTO(generalStatisticItems);
+            }
+        }
         public static List<RankStatisticItemDTO> GetRankStatisticOfApplicantByTestOwnerId(int? testOwnerId)
         {
             using (DeverateContext db = new DeverateContext())
@@ -271,10 +364,10 @@ namespace TestManagementServices.Service
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
                 List<Configuration> configurations = db.Configuration.Include(c => c.Account).Include(c => c.CatalogueInConfiguration)
-                                                     .Where(c => c.Account.CompanyId == account.CompanyId).ToList();
+                                                     .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == true).ToList();
                 List<int?> configIds = new List<int?>();
                 configurations.ForEach(c => configIds.Add(c.ConfigId));
-                List<Account> accounts = db.Account.Include(a => a.Configuration).Where(a => a.CompanyId == account.CompanyId).ToList();
+                
                 var result = from t in db.Test
                                     join con in db.Configuration on t.ConfigId equals con.ConfigId
                                     join cif in db.CatalogueInConfiguration on con.ConfigId equals cif.ConfigId
@@ -312,7 +405,8 @@ namespace TestManagementServices.Service
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for(int j = 0; j < configurations.Count; j++)
                 {
-                    int numberOfTest = configurations[j].Test.Where(t => t.Status == "Pending").ToList().Count();
+                    int totalTest = configurations[j].Test.Count;
+                    int numberOfTest = configurations[j].Test.Where(t => t.Status == "Submitted").ToList().Count();
                     //int numberOfTest = configurations[j].Test.ToList().Count();
                     int numberOfFinishedTest = 0;
                     List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
@@ -354,8 +448,8 @@ namespace TestManagementServices.Service
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
                     gsi.name = configurations[j].Title;
-                    gsi.numberOfFinishedTest = numberOfFinishedTest > numberOfTest ? numberOfTest : numberOfFinishedTest;
-                    gsi.totalTest = numberOfTest;
+                    gsi.numberOfFinishedTest = numberOfFinishedTest > totalTest ? totalTest : numberOfFinishedTest;
+                    gsi.totalTest = totalTest;
                     generalStatisticItems.Add(gsi); 
 
                 }
