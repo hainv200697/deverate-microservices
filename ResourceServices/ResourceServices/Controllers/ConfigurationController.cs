@@ -38,6 +38,21 @@ namespace ResourceServices.Controllers
             }
         }
 
+        [Route("GetConfigurationForApplicant")]
+        [HttpGet]
+        public ActionResult GetConfigurationForApplicant(bool isActive, int companyId)
+        {
+            try
+            {
+                List<ConfigurationDTO> con = ConfigurationDAO.GetAllConfigurationForApplicant(isActive, companyId);
+                return Ok(con);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
         [Route("GetConfigurationById")]
         [HttpGet]
         public ActionResult GetConfigurationById(int id)
