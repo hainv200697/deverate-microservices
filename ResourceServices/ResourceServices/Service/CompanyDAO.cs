@@ -23,10 +23,8 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var company = from com in db.Company
-                              join acc in db.Account on com.CompanyId equals acc.CompanyId
-                              where acc.RoleId == 2
-                              select new CompanyDTO(com, acc.Username, acc.Email, acc.Fullname);
+                var company = db.Company.Include(c => c.Account)
+                    .Select(c => new CompanyDTO(c, c.Account.Where(r => r.RoleId == 2).FirstOrDefault()));
                 return company.ToList().OrderByDescending(x => x.companyId).ToList();
             }
         }

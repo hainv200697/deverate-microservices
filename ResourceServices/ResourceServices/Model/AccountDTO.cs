@@ -31,17 +31,21 @@ namespace AuthenServices.Model
         }
         public AccountDTO(Account account)
         {
-            this.accountId = account.AccountId;
-            this.username = account.Username;
-            this.fullname = account.Fullname;
-            this.phone = account.Phone;
-            this.email = account.Email;
-            this.address = account.Address;
-            this.gender = account.Gender.Value;
-            this.avatar = account.Avatar;
-            this.joinDate = account.JoinDate;
-            this.roleId = account.RoleId;
-            this.isActive = account.IsActive;
+            if (account != null)
+            {
+                this.accountId = account.AccountId;
+                this.username = account.Username;
+                this.fullname = account.Fullname;
+                this.phone = account.Phone;
+                this.email = account.Email;
+                this.address = account.Address;
+                this.gender = account.Gender.Value;
+                this.avatar = account.Avatar;
+                this.joinDate = account.JoinDate;
+                this.roleId = account.RoleId;
+                this.isActive = account.IsActive;
+            }
+            
         }
     }
 }
