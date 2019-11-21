@@ -58,7 +58,7 @@ namespace AuthenServices.Service
                 if(AppConstrain.newestAccount == null)
                 {
                     List<Account> accounts = context.Account.ToList();
-                    AppConstrain.newestAccount = (accounts[accounts.Count - 1].AccountId + 1);
+                    AppConstrain.newestAccount = accounts.Count + 1;
                 }
                 else
                 {
