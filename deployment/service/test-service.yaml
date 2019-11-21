@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: testmanagement-6cffd75855-wdmbf	
+  name: testmanagement-695697cb49-s6gmf	
 spec:
   type: ClusterIP
   selector:
