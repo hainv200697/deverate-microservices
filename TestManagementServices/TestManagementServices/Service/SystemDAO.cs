@@ -774,7 +774,7 @@ namespace TestManagementServices.Service
                 {
                     anss.ForEach(a => answers.Add(new AnswerDTO(a)));
                     TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-                    totalPoint = CalculateResultPoint(context, testAnswer, statistic, test.Config.Account.CompanyId);
+                    totalPoint = CalculateResultPoint(context, testAnswer, statistic, test.Config.Account.CompanyId, userTest.testId);
 
 
                     totalPoint = AppConstrain.RoundDownNumber(totalPoint, 1);
@@ -859,10 +859,10 @@ namespace TestManagementServices.Service
             return result.ToList();
         }
 
-        public static double CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, Statistic statistic, int? companyId)
+        public static double CalculateResultPoint(DeverateContext db, TestAnswerDTO answers, Statistic statistic, int? companyId, int? testId)
         {
             double totalPoint = 0;
-            List<CataloguePointDTO> defaultCataloguePoints = CalculateCataloguePoints(db, answers, companyId);
+            List<CataloguePointDTO> defaultCataloguePoints = CalculateCataloguePoints(db, answers, companyId, testId);
             if (answers.testId == null)
             {
                 return -1;
@@ -920,7 +920,7 @@ namespace TestManagementServices.Service
             return result.ToList();
         }
 
-        public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers, int? companyId)
+        public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers, int? companyId, int? testId)
         {
             if (answers.testId == null)
             {
@@ -934,23 +934,38 @@ namespace TestManagementServices.Service
             List<int?> questIds = new List<int?>();
             anss.ForEach(a => questIds.Add(a.answerId));
             var quess = db.Answer.Include(a => a.Question).Where(an => questIds.Contains(an.AnswerId)).ToList();
-
+            var ans = db.QuestionInTest.Include(q => q.Question).ThenInclude(q => q.Answer).Where(q => q.TestId == testId).ToList();
             foreach (CatalogueInCompany cata in cataInCompany)
             {
                 float point = 0;
                 float maxPoint = 0;
-                
+                List<int?> ids = new List<int?>();
                 for(int i = 0; i < quess.Count; i++)
                 {
                     if(quess[i].Question.Cicid == cata.Cicid)
                     {
                         maxPoint += quess[i].Question.MaxPoint;
                         point += quess[i].Point;
+                        ids.Add(quess[i].QuestionId);
                         quess.RemoveAt(i);
                         i--;
                         
                     }
                 }
+                for(int i = 0; i < ans.Count; i++)
+                {
+                    if (ids.Contains(ans[i].QuestionId))
+                    {
+                        ans.RemoveAt(i);
+                    }
+                    else
+                    {
+                        point += 0;
+                        maxPoint += ans[i].Question.MaxPoint;
+                    }
+                }
+                
+                
                 float cataloguePoint = maxPoint == 0 ? 0: (point / maxPoint);
                 cataloguePoints.Add(new CataloguePointDTO(cata.CatalogueId  , cataloguePoint));
             }
