@@ -11,6 +11,92 @@ namespace TestManagementServices.Service
 {
     public class StatisticDAO
     {
+        public static List<RankStatisticItemDTO> GetRankStatisticOfApplicantByTestOwnerId(int? testOwnerId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
+                List<Account> accounts = db.Account.Include(a => a.Configuration).ThenInclude(Configuration => Configuration.CatalogueInConfiguration).Where(a => a.CompanyId == account.CompanyId).ToList();
+                List<Configuration> applicantConfigs = db.Configuration.Include(c => c.Test).Where(c => c.Account.AccountId == testOwnerId && c.Type == false).ToList();
+                if(applicantConfigs.Count == 0) return null;
+                List<int?> testIds = new List<int?>();
+
+
+                for(int i = 0; i < applicantConfigs.Count; i++)
+                {
+                    for(int j = 0; j < applicantConfigs[i].Test.Count; j++)
+                    {
+                        testIds.Add(applicantConfigs[i].Test.ToList()[j].TestId);
+                    }
+                }
+                if (testIds.Count == 0) return null;
+                List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
+                List<RankDTO> ranks = db.Rank.Where(r => r.IsActive == true).Select(r => new RankDTO(r)).ToList();
+                List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
+                int configCount = 0;
+
+
+                for (int j = 0; j < applicantConfigs.Count; j++)
+                {
+                    if (configCount == 5)
+                    {
+                        break;
+                    }
+                    int totalApp = 0;
+                    try
+                    {
+                        totalApp = applicantConfigs[j].Test.Count;
+                    }
+                    catch (Exception e)
+                    {
+                        totalApp = 0;
+                    }
+                    List<int?> totalOfDidTests = new List<int?>();
+                    RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
+                    rankStatisticItem.configId = applicantConfigs[j].ConfigId;
+                    rankStatisticItem.createDate = applicantConfigs[j].CreateDate;
+                    rankStatisticItem.endDate = applicantConfigs[j].EndDate;
+                    rankStatisticItem.name = applicantConfigs[j].Title;
+                    List<RankDTO> cloneRanks = new List<RankDTO>();
+                    foreach (RankDTO r in ranks)
+                    {
+                        cloneRanks.Add(new RankDTO(r.rankId, r.name, 0));
+                    }
+                    for (int k = 0; k < statistics.Count; k++)
+                    {
+                        if (statistics[k].Test.ConfigId == applicantConfigs[j].ConfigId)
+                        {
+                            if (!totalOfDidTests.Contains(statistics[k].Test.ApplicantId))
+                            {
+                                totalOfDidTests.Add(statistics[k].Test.ApplicantId);
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
+                            for (int m = 0; m < cloneRanks.Count; m++)
+                            {
+                                if (statistics[k].RankId == cloneRanks[m].rankId)
+                                {
+                                    cloneRanks[m].count += 1;
+                                }
+                            }
+                        }
+
+                    }
+                    rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count, AppConstrain.applicantDoTest);
+                    rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalApp, AppConstrain.totalApplicantDoTest);
+                    rankStatisticItem.series = cloneRanks;
+                    rankStatisticItems.Add(rankStatisticItem);
+                    configCount++;
+                }
+
+                return rankStatisticItems;
+            }
+        }
+
+
         public static List<UserStatisticDTO> GetOverallPointStatisticByCompanyId(int? companyId, int? configId, bool? isEmployee)
         {
             using(DeverateContext db = new DeverateContext())
@@ -168,7 +254,7 @@ namespace TestManagementServices.Service
 
                         }
                         rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count);
-                        rankStatisticItem.totalEmp = new TotalEmpItemDTO(totalEmp);
+                        rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalEmp);
                         rankStatisticItem.series = cloneRanks;
                         rankStatisticItems.Add(rankStatisticItem);
                         configCount++;

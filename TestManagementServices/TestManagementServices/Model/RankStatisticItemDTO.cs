@@ -15,13 +15,13 @@ namespace TestManagementServices.Model
         public DateTime? endDate { get; set; }
         public string name { get; set; }
         public TestedItemDTO tested { get; set; }
-        public TotalEmpItemDTO totalEmp { get; set; }
+        public TotalEmpItemDTO totalAccount { get; set; }
 
 
 
         public RankStatisticItemDTO() { }
         public RankStatisticItemDTO(int? configId, List<RankDTO> series,
-            DateTime? createDate, DateTime? endDate, string name, TestedItemDTO tested, TotalEmpItemDTO totalEmp)
+            DateTime? createDate, DateTime? endDate, string name, TestedItemDTO tested, TotalEmpItemDTO totalAccount)
         {
             this.configId = configId;
             this.series = series;
@@ -29,7 +29,7 @@ namespace TestManagementServices.Model
             this.endDate = endDate;
             this.name = name;
             this.tested = tested;
-            this.totalEmp = totalEmp;
+            this.totalAccount = totalAccount;
         }
 
     }
@@ -42,6 +42,11 @@ namespace TestManagementServices.Model
         {
             this.value = value;
         }
+        public TestedItemDTO(int? value, string name)
+        {
+            this.value = value;
+            this.name = name;
+        }
     }
 
     public class TotalEmpItemDTO
@@ -52,6 +57,11 @@ namespace TestManagementServices.Model
         public TotalEmpItemDTO(int? value)
         {
             this.value = value;
+        }
+        public TotalEmpItemDTO(int? value, string name)
+        {
+            this.value = value;
+            this.name = name;
         }
     }
 }

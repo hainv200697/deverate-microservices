@@ -104,10 +104,17 @@ namespace TestManagementServices.Controllers
 
             return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId) );
         }
+        [HttpGet("GetRankStatisticOfApplicant")]
+        public IActionResult GetRankStatisticOfApplicant(int? accountId)
+        {
+            
+            return Ok(StatisticDAO.GetRankStatisticOfApplicantByTestOwnerId(accountId));
+        }
 
         [HttpGet("GetRankStatistic")]
         public IActionResult GetRankStatistic(int? accountId)
         {
+            
             return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
         }
 
@@ -117,6 +124,7 @@ namespace TestManagementServices.Controllers
             try
             {
                 return Ok(StatisticDAO.GetOverallPointStatisticByCompanyId(companyId, configId, isEmployee));
+
             }
             catch(Exception e)
             {

@@ -20,7 +20,7 @@ namespace AuthenServices.Service
         {
             username = username.ToUpper();
             Account account = context.Account.Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
-            if(account == null)
+            if (account == null)
             {
                 return null;
             }
@@ -33,8 +33,8 @@ namespace AuthenServices.Service
             {
                 return null;
             }
-            
-            if(result.Value == false)
+
+            if (result.Value == false)
             {
                 return null;
             }
@@ -75,7 +75,7 @@ namespace AuthenServices.Service
                 context.SaveChanges();
                 return username.ToUpper() + "_" + password;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 File.WriteAllText(AppConstrain.logFile, e.Message);
             }
@@ -90,7 +90,7 @@ namespace AuthenServices.Service
 
             {
 
-                var employee = context.Account.Where(acc => acc.CompanyId == companyId &&( acc.RoleId == 3 || acc.RoleId == 4) && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                var employee = context.Account.Where(acc => acc.CompanyId == companyId && (acc.RoleId == 3 || acc.RoleId == 4) && acc.IsActive == status).Select(acc => new AccountDTO(acc));
                 return employee.ToList();
             }
 
@@ -107,7 +107,7 @@ namespace AuthenServices.Service
 
         }
 
-        public static List<string> checkExistedEmail(List<string> listemail,int? companyId)
+        public static List<string> checkExistedEmail(List<string> listemail, int? companyId)
         {
             using (DeverateContext context = new DeverateContext())
 
@@ -142,14 +142,35 @@ namespace AuthenServices.Service
 
         //}
 
-        public static List<AccountDTO> GetAccountByRole(int? companyId, bool? status,int? role)
+        public static List<AccountDTO> GetAccountByRole(int? companyId, bool? status, int? role)
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var account = context.Account.Where(acc => acc.CompanyId == companyId &&  acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                var account = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc));
                 return account.ToList();
             }
 
+        }
+
+        public static ProfileDTO GetProfile(int accountId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                return db.Account.Where(x => x.AccountId == accountId).Select(x => new ProfileDTO(x)).FirstOrDefault();
+            }
+        }
+
+        public static void UpdateProfile(ProfileDTO profileDTO)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                var account = db.Account.SingleOrDefault(x => x.AccountId == profileDTO.accountId);
+                account.Fullname = profileDTO.fullname;
+                account.Phone = profileDTO.phone;
+                account.Address = profileDTO.address;
+                account.Gender = profileDTO.gender;
+                db.SaveChanges();
+            }
         }
     }
 }
