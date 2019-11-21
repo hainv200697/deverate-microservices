@@ -25,11 +25,11 @@ namespace ResourceServices.Controllers
 
         [Route("GetAllConfiguration")]
         [HttpGet]
-        public ActionResult GetAllCompany(bool isActive, int companyId)
+        public ActionResult GetAllCompany(bool type, int companyId)
         {
             try
             {
-                List<ConfigurationDTO> con = ConfigurationDAO.GetAllConfiguration(isActive, companyId);
+                List<ConfigurationDTO> con = ConfigurationDAO.GetAllConfiguration(type, companyId);
                 return Ok(con);
             }
             catch (Exception)

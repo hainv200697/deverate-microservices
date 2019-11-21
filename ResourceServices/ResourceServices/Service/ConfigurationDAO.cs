@@ -19,11 +19,11 @@ namespace ResourceServices.Service
         }
 
 
-        public static List<ConfigurationDTO> GetAllConfiguration(bool isActive, int companyId)
+        public static List<ConfigurationDTO> GetAllConfiguration(bool type, int companyId)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(a => a.Account).Where(c => c.Account.CompanyId == companyId && c.IsActive == isActive).Select(c => new ConfigurationDTO(c)).ToList();
+                return db.Configuration.Include(a => a.Account).Where(c => c.Account.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -73,18 +73,12 @@ namespace ResourceServices.Service
                 }
                 else
                 {
-                    var config = db.Configuration.Where(c => c.IsActive && !c.Type);
-                    if (config.Count() != 0)
-                    {
-                        config.ToList().ForEach(c => c.IsActive = false);
-                    }
                     Configuration configuration = new Configuration();
                     configuration.AccountId = configurationDTO.testOwnerId.Value;
                     configuration.Title = configurationDTO.title;
                     configuration.TotalQuestion = configurationDTO.totalQuestion.Value;
                     configuration.CreateDate = configurationDTO.createDate;
                     configuration.StartDate = configurationDTO.startDate;
-                    configuration.EndDate = configurationDTO.endDate;
                     configuration.Duration = configurationDTO.duration.Value;
                     configuration.Title = configurationDTO.title;
                     configuration.Type = configurationDTO.type.Value;
@@ -184,25 +178,6 @@ namespace ResourceServices.Service
                     configuration.IsActive = item.isActive.Value;
                     db.Configuration.Update(configuration);
                     db.SaveChanges();
-
-
-                    foreach (var item1 in item.catalogueInConfigurations)
-                    {
-                        CatalogueInConfiguration catalogueInConfiguration = db.CatalogueInConfiguration.SingleOrDefault(con => con.Cicid == item1.Cicid);
-                        catalogueInConfiguration.ConfigId = configuration.ConfigId;
-                        catalogueInConfiguration.IsActive = configuration.IsActive;
-                        db.CatalogueInConfiguration.Update(catalogueInConfiguration);
-                        db.SaveChanges();
-                    }
-
-                    foreach (var item2 in item.ConfigurationRank)
-                    {
-                        ConfigurationRank configurationRank = db.ConfigurationRank.SingleOrDefault(con => con.ConfigurationRankId == item2.ConfigurationRankId);
-                        configurationRank.ConfigId = configuration.ConfigId;
-                        configurationRank.IsActive = configuration.IsActive;
-                        db.ConfigurationRank.Update(configurationRank);
-                        db.SaveChanges();
-                    }
                 }
                 return null;
             }
