@@ -30,7 +30,7 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPost("CreateApplicant")]
-        public ActionResult CreateApplicant([FromBody] List<ApplicantDTO> listApplicant)
+        public ActionResult CreateApplicant([FromBody] List<ApplicantDTO> listApplicant, int configId)
         {
             try
             {
@@ -44,12 +44,6 @@ namespace ResourceServices.Controllers
                     {
                         return BadRequest();
                     }
-                }
-
-                var configId = ApplicantDAO.getConfigApplicant();
-                if(configId == null)
-                {
-                    return NotFound();
                 }
                 List<ApplicantDTO> applicants = new List<ApplicantDTO>();
                 applicants = ApplicantDAO.createApplicant(listApplicant);
