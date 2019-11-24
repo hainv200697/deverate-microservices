@@ -42,9 +42,9 @@ namespace TestManagementServices.Controllers
         }
 
         [HttpPost("MyTest")]
-        public IActionResult QueryQuestionInMyTest([FromBody]TestInfoDTO testInfo) 
+        public IActionResult QueryQuestionInMyTest([FromBody]TestInfoDTO testInfo)
         {
-            var listQuestion = SystemDAO.GetQuestionInTest(testInfo,true);
+            var listQuestion = SystemDAO.GetQuestionInTest(testInfo, true);
             if (listQuestion == null)
             {
                 return BadRequest("Code invalid");
@@ -64,7 +64,8 @@ namespace TestManagementServices.Controllers
                     return BadRequest("Code invalid, Submit fail");
                 }
                 return Ok(rp);
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -78,16 +79,18 @@ namespace TestManagementServices.Controllers
                 bool save = SystemDAO.AutoSaveAnswer(context, userTest);
                 if (save)
                 {
-                   return Ok("{\"message\" : \"Auto Save Success\"}");
-                } else
+                    return Ok("{\"message\" : \"Auto Save Success\"}");
+                }
+                else
                 {
                     return BadRequest("{\"message\" : \"Code invalid, Auto Save\"}");
                 }
-            } catch(Exception)
+            }
+            catch (Exception)
             {
                 return StatusCode(500);
             }
-            
+
         }
         [HttpGet("GetAllTest")]
         public IActionResult GetTest(int id)
@@ -100,30 +103,52 @@ namespace TestManagementServices.Controllers
         [HttpGet("GetGeneralStatisticOfApplicant")]
         public IActionResult GetGeneralStatisticOfApplicant(int? accountId)
         {
-
-
-            return Ok(StatisticDAO.GetGeneralStatisticOfApplicantByTestOwnerId(accountId));
+            try
+            {
+                return Ok(StatisticDAO.GetGeneralStatisticOfApplicantByTestOwnerId(accountId));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpGet("GetGeneralStatistic")]
         public IActionResult GetGeneralStatistic(int? accountId)
         {
-            
-
-            return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId) );
+            try
+            {
+                return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
         }
         [HttpGet("GetRankStatisticOfApplicant")]
         public IActionResult GetRankStatisticOfApplicant(int? accountId)
         {
-            
-            return Ok(StatisticDAO.GetRankStatisticOfApplicantByTestOwnerId(accountId));
+            try
+            {
+                return Ok(StatisticDAO.GetRankStatisticOfApplicantByTestOwnerId(accountId));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpGet("GetRankStatistic")]
         public IActionResult GetRankStatistic(int? accountId)
         {
-            
-            return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
+            try
+            {
+                return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpGet("GetOverallPointStatistic")]
@@ -134,12 +159,12 @@ namespace TestManagementServices.Controllers
                 return Ok(StatisticDAO.GetOverallPointStatisticByCompanyId(companyId, configId, isEmployee));
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 return StatusCode(500);
             }
 
-            
+
         }
 
 
@@ -157,7 +182,8 @@ namespace TestManagementServices.Controllers
         [HttpPost("SendTestCode")]
         public IActionResult SendTestCode([FromBody]List<int> listestResendCode)
         {
-            try { 
+            try
+            {
                 SystemDAO.SendMailQuizCode(listestResendCode, true);
                 return Ok();
             }
@@ -173,7 +199,7 @@ namespace TestManagementServices.Controllers
         {
             try
             {
-                
+
                 return Ok(SystemDAO.GenerateQuestionsForSampleTest(context, sample));
             }
             catch (Exception)
@@ -195,6 +221,20 @@ namespace TestManagementServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpGet("GetApplicantByTestId")]
+        public IActionResult GetApplicantByTestId(int testId)
+        {
+            try
+            {
+
+                return Ok(StatisticDAO.GetApplicantByTestId(testId));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
-    
+
 }
