@@ -2,6 +2,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
+using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
@@ -16,6 +17,7 @@ using Steeltoe.Discovery.Client;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
 using TestManagementServices.RabbitMQ;
+using TestManagementServices.Service;
 
 namespace Deverate
 {
@@ -32,6 +34,10 @@ namespace Deverate
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHangfire(x => x.UseSqlServerStorage(Configuration.GetConnectionString("HangfireDB")));
+            services.AddHangfireServer();
+            services.AddScoped<IHangfireService, HangfireService>();
+
             services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_consumer));
             services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_applicant));
 
@@ -96,6 +102,8 @@ namespace Deverate
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
+            app.UseHangfireDashboard();
+            RecurringJob.AddOrUpdate<IHangfireService>("AutoSubmitAllTestNotSubmit", context => context.EvaluateRankAllTestNotSubmit(), Cron.Hourly);
 
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseDiscoveryClient();
