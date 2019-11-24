@@ -87,7 +87,7 @@ namespace TestManagementServices.Service
                 {
                     if(cic.Question.ToList()[i].IsActive == true)
                     {
-                        cloneQuesList.Add(cic.Question.ToList()[i]);
+                        cloneQuesList.Add(cic.Question.Where(q => q.IsActive == true).ToList()[i]);
                     }
                 }
                 cic.Question = cloneQuesList;
@@ -959,8 +959,9 @@ namespace TestManagementServices.Service
                         ans.RemoveAt(i);
                         i--;
                     }
-                    else
+                    else if (cata.Cicid == ans[i].Question.Cicid)
                     {
+                        
                         point += 0;
                         maxPoint += ans[i].Question.MaxPoint;
                     }
