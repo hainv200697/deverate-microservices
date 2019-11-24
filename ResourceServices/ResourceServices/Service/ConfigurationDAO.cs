@@ -131,45 +131,11 @@ namespace ResourceServices.Service
             {
                 Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == configurationDTO.configId);
                 configuration.Title = configurationDTO.title;
-                configuration.TotalQuestion = configurationDTO.totalQuestion.Value;
                 configuration.StartDate = configurationDTO.startDate;
                 configuration.EndDate = configurationDTO.endDate;
                 configuration.Duration = configurationDTO.duration.Value;
-                configuration.Type = configurationDTO.type.Value;
-                configuration.IsActive = true;
-                db.Configuration.Update(configuration);
+
                 db.SaveChanges();
-
-                var catas = from cif in db.CatalogueInConfiguration
-                            join c in db.Configuration on cif.ConfigId equals c.ConfigId
-                            where c.ConfigId == configurationDTO.configId
-                            select cif;
-                List<CatalogueInConfiguration> catalogues = catas.ToList();
-
-                for (int i = 0; i < configurationDTO.catalogueInConfigurations.Count; i++)
-                {
-                    if (catalogues.Any(o => o.ConfigId == configurationDTO.catalogueInConfigurations[i].ConfigId))
-                    {
-                        catalogues.Find(o => o.ConfigId == configurationDTO.catalogueInConfigurations[i].ConfigId).IsActive = configurationDTO.catalogueInConfigurations[i].IsActive;
-                    }
-                    else
-                    {
-                        db.CatalogueInConfiguration.Add(configurationDTO.catalogueInConfigurations[i]);
-                    }
-                    db.SaveChanges();
-                }
-
-
-                //foreach (var item in configurationDTO.ConfigurationRank)
-                //{
-                //    ConfigurationRank configurationRank = db.ConfigurationRank.SingleOrDefault(con => con.ConfigurationRankId == item.ConfigurationRankId);
-                //    configurationRank.ConfigId = configuration.ConfigId;
-                //    configurationRank.RankId = item.RankId;
-                //    configurationRank.WeightPoint = item.WeightPoint;
-                //    configurationRank.IsActive = item.IsActive;
-                //    db.ConfigurationRank.Update(configurationRank);
-                //    db.SaveChanges();
-                //}
 
                 return null;
             }

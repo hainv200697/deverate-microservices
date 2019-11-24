@@ -572,6 +572,12 @@ namespace TestManagementServices.Service
                 return db.Test.Include(x => x.Account).Where(x => x.TestId == testId).Select(x => new AccountDTO(x.Account.Username, x.Account.Fullname, x.Account.Phone, x.Account.Email, x.Account.Address, x.Account.Gender.Value)).FirstOrDefault();
             }
         }
+        public static ApplicantDTO GetApplicantByTestId(int testId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                return db.Test.Include(x => x.Applicant).Where(x => x.TestId == testId).Select(x => new ApplicantDTO(x.Applicant)).FirstOrDefault();
+            }
+        }
     }
-
 }
