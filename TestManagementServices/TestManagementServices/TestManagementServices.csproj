@@ -19,6 +19,7 @@
     <PackageReference Include="Steeltoe.Discovery.ClientCore" Version="2.4.0" />
     <PackageReference Include="NSwag.AspNetCore" Version="13.1.5" />
     <PackageReference Include="NSwag.Core" Version="13.1.5" />
+    <PackageReference Include="Hangfire" Version="1.7.7" />
   </ItemGroup>
 
   <ItemGroup>
