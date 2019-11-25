@@ -1037,7 +1037,7 @@ namespace TestManagementServices.Service
 
         public static List<TestInfoDTO> GetTestByConfig(DeverateContext db, int id)
         {
-            var results = db.Test.Where(t => t.ConfigId == id).Select(t => new TestInfoDTO(t, t.Config.Title, t.Account.Username)).ToList();
+            var results = db.Test.Where(t => t.ConfigId == id).Select(t => new TestInfoDTO(t, t.Config.Title, t.Account.Username,t.Applicant.Fullname)).ToList();
             return results;
         }
 
