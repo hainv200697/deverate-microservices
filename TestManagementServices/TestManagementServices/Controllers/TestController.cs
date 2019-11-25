@@ -208,27 +208,12 @@ namespace TestManagementServices.Controllers
             }
         }
 
-        [HttpGet("GetAccountByTestId")]
-        public IActionResult GetAccountByTestId(int testId)
+        [HttpGet("GetInfoByTestId")]
+        public IActionResult GetInfoByTestId(int testId)
         {
             try
             {
-
-                return Ok(StatisticDAO.GetAccountByTestId(testId));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        [HttpGet("GetApplicantByTestId")]
-        public IActionResult GetApplicantByTestId(int testId)
-        {
-            try
-            {
-
-                return Ok(StatisticDAO.GetApplicantByTestId(testId));
+                return Ok(StatisticDAO.GetInfoByTestId(testId));
             }
             catch (Exception)
             {
