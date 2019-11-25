@@ -1095,5 +1095,18 @@ namespace TestManagementServices.Service
                 Producer.PublishMessage(JsonConvert.SerializeObject(list), AppConstrain.test_mail);
             }
         }
+
+        public static bool CheckCode(int testId, string code)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                Test test = context.Test.SingleOrDefault(t => t.TestId == testId && t.Code == code);
+                if (test != null)
+                {
+                    return true;
+                }
+                return false;
+            }
+        }
     }
 }

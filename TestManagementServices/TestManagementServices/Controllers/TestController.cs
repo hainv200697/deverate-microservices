@@ -220,6 +220,24 @@ namespace TestManagementServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpGet("CheckCode")]
+        public IActionResult CheckCode(int testId,string code)
+        {
+            try
+            {
+                bool check = SystemDAO.CheckCode(testId,code);
+                if(check == false)
+                {
+                    return BadRequest();
+                }
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 
 }
