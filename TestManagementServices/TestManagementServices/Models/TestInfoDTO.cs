@@ -13,6 +13,7 @@ namespace TestManagementServices.Models
         public string title { get; set; }
         public string code { get; set; }
         public string accountName { get; set; }
+        public string applicantName { get; set; }
         public string status { get; set; }
         public bool isActive { get; set; }
         public TestInfoDTO()
@@ -29,13 +30,14 @@ namespace TestManagementServices.Models
             this.code = code;
         }
 
-        public TestInfoDTO(Test test, string configTitle, string name)
+        public TestInfoDTO(Test test, string configTitle, string name, string applicantName)
         {
             this.configId = test.ConfigId;
             this.accountId = test.AccountId;
             this.testId = test.TestId;
             this.title = configTitle;
             this.accountName = name;
+            this.applicantName = applicantName;
             this.status = test.Status;
             this.isActive = test.IsActive;
         }
