@@ -565,18 +565,21 @@ namespace TestManagementServices.Service
                 return testHistories;
             }
         }
-        public static AccountDTO GetAccountByTestId(int testId)
+        public static object GetInfoByTestId(int testId)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Test.Include(x => x.Account).Where(x => x.TestId == testId).Select(x => new AccountDTO(x.Account.Username, x.Account.Fullname, x.Account.Phone, x.Account.Email, x.Account.Address, x.Account.Gender.Value)).FirstOrDefault();
-            }
-        }
-        public static ApplicantDTO GetApplicantByTestId(int testId)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                return db.Test.Include(x => x.Applicant).Where(x => x.TestId == testId).Select(x => new ApplicantDTO(x.Applicant)).FirstOrDefault();
+
+                var info = db.Test.Include(x => x.Account).Include(x => x.Applicant).Where(x => x.TestId == testId).FirstOrDefault();
+                if(info.AccountId != null)
+                {
+                    return new AccountDTO(info.Account.Username, info.Account.Fullname, info.Account.Phone, info.Account.Email, info.Account.Address, info.Account.Gender.Value);
+
+                }
+                else
+                {
+                    return new ApplicantDTO(info.Applicant);
+                }
             }
         }
     }
