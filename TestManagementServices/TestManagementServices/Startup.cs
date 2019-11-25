@@ -5,6 +5,7 @@ using System.Text;
 using Hangfire;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -102,7 +103,18 @@ namespace Deverate
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app)
         {
-            app.UseHangfireDashboard();
+            app.Use((context, next) =>
+            {
+                if (context.Request.Path.StartsWithSegments("/hangfire"))
+                {
+                    context.Request.PathBase = new PathString(context.Request.Headers["X-Forwarded-Prefix"]);
+                }
+                return next();
+            });
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+                Authorization = new[] { new MyAuthorizationFilter() }
+            });
             RecurringJob.AddOrUpdate<IHangfireService>("AutoSubmitAllTestNotSubmit", context => context.EvaluateRankAllTestNotSubmit(), Cron.Hourly);
 
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
