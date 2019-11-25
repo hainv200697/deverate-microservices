@@ -521,11 +521,32 @@ namespace TestManagementServices.Service
         {
             using(DeverateContext db = new DeverateContext())
             {
-                List<Statistic> statistics = db.Statistic.Include(t => t.Test.Config).Include(t => t.DetailStatistic).Where(t => t.Test.AccountId == accountId).ToList();
+                List<Statistic> statistics = db.Statistic.Include(t => t.Test.Config).Include(t => t.Test.Account).Include(t => t.DetailStatistic).Where(t => t.Test.AccountId == accountId).ToList();
+                if (statistics.Count == 0) return null;
                 List<Rank> ranks = db.Rank.ToList();
                 List<TestHistoryDTO> testHistories = new List<TestHistoryDTO>();
                 List<Catalogue> catas = db.Catalogue.ToList();
-                for(int i = 0; i < statistics.Count; i++)
+                List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
+                                                                 join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
+                                                                 join c in db.Catalogue on cic.CatalogueId equals c.CatalogueId
+                                                                 join cicom in db.CatalogueInCompany on c.CatalogueId equals cicom.CatalogueId
+                                                                 where cicom.CompanyId == statistics[0].Test.Account.CompanyId
+                                                                 select cicom).ToList();
+                List<Catalogue> catalogues = db.Catalogue.ToList();
+                catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.Cicid).Select(c => c.First()).ToList();
+                for (int i = 0; i < catalogueInCompanies.Count; i++)
+                {
+                    foreach (Catalogue c in catalogues)
+                    {
+                        if (c.CatalogueId == catalogueInCompanies[i].CatalogueId)
+                        {
+                            catalogueInCompanies[i].Catalogue = c;
+                            break;
+                        }
+                    }
+                }
+
+                for (int i = 0; i < statistics.Count; i++)
                 {
                     TestHistoryDTO test = new TestHistoryDTO();
                     test.testId = statistics[i].TestId;
@@ -542,24 +563,22 @@ namespace TestManagementServices.Service
                             break;
                         }
                     }
-                    List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
-                    foreach(DetailStatistic ds in statistics[i].DetailStatistic.ToList())
+                    List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
+                    foreach (CatalogueInCompany c in catalogueInCompanies)
                     {
-                        CatalogueDTO ca = new CatalogueDTO();
-                        ca.catalogueId = ds.CatalogueId;
-                        ca.overallPoint = ds.Point * AppConstrain.scaleUpNumb;
-                        ca.weightPoint = null;
-                        foreach(Catalogue c in catas)
+                        cloneCatalogues.Add(new CatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0));
+                    }
+                    foreach (DetailStatistic ds in statistics[i].DetailStatistic.ToList())
+                    {
+                        for(int j = 0; j < cloneCatalogues.Count; j++)
                         {
-                            if(c.CatalogueId == ds.CatalogueId)
+                            if(cloneCatalogues[j].catalogueId == ds.CatalogueId)
                             {
-                                ca.name = c.Name;
-                                break;
+                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleUpNumb);
                             }
                         }
-                        catalogues.Add(ca);
                     }
-                    test.catalogues = catalogues;
+                    test.catalogues = cloneCatalogues;
                     testHistories.Add(test);
                 }
                 return testHistories;
