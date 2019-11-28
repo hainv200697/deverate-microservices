@@ -50,7 +50,7 @@ namespace TestManagementServices.Service
             return questions;
         }
 
-
+        // trộn 1 list question để random question
         public static List<Question> ShuffleQuestion(List<Question> questions)
         {
             Random rand = new Random();
@@ -70,8 +70,11 @@ namespace TestManagementServices.Service
         {
 
             List<QuestionDTO> questions = new List<QuestionDTO>();
+            // những câu hỏi còn lại
             List<QuestionRemain> remainQues = new List<QuestionRemain>();
+            // những câu hỏi chưa chọn
             List<QuestionDTO> unchoosedQues = new List<QuestionDTO>();
+            // những câu hỏi đã chọn
             List<QuestionDTO> choosedQues = new List<QuestionDTO>();
             List<int?> quesIds = new List<int?>();
             Random rand = new Random();
@@ -79,8 +82,10 @@ namespace TestManagementServices.Service
 
             List<int?> cIds = new List<int?>();
             con.catalogueInSamples.ForEach(c => cIds.Add(c.cicId));
+            // lấy danh sách catalogue in company theo catalogueId và companyId
             List<CatalogueInCompany> catalogueIns = db.CatalogueInCompany.Include(c => c.Catalogue).Include(c => c.Question).ThenInclude(c => c.Answer).Where(c => cIds.Contains(c.Catalogue.CatalogueId) && c.CompanyId == con.companyId).ToList();
             List<Question> cloneQuesList = new List<Question>();
+            // lấy những question active
             foreach(CatalogueInCompany cic in catalogueIns)
             {
                 for(int i = 0; i < cic.Question.ToList().Count; i++)
@@ -97,6 +102,7 @@ namespace TestManagementServices.Service
             {
                 return null;
             }
+            // parse catalogueIns vào CatalogueDTO
             List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
             for(int i = 0; i < catalogueIns.Count; i++)
             {
@@ -119,24 +125,28 @@ namespace TestManagementServices.Service
                 return null;
 
             }
+            // sort catalogues từ nhỏ đến lớn theo weightPoint
             catalogues = catalogues.OrderBy(o => o.weightPoint).ToList();
-
+            // số lượng câu hỏi nhìu hơn cata config -> lấy hết
             int totalOfQues = con.totalQuestion.Value > totalCataQues ? totalCataQues : con.totalQuestion.Value;
+            // lấy số lượng câu hỏi theo trọng số
             catalogues = GetNumberOfQuestionEachCatalogue(db, totalOfQues, catalogues);
 
-
+            // 
             for (int i = 0; i < catalogues.Count; i++)
             {
                 QuestionRemain quesRe = new QuestionRemain();
                 quesRe.catalogueId = catalogues[i].catalogueId;
-
+                // kiểm tra catalogue có câu hỏi 
                 List<Question> totalQues = catalogues[i].questionList;
                 if (totalQues == null || totalQues.Count == 0)
                 {
                     continue;
                 }
                 int quesLenght = totalQues.Count;
+                // nếu mak total question nhìu hơn bộ câu hỏi thì lấy hết câu hỏi
                 int numbOfQues = catalogues[i].numberOfQuestion > quesLenght ? quesLenght : catalogues[i].numberOfQuestion.Value;
+
                 totalQues = ShuffleQuestion(totalQues);
                 for (int j = 0; j < numbOfQues; j++)
                 {
@@ -155,9 +165,11 @@ namespace TestManagementServices.Service
                         j--;
                     }
                 }
+                
                 quesRe.curNumbQues = numbOfQues;
+               
                 quesRe.numbCataQues = catalogues[i].questionList.Count;
-
+                // kiểm tra lấy đủ câu hỏi hay chưa
                 if (numbOfQues != quesLenght)
                 {
                     for (int k = 0; k < quesLenght; k++)
@@ -182,6 +194,7 @@ namespace TestManagementServices.Service
                 quesRe.weightPoint = catalogues[i].weightPoint;
                 remainQues.Add(quesRe);
             }
+            // hàm đệ quy để 
             questions = fillQues(remainQues, totalOfQues, questions);
             questions = Shuffle(questions);
             for(int i = 0; i < catalogues.Count; i++)
@@ -373,20 +386,25 @@ namespace TestManagementServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
+                // lấy config ra theo configId
                 Configuration con = context.Configuration.SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
                 if (con.Duration < AppConstrain.minDuration)
                 {
                     return Message.durationExceptopn;
                 }
+                // lấy điểm catalogue trong config
                 List<CatalogueDTO> catas = GetCatalogueWeights(context, con.ConfigId);
+                // nếu ko có catalogue báo lỗi
                 if (catas.Count == 0)
                 {
                     return Message.noCatalogueException;
                 }
+                // mỗi catalogue phải có 1 câu hỏi
                 if (con.TotalQuestion < catas.Count)
                 {
                     return Message.numberQuestionExceptopn;
                 }
+                // kiểm tra bài test của ai
                 Account acc = context.Account.SingleOrDefault(o => o.AccountId == con.AccountId);
 
 
@@ -394,6 +412,7 @@ namespace TestManagementServices.Service
                             where a.CompanyId == acc.CompanyId && a.RoleId == AppConstrain.empRole && a.IsActive == true
                             select new AccountDTO(a);
                 List<AccountDTO> accounts = emps.ToList();
+                // ko có employee báo lỗi
                 if (accounts.Count == 0)
                 {
                     return Message.noEmployeeException;
@@ -414,8 +433,10 @@ namespace TestManagementServices.Service
             Random rand = new Random();
             int totalCataQues = 0;
 
+            // lấy list accountId
             List<int?> accountIds = new List<int?>();
             accounts.ForEach(a => accountIds.Add(a.accountId));
+            // lấy bài test theo configId
             List<Test> tests = db.Test.Where(t => t.ConfigId == config.ConfigId).ToList();
             tests = removeAvailableTests(accountIds, tests);
             db.SaveChanges();
@@ -624,7 +645,9 @@ namespace TestManagementServices.Service
         public static List<QuestionDTO> fillQues(List<QuestionRemain> remains, int totalOfQues, List<QuestionDTO> questions)
         {
             Random rand = new Random();
+            // kiểm tra còn thiếu bao nhiu câu
             int remainNumbQues = totalOfQues - questions.Count;
+            // = số lượng câu hỏi thừa hoặc đủ thì return
             if (totalOfQues <= questions.Count)
             {
                 return questions;
@@ -718,15 +741,21 @@ namespace TestManagementServices.Service
             int currentQuestion = 0;
             for (int i = 0; i < catalogues.Count; i++)
             {
+                // lấy số câu hỏi dựa vào weightPoint * totalQuestion
                 double numberOfQuestion = catalogues[i].weightPoint == null || catalogues[i].weightPoint.Value <= 0 ? 0: catalogues[i].weightPoint.Value * totalQuestion.Value / AppConstrain.scaleUpNumb;
+                // convert int
                 catalogues[i].numberOfQuestion = Convert.ToInt32(numberOfQuestion);
+                // có ít nhất 1 câu trong catalogue doa
                 if(catalogues[i].numberOfQuestion == 0)
                 {
                     catalogues[i].numberOfQuestion = 1;
                 }
+                // số lượng câu hỏi hiện tại bao nhiu
                 currentQuestion += catalogues[i].numberOfQuestion.Value;
             }
+            // coi chênh lệch số câu hỏi hiện tại với số câu hỏi trong config
             int dif = currentQuestion - totalQuestion.Value;
+            // 
             catalogues[catalogues.Count - 1].numberOfQuestion = catalogues[catalogues.Count - 1].numberOfQuestion.Value - dif;
             return catalogues;
         }
@@ -937,7 +966,9 @@ namespace TestManagementServices.Service
             var ans = db.QuestionInTest.Include(q => q.Question).ThenInclude(q => q.Answer).Where(q => q.TestId == testId).ToList();
             foreach (CatalogueInCompany cata in cataInCompany)
             {
+                // điểm mình làm
                 float point = 0;
+                // điểm tổng
                 float maxPoint = 0;
                 List<int?> ids = new List<int?>();
                 for(int i = 0; i < quess.Count; i++)

@@ -15,11 +15,15 @@ namespace TestManagementServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
+                // lấy account info
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
+                // từ account lấy ra companyId để lấy data list<config>
                 List<Configuration> configurations = db.Configuration.Include(c => c.Account).Include(c => c.Test).Include(c => c.CatalogueInConfiguration)
                                                      .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == false).ToList();
                 List<int?> configIds = new List<int?>();
+                // với mỗi config add id vào configIds
                 configurations.ForEach(c => configIds.Add(c.ConfigId));
+                // 
                 List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
                                                                  join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
                                                                  join c in db.Catalogue on cic.CatalogueId equals c.CatalogueId
@@ -27,7 +31,9 @@ namespace TestManagementServices.Service
                                                                  where cicom.CompanyId == account.CompanyId
                                                                  select cicom).ToList();
                 List<Catalogue> catalogues = db.Catalogue.ToList();
+                // gộp catalogue in company có cicid thành 1 nhóm
                 catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.Cicid).Select(c => c.First()).ToList();
+                // add catalogue vào catalogue in company
                 for (int i = 0; i < catalogueInCompanies.Count; i++)
                 {
                     foreach (Catalogue c in catalogues)
@@ -41,6 +47,7 @@ namespace TestManagementServices.Service
                 }
 
                 List<int?> testIds = new List<int?>();
+                // từ list config lấy ra dc list testID
                 for (int i = 0; i < configurations.Count; i++)
                 {
                     for (int j = 0; j < configurations[i].Test.Count; j++)
@@ -48,15 +55,19 @@ namespace TestManagementServices.Service
                         testIds.Add(configurations[i].Test.ToList()[j].TestId);
                     }
                 }
+                //từ list testID lây ra dc list statistic và detail statistic
                 List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
 
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for (int j = 0; j < configurations.Count; j++)
                 {
+                    // đếm số bài test đã submit
                     int numberOfTest = configurations[j].Test.Where(t => t.Status == "Submitted").ToList().Count();
+                    // đếm tổng số bài test
                     int totalTest = configurations[j].Test.ToList().Count;
                     int numberOfFinishedTest = 0;
                     List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
+                    // clone catalogue ra 
                     foreach (CatalogueInCompany c in catalogueInCompanies)
                     {
                         cloneCatalogues.Add(new CatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0));
@@ -69,6 +80,7 @@ namespace TestManagementServices.Service
                         if (statistics[k].Test.ConfigId == configurations[j].ConfigId)
                         {
                             numberOfFinishedTest += 1;
+                            // cộng vào điểm tổng gpa
                             totalGPA += statistics[k].Point;
                             List<DetailStatistic> details = statistics[k].DetailStatistic.ToList();
                             for (int m = 0; m < details.Count; m++)
@@ -78,6 +90,7 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueId == cloneCatalogues[n].catalogueId)
                                     {
+                                        // gắn giá trị dtb từng catalogue vào clone catalogue, ko co  thì valua = 0
                                         cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleUpNumb);
                                         if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
                                         {
@@ -368,12 +381,14 @@ namespace TestManagementServices.Service
                 List<int?> configIds = new List<int?>();
                 configurations.ForEach(c => configIds.Add(c.ConfigId));
                 
+                // lấy data bài test của công ty
                 var result = from t in db.Test
                                     join con in db.Configuration on t.ConfigId equals con.ConfigId
                                     join cif in db.CatalogueInConfiguration on con.ConfigId equals cif.ConfigId
                                     join acc in db.Account on con.AccountId equals acc.AccountId
                                     where acc.CompanyId == account.CompanyId
                                     select t;
+                // lấy list catalogue in company trong kỳ của bài test
                 List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
                                                                   join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
                                                                   join c in db.Catalogue on cic.CatalogueId equals c.CatalogueId
@@ -393,13 +408,14 @@ namespace TestManagementServices.Service
                         }
                     }
                 }
-                
+                // lấy ra testID
                 List < Test > tests = result.ToList();
                 List<int?> testIds = new List<int?>();
                 foreach(Test t in tests)
                 {
                     testIds.Add(t.TestId);
                 }
+                // lấy data statistic và detail statistic
                 List<Statistic> statistics = db.Statistic.Include(s => s.DetailStatistic).Where(s => testIds.Contains(s.TestId)).ToList();
                 
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
