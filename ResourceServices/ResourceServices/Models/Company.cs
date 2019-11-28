@@ -15,7 +15,7 @@ namespace ResourceServices.Models
         public string Name { get; set; }
         public string Address { get; set; }
         public DateTime? CreateAt { get; set; }
-        public int? Phone { get; set; }
+        public string Phone { get; set; }
         public string Fax { get; set; }
         public bool IsActive { get; set; }
 

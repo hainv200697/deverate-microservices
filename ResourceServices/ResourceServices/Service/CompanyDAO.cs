@@ -102,5 +102,16 @@ namespace ResourceServices.Service
                 return null;
             }
         }
+
+        public static bool checkExistedCompany(string companyName)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                var check = db.Company.Where(x => companyName.Contains(x.Name));
+                return check.Any();
+            }
+
+        }
+
     }
 }

@@ -49,7 +49,7 @@ namespace ResourceServices.Model
         public string address { get; set; }
         public DateTime? create_At { get; set; }
         public string fax { get; set; }
-        public int? phone { get; set; }
+        public string phone { get; set; }
         public bool? isActive { get; set; }
         public string managerUserName { get; set; }
         public string managerMail { get; set; }
