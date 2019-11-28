@@ -72,17 +72,21 @@ namespace ResourceServices.Controllers
 
         [Route("CreateCompany")]
         [HttpPost]
-        public ActionResult<IEnumerable<string>> PostCreateCompany([FromBody] CompanyDataDTO companyDataDTO)
+        public IActionResult PostCreateCompany([FromBody] CompanyDataDTO companyDataDTO)
         {
             try
             {
+                if (CompanyDAO.checkExistedCompany(companyDataDTO.CompanyDTO.name))
+                {
+                    return BadRequest();
+                }
                 var company = CompanyDAO.CreateCompany(companyDataDTO);
                 var account = companyDataDTO.AccountDTO;
                 var messageAccount = new MessageAccount(company.CompanyId, account.fullname, account.email, 2,account.address,account.gender,account.phone);
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
 
-                return new JsonResult(rm.Success("Save success"));
+                return Ok();
             }
             catch (Exception)
             {
