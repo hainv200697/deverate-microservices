@@ -140,7 +140,7 @@ namespace TestManagementServices.Service
                     {
                         totalApp = applicantConfigs[j].Test.Count;
                     }
-                    catch (Exception e)
+                    catch (Exception)
                     {
                         totalApp = 0;
                     }
@@ -312,7 +312,7 @@ namespace TestManagementServices.Service
                         {
                             totalEmp = configurations[j].Test.Count;
                         }
-                        catch(Exception e)
+                        catch(Exception)
                         {
                             totalEmp = 0;
                         }

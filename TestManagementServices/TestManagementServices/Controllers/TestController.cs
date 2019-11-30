@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AuthenServices.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
 using TestManagementServices.Service;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace TestManagementServices.Controllers
 {
@@ -33,7 +27,11 @@ namespace TestManagementServices.Controllers
         public IActionResult GetConfig(int testId)
         {
             ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
-            if (con.status == "Doing" && con.timeRemaining <= 10)
+            if (con.status == "Pending" && con.accountId != null && DateTime.Compare(DateTime.UtcNow, con.endDate.Value) > 0)
+            {
+                SystemDAO.ExpireTest(testId);
+                con = SystemDAO.GetConfig(context, testId);
+            } else if (con.status == "Doing" && con.timeRemaining <= 10)
             {
                 SystemDAO.AutoSubmit(testId);
                 con = SystemDAO.GetConfig(context, testId);
@@ -107,7 +105,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetGeneralStatisticOfApplicantByTestOwnerId(accountId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -120,7 +118,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -132,7 +130,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetRankStatisticOfApplicantByTestOwnerId(accountId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -145,7 +143,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetRankStatisticByTestOwnerId(accountId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -159,7 +157,7 @@ namespace TestManagementServices.Controllers
                 return Ok(StatisticDAO.GetOverallPointStatisticByCompanyId(companyId, configId, isEmployee));
 
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }

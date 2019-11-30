@@ -35,6 +35,16 @@ namespace TestManagementServices.Service
             }
         }
 
+        public static void ExpireTest(int testId)
+        {
+            using(DeverateContext context = new DeverateContext())
+            {
+                var test = context.Test.FirstOrDefault(t => t.TestId == testId);
+                test.Status = "Expired";
+                context.SaveChanges();
+            }
+        }
+
         public static List<QuestionDTO> Shuffle(List<QuestionDTO> questions)
         {
             Random rand = new Random();
@@ -757,6 +767,7 @@ namespace TestManagementServices.Service
                 }
 
                 test.Status = "Submitted";
+                test.FinishTime = DateTime.UtcNow;
                 context.SaveChanges();
                 List<AnswerDTO> answers = new List<AnswerDTO>();
                 List<int?> answerIds = new List<int?>();

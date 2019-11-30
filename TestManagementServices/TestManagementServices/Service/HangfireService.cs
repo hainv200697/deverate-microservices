@@ -9,6 +9,7 @@ namespace TestManagementServices.Service
     public interface IHangfireService
     {
         void EvaluateRankAllTestNotSubmit();
+        void ExpireTest();
     }
 
     public class HangfireService : IHangfireService
@@ -19,7 +20,7 @@ namespace TestManagementServices.Service
             {
                 using (DeverateContext context = new DeverateContext())
                 {
-                    var now = DateTime.Now;
+                    var now = DateTime.UtcNow;
                     var testIds = context.Test
                         .Include(c => c.Config)
                         .Where(t => t.IsActive && t.StartTime != null && t.Status == "Doing" && DateTime.Compare(now, t.StartTime.Value.AddMinutes(t.Config.Duration)) > 0 && t.IsActive)
@@ -33,7 +34,28 @@ namespace TestManagementServices.Service
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Error hangfire: " + ex);
+                Console.WriteLine("Error hangfire Not Submit: " + ex);
+            }
+        }
+
+        public void ExpireTest()
+        {
+            try
+            {
+                using (DeverateContext context = new DeverateContext())
+                {
+                    var now = DateTime.UtcNow;
+                    var tests = context.Test
+                        .Include(c => c.Config)
+                        .Where(t => t.Status == "Pending" && t.Config.Type && DateTime.Compare(now, t.Config.EndDate.Value) > 0)
+                        .ToList();
+                    tests.ForEach(t => t.Status = "Expired");
+                    context.SaveChanges();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error hangfire Expire Test: " + ex);
             }
         }
     }
