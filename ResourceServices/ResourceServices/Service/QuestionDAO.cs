@@ -82,5 +82,16 @@ namespace ResourceServices.Service
                 context.SaveChanges();
             }
         }
+
+        public static List<string> checkExistedQuestion(List<string> ques, int? cicId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.Cicid == cicId).Select(x => x.Question1).ToList();
+                return check;
+            }
+
+        }
     }
 }
