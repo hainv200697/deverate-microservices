@@ -25,7 +25,7 @@ namespace AuthenServices.Service
                         {
                             new Claim("accountId",  account.AccountId.ToString()),
                             new Claim("username", account.Username),
-                            new Claim(ClaimTypes.Role, account.Role.Description),
+                            new Claim(ClaimTypes.Role, account.Role.RoleName),
                             new Claim("fullname", account.Fullname),
                             new Claim("companyId", account.CompanyId.ToString())
                         }),
