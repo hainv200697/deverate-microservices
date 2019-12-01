@@ -61,7 +61,8 @@ namespace TestManagementServices.Controllers
                 {
                     return BadRequest("Code invalid, Submit fail");
                 }
-                return Ok(rp);
+                int applicantId = SystemDAO.GetApplicantId(userTest.testId);
+                return Ok(applicantId);
             }
             catch (Exception)
             {

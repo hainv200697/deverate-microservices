@@ -60,6 +60,18 @@ namespace TestManagementServices.Service
             return questions;
         }
 
+        public static int GetApplicantId(int testId)
+        {
+            using(DeverateContext context = new DeverateContext())
+            {
+                var test = context.Test.FirstOrDefault(t => t.TestId == testId);
+                if (test.ApplicantId == null)
+                {
+                    return 0;
+                }
+                return test.ApplicantId.Value;
+            }
+        }
 
         public static List<Question> ShuffleQuestion(List<Question> questions)
         {
