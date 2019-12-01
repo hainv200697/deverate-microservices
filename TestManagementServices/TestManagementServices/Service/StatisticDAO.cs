@@ -131,10 +131,6 @@ namespace TestManagementServices.Service
 
                 for (int j = 0; j < applicantConfigs.Count; j++)
                 {
-                    if (configCount == 5)
-                    {
-                        break;
-                    }
                     int totalApp = 0;
                     try
                     {
@@ -303,10 +299,6 @@ namespace TestManagementServices.Service
                     List<Configuration> configurations = accounts[i].Configuration.ToList();
                     for (int j = 0; j < configurations.Count; j++)
                     {
-                        if(configCount == 5)
-                        {
-                            break;
-                        }
                         int totalEmp = 0;
                         try
                         {
