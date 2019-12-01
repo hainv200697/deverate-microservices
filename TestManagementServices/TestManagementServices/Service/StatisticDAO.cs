@@ -238,35 +238,33 @@ namespace TestManagementServices.Service
                     {
                         continue;
                     }
-                    if (!userIds.Contains(t.AccountId)){
-                        userIds.Add(t.AccountId);
-                        Rank r = t.Statistic.First().Rank;
-                        if(t.AccountId != null)
+
+                    Rank r = t.Statistic.First().Rank;
+                    if(t.AccountId != null)
+                    {
+                        if(r != null)
                         {
-                            if(r != null)
-                            {
-                                userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, t.Statistic.First().Rank.Name, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
-                            }
-                            else
-                            {
-                                userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, "DEV0", (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
-                            }
-                            
+                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, t.Statistic.First().Rank.Name, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
                         }
                         else
                         {
-                            if (r != null)
-                            {
-                                userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, t.Statistic.First().Rank.Name, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
-                            }
-                            else
-                            {
-                                userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, "DEV0", (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
-                            }
-                            
+                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, "DEV0", (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
                         }
-                        
+                            
                     }
+                    else
+                    {
+                        if (r != null)
+                        {
+                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, t.Statistic.First().Rank.Name, (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
+                        }
+                        else
+                        {
+                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, "DEV0", (t.Statistic == null || t.Statistic.Count == 0) ? 0 : AppConstrain.RoundDownNumber(t.Statistic.First().Point, 1), configuration.Title, t.TestId));
+                        }
+                            
+                    }
+
                 }
                 return userStatistics;
             }
