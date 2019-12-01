@@ -558,7 +558,7 @@ namespace TestManagementServices.Service
                     List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
                     foreach (CatalogueInCompany c in catalogueInCompanies)
                     {
-                        cloneCatalogues.Add(new CatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0));
+                        cloneCatalogues.Add(new CatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0, 0));
                     }
                     foreach (DetailStatistic ds in statistics[i].DetailStatistic.ToList())
                     {
