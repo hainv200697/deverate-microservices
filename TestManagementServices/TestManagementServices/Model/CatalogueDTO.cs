@@ -57,6 +57,13 @@ namespace TestManagementServices.Model
             this.name = name;
             this.value = value;
         }
+
+        public CatalogueDTO(int? catalogueId, string name, double? overallPoint, int identify = 1)
+        {
+            this.catalogueId = catalogueId;
+            this.name = name;
+            this.overallPoint = overallPoint;
+        }
         public CatalogueDTO(int? configId)
         {
             this.configId = configId;
