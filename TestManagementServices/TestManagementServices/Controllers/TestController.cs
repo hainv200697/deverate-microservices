@@ -224,12 +224,12 @@ namespace TestManagementServices.Controllers
         {
             try
             {
-                bool check = SystemDAO.CheckCode(testId,code);
-                if(check == false)
+                int check = SystemDAO.CheckCode(testId,code);
+                if(check == 0)
                 {
                     return BadRequest();
                 }
-                return Ok();
+                return Ok(check);
             }
             catch (Exception)
             {

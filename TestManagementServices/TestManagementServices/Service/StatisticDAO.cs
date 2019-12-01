@@ -592,7 +592,7 @@ namespace TestManagementServices.Service
                 var info = db.Test.Include(x => x.Account).Include(x => x.Applicant).Where(x => x.TestId == testId).FirstOrDefault();
                 if(info.AccountId != null)
                 {
-                    return new AccountDTO(info.Account.Username, info.Account.Fullname, info.Account.Phone, info.Account.Email, info.Account.Address, info.Account.Gender.Value);
+                    return new AccountDTO(info.AccountId.Value, info.Account.Username, info.Account.Fullname, info.Account.Phone, info.Account.Email, info.Account.Address, info.Account.Gender.Value);
 
                 }
                 else

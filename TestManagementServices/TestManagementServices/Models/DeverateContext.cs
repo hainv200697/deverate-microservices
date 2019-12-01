@@ -193,6 +193,8 @@ namespace TestManagementServices.Models
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(250);
+
+                entity.Property(e => e.Phone).HasMaxLength(250);
             });
 
             modelBuilder.Entity<Configuration>(entity =>
@@ -315,9 +317,9 @@ namespace TestManagementServices.Models
 
             modelBuilder.Entity<Role>(entity =>
             {
-                entity.Property(e => e.Description)
+                entity.Property(e => e.RoleName)
                     .IsRequired()
-                    .HasMaxLength(350);
+                    .HasMaxLength(250);
             });
 
             modelBuilder.Entity<Statistic>(entity =>

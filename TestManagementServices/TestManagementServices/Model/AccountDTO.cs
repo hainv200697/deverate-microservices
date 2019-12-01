@@ -45,8 +45,9 @@ namespace AuthenServices.Model
             this.companyId = account.CompanyId;
             this.isActive = account.IsActive;
         }
-        public AccountDTO(string username,string fullname,string phone,string email,string address,bool gender)
+        public AccountDTO(int? accountId,string username,string fullname,string phone,string email,string address,bool gender)
         {
+            this.accountId = accountId;
             this.username = username;
             this.fullname = fullname;
             this.phone = phone;
