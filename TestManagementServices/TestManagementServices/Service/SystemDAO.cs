@@ -989,8 +989,8 @@ namespace TestManagementServices.Service
         {
             var result = from cf in db.Configuration
                          join t in db.Test on cf.ConfigId equals t.ConfigId
-                         where t.AccountId == acccountId && t.IsActive == true && cf.StartDate <= DateTime.UtcNow && DateTime.UtcNow <= cf.EndDate
-                         select new TestInfoDTO(cf.ConfigId, acccountId, t.TestId, cf.Title , null);
+                         where t.AccountId == acccountId && t.IsActive == true
+                         select new TestInfoDTO(cf.ConfigId, acccountId, t.TestId, cf.Title , null, t.Status, cf.StartDate, cf.EndDate);
             return result.ToList();
         }
 
@@ -1107,16 +1107,16 @@ namespace TestManagementServices.Service
             }
         }
 
-        public static bool CheckCode(int testId, string code)
+        public static int CheckCode(int testId, string code)
         {
             using (DeverateContext context = new DeverateContext())
             {
                 Test test = context.Test.SingleOrDefault(t => t.TestId == testId && t.Code == code);
                 if (test != null)
                 {
-                    return true;
+                    return test.ApplicantId.Value;
                 }
-                return false;
+                return 0;
             }
         }
     }

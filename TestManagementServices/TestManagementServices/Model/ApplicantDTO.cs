@@ -17,6 +17,7 @@ namespace TestManagementServices.Model
 
         public ApplicantDTO() { }
         public ApplicantDTO(Applicant applicant) {
+            this.applicantId = applicant.ApplicantId;
             this.fullName = applicant.Fullname;
             this.email = applicant.Email;
         }
