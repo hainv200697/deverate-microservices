@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AuthenServices.Models
+namespace MailingServices.Models
 {
     public partial class Role
     {
@@ -11,8 +11,8 @@ namespace AuthenServices.Models
         }
 
         public int RoleId { get; set; }
-        public string Description { get; set; }
-        public bool? IsActive { get; set; }
+        public string RoleName { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual ICollection<Account> Account { get; set; }
     }

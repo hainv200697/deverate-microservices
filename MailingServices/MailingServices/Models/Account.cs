@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace AuthenServices.Models
+namespace MailingServices.Models
 {
     public partial class Account
     {
         public Account()
         {
-            AccountInTest = new HashSet<AccountInTest>();
+            Configuration = new HashSet<Configuration>();
+            Question = new HashSet<Question>();
+            Test = new HashSet<Test>();
         }
 
         public int AccountId { get; set; }
@@ -22,10 +24,12 @@ namespace AuthenServices.Models
         public string Avatar { get; set; }
         public DateTime? JoinDate { get; set; }
         public int RoleId { get; set; }
-        public bool? IsActive { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual Company Company { get; set; }
         public virtual Role Role { get; set; }
-        public virtual ICollection<AccountInTest> AccountInTest { get; set; }
+        public virtual ICollection<Configuration> Configuration { get; set; }
+        public virtual ICollection<Question> Question { get; set; }
+        public virtual ICollection<Test> Test { get; set; }
     }
 }
