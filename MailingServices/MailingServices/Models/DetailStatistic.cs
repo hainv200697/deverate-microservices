@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace MailingServices.Models
 {
-    public partial class CatalogueInConfiguration
+    public partial class DetailStatistic
     {
-        public int Cicid { get; set; }
-        public int ConfigId { get; set; }
+        public int DetailId { get; set; }
+        public int StatisticId { get; set; }
         public int CatalogueId { get; set; }
-        public double WeightPoint { get; set; }
+        public double Point { get; set; }
         public bool IsActive { get; set; }
 
         public virtual Catalogue Catalogue { get; set; }
-        public virtual Configuration Config { get; set; }
+        public virtual Statistic Statistic { get; set; }
     }
 }

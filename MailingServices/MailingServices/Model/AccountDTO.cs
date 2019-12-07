@@ -1,4 +1,5 @@
 ﻿using AuthenServices.Models;
+using MailingServices.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

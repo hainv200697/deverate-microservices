@@ -14,8 +14,8 @@ namespace ResourceServices.Model
         public int configId { get; set; }
         public int? testOwnerId { get; set; }
         public int? totalQuestion { get; set; }
-        public DateTime? createDate { get; set; } = DateTime.UtcNow;
-        public DateTime? startDate { get; set; }
+        public DateTime createDate { get; set; } = DateTime.UtcNow;
+        public DateTime startDate { get; set; }
         public DateTime? endDate { get; set; }
         public int? duration { get; set; }
         public string title { get; set; }
@@ -53,7 +53,7 @@ namespace ResourceServices.Model
             this.testOwnerId = configuration.AccountId;
             this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
-            this.startDate = configuration.StartDate.Value.AddHours(7);
+            this.startDate = configuration.StartDate.AddHours(7);
             this.endDate = configuration.EndDate.Value.AddHours(7);
             this.duration = configuration.Duration;
             this.isActive = configuration.IsActive;
