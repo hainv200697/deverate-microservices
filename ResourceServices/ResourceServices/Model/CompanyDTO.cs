@@ -20,8 +20,7 @@ namespace ResourceServices.Model
             this.companyId = company.CompanyId;
             this.name = company.Name;
             this.address = company.Address;
-            this.create_At = company.CreateAt;
-            this.fax = company.Fax;
+            this.create_At = company.CreateDate;
             this.phone = company.Phone;
             this.isActive = company.IsActive;
             if (account != null)
@@ -37,8 +36,7 @@ namespace ResourceServices.Model
             this.companyId = company.CompanyId;
             this.name = company.Name;
             this.address = company.Address;
-            this.create_At = company.CreateAt;
-            this.fax = company.Fax;
+            this.create_At = company.CreateDate;
             this.phone = company.Phone;
             this.isActive = company.IsActive;
         }
@@ -48,7 +46,6 @@ namespace ResourceServices.Model
         public string name { get; set; }
         public string address { get; set; }
         public DateTime? create_At { get; set; }
-        public string fax { get; set; }
         public string phone { get; set; }
         public bool? isActive { get; set; }
         public string managerUserName { get; set; }

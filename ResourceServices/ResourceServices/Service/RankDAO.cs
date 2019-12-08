@@ -21,9 +21,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var ranks = from rank in db.Rank
-                              where rank.IsActive == isActive
-                              select new RankDTO(rank);
+                var ranks = db.CompanyRank.Where(c => c.IsActive == isActive).Select(c => new RankDTO(c));
                 return ranks.ToList().OrderByDescending(x => x.rankId).ToList();
             }
         }

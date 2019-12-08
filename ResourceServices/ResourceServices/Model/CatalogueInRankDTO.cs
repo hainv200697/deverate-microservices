@@ -22,9 +22,9 @@ namespace ResourceServices.Model
             this.catalogues = catalogues;
         }
 
-        public CatalogueInRankDTO(CatalogueInRank c)
+        public CatalogueInRankDTO(CatalogueInConfigRank c)
         {
-            catalogue = new CatalogueDTO(c.Catalogue, c.WeightPoint);
+            catalogue = new CatalogueDTO(c.CompanyCatalogue, c.Point);
         }
 
     }

@@ -54,7 +54,6 @@ namespace ResourceServices.Service
                     Configuration configuration = new Configuration();
                     configuration.AccountId = configurationDTO.testOwnerId.Value;
                     configuration.Title = configurationDTO.title;
-                    configuration.TotalQuestion = configurationDTO.totalQuestion.Value;
                     configuration.CreateDate = configurationDTO.createDate;
                     configuration.StartDate = configurationDTO.startDate;
                     configuration.EndDate = configurationDTO.endDate;
@@ -63,15 +62,15 @@ namespace ResourceServices.Service
                     configuration.Type = configurationDTO.type.Value;
                     configuration.IsActive = true;
                     configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
-                    configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
+                    configuration.RankInConfiguration = configurationDTO.ConfigurationRank;
                     var configSave = db.Configuration.Add(configuration);
 
                     foreach (var item in configurationDTO.ConfigurationRank)
                     {
-                        CatalogueInRank catalogueInRank = new CatalogueInRank();
-                        catalogueInRank.ConfigurationRankId = item.ConfigurationRankId;
-                        catalogueInRank.CatalogueId = item.CatalogueInRank.ToList()[0].CatalogueId;
-                        catalogueInRank.WeightPoint = item.CatalogueInRank.ToList()[0].WeightPoint;
+                        CatalogueInConfigRank catalogueInRank = new CatalogueInConfigRank();
+                        catalogueInRank.CompanyRankId = item.CompanyRankId;
+                        catalogueInRank.CompanyCatalogueId = item.CatalogueInConfigRank.ToList()[0].CompanyCatalogueId;
+                        catalogueInRank.Point = item.CatalogueInConfigRank.ToList()[0].Point;
                         catalogueInRank.IsActive = true;
                     }
                     db.SaveChanges();
@@ -83,7 +82,6 @@ namespace ResourceServices.Service
                     Configuration configuration = new Configuration();
                     configuration.AccountId = configurationDTO.testOwnerId.Value;
                     configuration.Title = configurationDTO.title;
-                    configuration.TotalQuestion = configurationDTO.totalQuestion.Value;
                     configuration.CreateDate = configurationDTO.createDate;
                     configuration.StartDate = configurationDTO.startDate;
                     configuration.Duration = configurationDTO.duration.Value;
@@ -91,15 +89,15 @@ namespace ResourceServices.Service
                     configuration.Type = configurationDTO.type.Value;
                     configuration.IsActive = true;
                     configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
-                    configuration.ConfigurationRank = configurationDTO.ConfigurationRank;
+                    configuration.RankInConfiguration = configurationDTO.ConfigurationRank;
                     var configSave = db.Configuration.Add(configuration);
 
                     foreach (var item in configurationDTO.ConfigurationRank)
                     {
-                        CatalogueInRank catalogueInRank = new CatalogueInRank();
-                        catalogueInRank.ConfigurationRankId = item.ConfigurationRankId;
-                        catalogueInRank.CatalogueId = item.CatalogueInRank.ToList()[0].CatalogueId;
-                        catalogueInRank.WeightPoint = item.CatalogueInRank.ToList()[0].WeightPoint;
+                        CatalogueInConfigRank catalogueInRank = new CatalogueInConfigRank();
+                        catalogueInRank.CompanyRankId = item.CompanyRankId;
+                        catalogueInRank.CompanyCatalogueId = item.CatalogueInConfigRank.ToList()[0].CompanyCatalogueId;
+                        catalogueInRank.Point = item.CatalogueInConfigRank.ToList()[0].Point;
                         catalogueInRank.IsActive = true;
                     }
                     db.SaveChanges();
@@ -113,14 +111,14 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var cass = db.ConfigurationRank
+                var cass = db.RankInConfiguration
                             .Include(cir => cir.Config.Account)
-                            .Include(cir => cir.Rank)
-                            .Include(cir => cir.CatalogueInRank)
+                            .Include(cir => cir.CompanyRank)
+                            .Include(cir => cir.CatalogueInConfigRank)
                             .Where(cir => cir.ConfigId == configId)
                             .ToList();
-                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.Catalogue).Where(c => c.ConfigId == configId).Select(c => new CatalogueInConfigDTO(c)).ToList();
-                List<Catalogue> catalogues = db.Catalogue.ToList();
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue).Where(c => c.ConfigId == configId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+                List<CompanyCatalogue> catalogues = db.CompanyCatalogue.ToList();
                 return new ConfigurationDTO(cass[0].Config, cass[0].Config.CatalogueInConfiguration.Select(c => new CatalogueInConfigDTO(c)).ToList(), cass.Select(c => new ConfigurationRankDTO(c)).ToList(), cass[0].Config.Account.Fullname, 0);
             }
         }

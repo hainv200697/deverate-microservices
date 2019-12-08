@@ -20,10 +20,9 @@ namespace ResourceServices.Model
         public CatalogueInConfigDTO() { }
         public CatalogueInConfigDTO(CatalogueInConfiguration c)
         {
-            this.cicId = c.Cicid;
             this.configId = c.ConfigId;
-            this.catalogueId = c.CatalogueId;
-            this.catalogueName = c.Catalogue.Name;
+            this.catalogueId = c.CompanyCatalogueId;
+            this.catalogueName = c.CompanyCatalogue.Name;
             this.weightPoint = c.WeightPoint;
             this.isActive = c.IsActive;
         }

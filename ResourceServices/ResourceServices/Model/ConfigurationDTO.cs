@@ -23,7 +23,7 @@ namespace ResourceServices.Model
         public bool? type { get; set; }
         public string TestOwnerName { get; set; }
         public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
-        public List<ConfigurationRank> ConfigurationRank { get; set; }
+        public List<RankInConfiguration> ConfigurationRank { get; set; }
 
         public List<CatalogueInConfigDTO> catalogueInConfigs { get; set; }
         public List<ConfigurationRankDTO> configurationRanks { get; set; }
@@ -38,7 +38,6 @@ namespace ResourceServices.Model
             this.configId = configuration.ConfigId;
             this.testOwnerId = configuration.AccountId;
             this.title = configuration.Title;
-            this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate;
             this.endDate = configuration.EndDate;
@@ -47,11 +46,10 @@ namespace ResourceServices.Model
             this.isActive = configuration.IsActive;
         }
 
-        public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<ConfigurationRank> configurationRank, string name)
+        public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<RankInConfiguration> configurationRank, string name)
         {
             this.configId = configuration.ConfigId;
             this.testOwnerId = configuration.AccountId;
-            this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate.AddHours(7);
             this.endDate = configuration.EndDate.Value.AddHours(7);
@@ -69,7 +67,6 @@ namespace ResourceServices.Model
         {
             this.configId = configuration.ConfigId;
             this.testOwnerId = configuration.AccountId;
-            this.totalQuestion = configuration.TotalQuestion;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate;
             this.endDate = configuration.EndDate;

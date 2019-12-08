@@ -17,7 +17,6 @@ namespace ResourceServices.Controllers
     [Route("CompanyAPI")]
     public class CompanyController: Controller
     {
-        ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
 
         public CompanyController(DeverateContext context)
@@ -32,7 +31,7 @@ namespace ResourceServices.Controllers
             try
             {
                 List<CompanyDTO> com = CompanyDAO.GetAllCompany();
-                return Ok(rm.Success(com));
+                return Ok(com);
             }
             catch (Exception)
             {
@@ -47,7 +46,7 @@ namespace ResourceServices.Controllers
             try
             {
                 CompanyDataDTO com = CompanyDAO.GetCompanyById(id);
-                return Ok(rm.Success(com));
+                return Ok(com);
             }
             catch (Exception)
             {
@@ -62,31 +61,7 @@ namespace ResourceServices.Controllers
             try
             {
                 List<CompanyDTO> com = CompanyDAO.GetCompanyByName(name);
-                return Ok(rm.Success(com));
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        [Route("CreateCompany")]
-        [HttpPost]
-        public IActionResult PostCreateCompany([FromBody] CompanyDataDTO companyDataDTO)
-        {
-            try
-            {
-                if (CompanyDAO.checkExistedCompany(companyDataDTO.CompanyDTO.name))
-                {
-                    return BadRequest();
-                }
-                var company = CompanyDAO.CreateCompany(companyDataDTO);
-                var account = companyDataDTO.AccountDTO;
-                var messageAccount = new MessageAccount(company.CompanyId, account.fullname, account.email, 2,account.address,account.gender,account.phone);
-                Producer producer = new Producer();
-                producer.PublishMessage(JsonConvert.SerializeObject(messageAccount), "AccountGenerate");
-
-                return Ok();
+                return Ok(com);
             }
             catch (Exception)
             {
@@ -101,7 +76,7 @@ namespace ResourceServices.Controllers
             try
             {
                 string message = CompanyDAO.UpdateCompany(company);
-                return Ok(rm.Success(message));
+                return Ok(message);
             }
             catch (Exception)
             {
@@ -116,7 +91,7 @@ namespace ResourceServices.Controllers
             try
             {
                 string message = CompanyDAO.DisableCompany(company, status);
-                return Ok(rm.Success(message));
+                return Ok(message);
             }
             catch (Exception)
             {

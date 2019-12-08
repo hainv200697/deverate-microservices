@@ -21,7 +21,7 @@ namespace ResourceServices.Model
         {
             this.answerId = ans.AnswerId;
             this.answer = ans.Answer1;
-            this.point = ans.Point;
+            this.percent = ans.Percent;
             this.questionId = ans.QuestionId;
             this.isActive = ans.IsActive;
         }
@@ -30,7 +30,7 @@ namespace ResourceServices.Model
         public int answerId { get; set; }
         public int? questionId { get; set; }
         public string answer { get; set; }
-        public int point { get; set; }
+        public int percent { get; set; }
         public bool? isActive { get; set; }
 
     }

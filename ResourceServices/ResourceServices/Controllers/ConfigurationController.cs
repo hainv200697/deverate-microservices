@@ -15,7 +15,6 @@ namespace ResourceServices.Controllers
     [Route("ConfigurationApi")]
     public class ConfigurationController: Controller
     {
-        ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
 
         public ConfigurationController(DeverateContext context)
@@ -83,12 +82,12 @@ namespace ResourceServices.Controllers
                     }
                     Producer producer = new Producer();
                     producer.PublishMessage(save.configId + "", "GenerateTest");
-                    return Ok(rm.Success("Save success"));
+                    return Ok("Save success");
                 }
                 else
                 {
                     ConfigurationDAO.CreateConfiguration(configuration);
-                    return Ok(rm.Success("Save success"));
+                    return Ok("Save success");
                 }
             }
             catch (Exception)
@@ -105,7 +104,7 @@ namespace ResourceServices.Controllers
             try
             {
                 var message = ConfigurationDAO.UpdateConfiguration(configuration);
-                return Ok(rm.Success(message));
+                return Ok(message);
             }
             catch (Exception)
             {
@@ -120,7 +119,7 @@ namespace ResourceServices.Controllers
             try
             {
                 var message = ConfigurationDAO.ChangeStatusConfiguration(configuration);
-                return Ok(rm.Success(message));
+                return Ok(message);
             }
             catch(Exception)
             {

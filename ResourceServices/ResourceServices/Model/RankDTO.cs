@@ -13,6 +13,7 @@ namespace ResourceServices.Model
     {
         [JsonProperty("rankId")]
         public int? rankId { get; set; }
+        public int? companyId { get; set; }
         public string name { get; set; }
         public DateTime? creatAt { get; set; }
         public DateTime? updateAt { get; set; }
@@ -23,12 +24,12 @@ namespace ResourceServices.Model
 
         }
 
-        public RankDTO(Rank rank)
+        public RankDTO(CompanyRank rank)
         {
-            this.rankId = rank.RankId;
+            this.rankId = rank.CompanyRankId;
+            this.companyId = rank.CompanyId;    
             this.name = rank.Name;
-            this.creatAt = rank.CreateAt;
-            this.updateAt = rank.UpdateAt;
+            this.creatAt = rank.CreateDate;
             this.isActive = rank.IsActive;
         }
     }

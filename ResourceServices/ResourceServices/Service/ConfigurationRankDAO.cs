@@ -1,4 +1,5 @@
-﻿using ResourceServices.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using ResourceServices.Model;
 using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
@@ -20,11 +21,10 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var con = from configRank in db.ConfigurationRank
-                            join config in db.Configuration on configRank.ConfigId equals config.ConfigId
-                            join rank in db.Rank on configRank.RankId equals rank.RankId
-                            where configRank.IsActive == isActive
-                            select new ConfigurationRankDTO(configRank, config, rank);
+                var con = db.RankInConfiguration.Include(c => c.Config)
+                    .Include(c => c.CompanyRank)
+                    .Where(c => c.IsActive == isActive)
+                    .Select(c => new ConfigurationRankDTO(c, c.Config, c.CompanyRank));
                 return con.ToList();
             }
         }

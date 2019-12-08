@@ -29,8 +29,7 @@ namespace ResourceServices.Model
             this.phone = account.Phone;
             this.email = account.Email;
             this.address = account.Address;
-            this.gender = account.Gender.Value;
-            this.avatar = account.Avatar;
+            this.gender = account.Gender;
         }
     }
 }

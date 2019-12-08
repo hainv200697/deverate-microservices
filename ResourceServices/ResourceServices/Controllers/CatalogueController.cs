@@ -120,7 +120,7 @@ namespace ResourceServices.Controllers
                 CatalogueDAO.CreateCatalogueDefault(catalog);
                 return Ok(Message.createCatalogueSucceed);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }

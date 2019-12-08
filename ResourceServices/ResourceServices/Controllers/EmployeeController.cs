@@ -21,7 +21,6 @@ namespace ResourceServices.Controllers
     public class EmployeeController : Controller
     {
 
-        ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
 
         public EmployeeController(DeverateContext context)
@@ -118,24 +117,6 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
-        //[HttpPut("UpdateAccountRole")]
-        //public ActionResult UpdateAccountRole([FromBody] AccountDTO accountChangeRole)
-        //{
-        //    try
-        //    {
-        //        if (accountChangeRole == null)
-        //        {
-        //            return BadRequest();
-        //        }
-        //        AccountDAO.updateAccountRole(accountChangeRole);
-        //        return Ok();
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return StatusCode(500);
-        //    }
-        //}
 
         [HttpGet("GetAccountByRole")]
         public ActionResult GetAccountByRole(int? companyId, bool? status, int? role)

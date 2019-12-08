@@ -48,7 +48,6 @@ namespace ResourceServices.Controllers
                     return BadRequest();
                 }
                 AnswerDAO.CreateAnswer(answer);
-                AnswerDAO.UpdateMaxPoint(answer.questionId);
                 return Ok(Message.createAnswerSucceed);
             }
             catch (Exception)
@@ -64,7 +63,6 @@ namespace ResourceServices.Controllers
             try
             {
                 AnswerDAO.UpdateAnswer(ans);
-                AnswerDAO.UpdateMaxPoint(ans.questionId);
                 return Ok(Message.updateAnswerSucceed);
             }
             catch (Exception)
@@ -81,7 +79,6 @@ namespace ResourceServices.Controllers
             {
                 int? id = ans[0].questionId;
                 AnswerDAO.removeAnswer(ans);
-                AnswerDAO.UpdateMaxPoint(id);
                 return Ok(Message.removeAnswerSucceed);
             }
             catch (Exception)

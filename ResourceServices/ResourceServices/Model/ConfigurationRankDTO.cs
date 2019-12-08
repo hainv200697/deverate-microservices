@@ -23,28 +23,26 @@ namespace ResourceServices.Model
 
         }
 
-        public ConfigurationRankDTO(ConfigurationRank configurationRank)
+        public ConfigurationRankDTO(RankInConfiguration configurationRank)
         {
-            this.configurationRankId = configurationRank.ConfigurationRankId;
             this.configId = configurationRank.ConfigId;
-            this.rankId = configurationRank.RankId;
-            this.weightPoint = configurationRank.WeightPoint;
+            this.rankId = configurationRank.CompanyRankId;
+            this.weightPoint = configurationRank.Point;
             this.isActive = configurationRank.IsActive;
-            this.rank = configurationRank.Rank.Name;
+            this.rank = configurationRank.CompanyRank.Name;
             List<CatalogueInRankDTO> catalogueIns = new List<CatalogueInRankDTO>();
             //configurationRank.CatalogueInRank.ToList().ForEach(c => catalogueIns.Add(new CatalogueInRankDTO(c.ConfigurationRank.RankId, c.ConfigurationRank.Rank.Name, c.Catalogue)))
-            this.catalogueInRanks = configurationRank.CatalogueInRank.Select(c => new CatalogueInRankDTO(c)).ToList();
+            this.catalogueInRanks = configurationRank.CatalogueInConfigRank.Select(c => new CatalogueInRankDTO(c)).ToList();
         }
 
-        public ConfigurationRankDTO(ConfigurationRank configurationRank, Configuration configuration, Rank rank)
+        public ConfigurationRankDTO(RankInConfiguration configurationRank, Configuration configuration, CompanyRank rank)
         {
-            this.configurationRankId = configurationRank.ConfigurationRankId;
             this.configId = configurationRank.ConfigId;
-            this.rankId = configurationRank.RankId;
-            this.weightPoint = configurationRank.WeightPoint;
+            this.rankId = configurationRank.CompanyRankId;
+            this.weightPoint = configurationRank.Point;
             this.isActive = configurationRank.IsActive;
             this.configuration = new ConfigurationDTO(configuration);
-            this.rank = configurationRank.Rank.Name;
+            this.rank = configurationRank.CompanyRank.Name;
         }
     }
 }

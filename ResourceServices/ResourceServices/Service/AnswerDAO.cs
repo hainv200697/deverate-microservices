@@ -33,7 +33,7 @@ namespace ResourceServices.Service
             {
                 Answer answer = new Answer();
                 answer.Answer1 = ans.answer;
-                answer.Point = ans.point;
+                answer.Percent = ans.percent;
                 answer.IsActive = true;
                 answer.QuestionId = ans.questionId.Value;
                 context.Answer.Add(answer);
@@ -42,16 +42,6 @@ namespace ResourceServices.Service
 
         }
 
-        public static void UpdateMaxPoint(int? id)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                int maxPoint = context.Answer.Where(a => a.QuestionId == id && a.IsActive == true).Max(a => a.Point);
-                Question quesDb = context.Question.SingleOrDefault(ques => ques.QuestionId == id);
-                quesDb.MaxPoint = maxPoint;
-                context.SaveChanges();
-            }
-        }
 
         public static void UpdateAnswer(AnswerDTO ans)
         {
@@ -60,7 +50,7 @@ namespace ResourceServices.Service
                     Answer answer = new Answer();
                     answer.AnswerId = ans.answerId; 
                     answer.Answer1 = ans.answer;
-                    answer.Point = ans.point;
+                    answer.Percent = ans.percent;
                     answer.IsActive = true;
                     answer.QuestionId = ans.questionId.Value;
                     context.Answer.Update(answer);

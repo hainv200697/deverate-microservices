@@ -12,14 +12,13 @@ namespace ResourceServices.Controllers
     [Route("ConfigurationRankController")]
     public class ConfigurationRankController: Controller
     {
-        ResponseMessage rm = new ResponseMessage();
 
         [Route("GetAllConfigurationRank")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllConfigurationRank(bool isActive)
         {
             List<ConfigurationRankDTO> com = ConfigurationRankDAO.GetAllRank(isActive);
-            return new JsonResult(rm.Success(com));
+            return new JsonResult(com);
         }
     }
 }

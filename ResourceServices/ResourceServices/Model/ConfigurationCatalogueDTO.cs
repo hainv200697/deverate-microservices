@@ -23,18 +23,16 @@ namespace ResourceServices.Model
 
         public ConfigurationCatalogueDTO(CatalogueInConfiguration catalogueInConfiguration)
         {
-            this.configurationCatalogueId = catalogueInConfiguration.Cicid;
             this.configId = catalogueInConfiguration.ConfigId;
-            this.catalogueId = catalogueInConfiguration.CatalogueId;
+            this.catalogueId = catalogueInConfiguration.CompanyCatalogueId;
             this.weightPoint = catalogueInConfiguration.WeightPoint;
             this.isActive = catalogueInConfiguration.IsActive;
         }
 
-        public ConfigurationCatalogueDTO(CatalogueInConfiguration catalogueInConfiguration, Configuration configuration, Catalogue catalogue)
+        public ConfigurationCatalogueDTO(CatalogueInConfiguration catalogueInConfiguration, Configuration configuration, CompanyCatalogue catalogue)
         {
-            this.configurationCatalogueId = catalogueInConfiguration.Cicid;
             this.configId = catalogueInConfiguration.ConfigId;
-            this.catalogueId = catalogueInConfiguration.CatalogueId;
+            this.catalogueId = catalogueInConfiguration.CompanyCatalogueId;
             this.weightPoint = catalogueInConfiguration.WeightPoint;
             this.isActive = catalogueInConfiguration.IsActive;
             this.configuration = new ConfigurationDTO(configuration);

@@ -12,14 +12,13 @@ namespace ResourceServices.Controllers
     [Route("ConfigurationCatalogue")]
     public class ConfigurationCatalogueController: Controller
     {
-        ResponseMessage rm = new ResponseMessage();
 
         [Route("GetAllConfigurationCatalogue")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllConfigurationCatalogue(bool isActive)
         {
             List<ConfigurationCatalogueDTO> com = ConfigurationCatalogueDAO.GetAllConfigurationCatalogue(isActive);
-            return new JsonResult(rm.Success(com));
+            return new JsonResult(com);
         }
 
         [Route("GetConfigurationCatalogueByConfigId")]
@@ -27,7 +26,7 @@ namespace ResourceServices.Controllers
         public ActionResult<IEnumerable<string>> GetConfigurationCatalogueByConfigId(int id)
         {
             List<ConfigurationCatalogueDTO> com = ConfigurationCatalogueDAO.GetConfigurationCatalogueByConfigId(id);
-            return new JsonResult(rm.Success(com));
+            return new JsonResult(com);
         }
     }
 }

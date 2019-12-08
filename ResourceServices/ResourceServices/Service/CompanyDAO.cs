@@ -48,35 +48,7 @@ namespace ResourceServices.Service
             }
         }
 
-        public static Company CreateCompany(CompanyDataDTO companyData)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                Company com = new Company();
-                com.Address = companyData.CompanyDTO.address;
-                com.Name = companyData.CompanyDTO.name;
-                com.CreateAt = DateTime.UtcNow;
-                com.Fax = companyData.CompanyDTO.fax;
-                com.Phone = companyData.CompanyDTO.phone;
-                com.IsActive = companyData.CompanyDTO.isActive.Value;  
-                var result = db.Company.Add(com);
-                var cata = db.Catalogue.Where(x => x.IsActive && !x.Type).ToList();
-                // add all catalogue to companyCatalogue
-                List<CatalogueInCompany> catalogueInCompany = new List<CatalogueInCompany>();
-                foreach(Catalogue catalogue in cata)
-                {
-                    catalogueInCompany.Add(new CatalogueInCompany
-                    {
-                        Catalogue = catalogue,
-                        IsActive = true,
-                    });
-                }
-                // add to company
-                com.CatalogueInCompany = catalogueInCompany;
-                db.SaveChanges();
-                return result.Entity;
-            }
-        }
+        
 
         public static string UpdateCompany(CompanyDTO company)
         {
@@ -85,7 +57,6 @@ namespace ResourceServices.Service
                 Company com = db.Company.SingleOrDefault(co => co.CompanyId == company.companyId);
                 com.Name = company.name;
                 com.Address = company.address;
-                com.Fax = company.fax;
                 com.Phone = company.phone;
                 com.IsActive = company.isActive.Value;
                 db.SaveChanges();

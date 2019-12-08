@@ -42,14 +42,14 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                int? cicid = question[0].cicid;
+                int companyCatalogue = question[0].companyCatalogueId;
                 List<string> listeQues = new List<string>();
                 foreach (var ques in question)
                 {
 
                     listeQues.Add(ques.question1);
                 }
-                var check = QuestionDAO.checkExistedQuestion(listeQues, cicid);
+                var check = QuestionDAO.checkExistedQuestion(listeQues, companyCatalogue);
                 if (check.Count() > 0)
                 {
                     return BadRequest(check);
