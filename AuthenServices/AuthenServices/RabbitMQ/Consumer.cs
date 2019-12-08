@@ -54,26 +54,6 @@ namespace AuthenServices.RabbitMQ
                 Producer producer = new Producer();
                 switch (this.exch)
                 {
-                    //case "AccountGenerate":
-                    //    var messageAccount = JsonConvert.DeserializeObject<MessageAccount>(message);
-                    //    MessageAccountDTO messageDTO = AccountDAO.GenerateCompanyAccount(context, messageAccount);
-                    //    if (messageDTO != null)
-                    //    {
-                    //        producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
-                    //    }
-                    //    break;
-                    //case "ListAccountGenerate":
-                    //    var listmessageAccount = JsonConvert.DeserializeObject<List<MessageAccount>>(message);
-                    //    foreach(MessageAccount msAccount in listmessageAccount)
-                    //    {
-
-                    //        MessageAccountDTO msAccountDTO = AccountDAO.GenerateCompanyAccount(context, msAccount);
-                    //        if (msAccount != null)
-                    //        {
-                    //            producer.PublishMessage(message: JsonConvert.SerializeObject(msAccountDTO), "AccountToEmail");
-                    //        }
-                    //    }
-                    //    break;
                     case "ResendPassword":
                         List<string> listSendPass = JsonConvert.DeserializeObject<List<string>>(message);
                         var listResendAccount = AccountDAO.Resend(listSendPass);
