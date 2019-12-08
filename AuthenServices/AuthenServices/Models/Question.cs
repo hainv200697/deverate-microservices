@@ -12,15 +12,13 @@ namespace AuthenServices.Models
         }
 
         public int QuestionId { get; set; }
-        public int Cicid { get; set; }
+        public int CompanyCatalogueId { get; set; }
         public string Question1 { get; set; }
-        public int MaxPoint { get; set; }
-        public int AccountId { get; set; }
+        public int Point { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreateAt { get; set; }
 
-        public virtual Account Account { get; set; }
-        public virtual CatalogueInCompany Cic { get; set; }
+        public virtual CompanyCatalogue CompanyCatalogue { get; set; }
         public virtual ICollection<Answer> Answer { get; set; }
         public virtual ICollection<QuestionInTest> QuestionInTest { get; set; }
     }

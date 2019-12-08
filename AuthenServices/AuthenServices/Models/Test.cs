@@ -7,8 +7,8 @@ namespace AuthenServices.Models
     {
         public Test()
         {
+            DetailResult = new HashSet<DetailResult>();
             QuestionInTest = new HashSet<QuestionInTest>();
-            Statistic = new HashSet<Statistic>();
         }
 
         public int TestId { get; set; }
@@ -18,14 +18,17 @@ namespace AuthenServices.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+        public int? CompanyRankId { get; set; }
+        public double? Point { get; set; }
         public string Code { get; set; }
         public string Status { get; set; }
         public bool IsActive { get; set; }
 
         public virtual Account Account { get; set; }
         public virtual Applicant Applicant { get; set; }
+        public virtual CompanyRank CompanyRank { get; set; }
         public virtual Configuration Config { get; set; }
+        public virtual ICollection<DetailResult> DetailResult { get; set; }
         public virtual ICollection<QuestionInTest> QuestionInTest { get; set; }
-        public virtual ICollection<Statistic> Statistic { get; set; }
     }
 }

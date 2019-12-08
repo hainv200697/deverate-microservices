@@ -8,7 +8,7 @@ namespace AuthenServices.Models
         public Configuration()
         {
             CatalogueInConfiguration = new HashSet<CatalogueInConfiguration>();
-            ConfigurationRank = new HashSet<ConfigurationRank>();
+            RankInConfiguration = new HashSet<RankInConfiguration>();
             Test = new HashSet<Test>();
         }
 
@@ -25,7 +25,7 @@ namespace AuthenServices.Models
 
         public virtual Account Account { get; set; }
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
-        public virtual ICollection<ConfigurationRank> ConfigurationRank { get; set; }
+        public virtual ICollection<RankInConfiguration> RankInConfiguration { get; set; }
         public virtual ICollection<Test> Test { get; set; }
     }
 }

@@ -3,15 +3,14 @@ using System.Collections.Generic;
 
 namespace AuthenServices.Models
 {
-    public partial class CatalogueInConfiguration
+    public partial class DetailResult
     {
-        public int ConfigId { get; set; }
+        public int TestId { get; set; }
         public int CompanyCatalogueId { get; set; }
-        public double WeightPoint { get; set; }
-        public int NumberQuestion { get; set; }
+        public double Point { get; set; }
         public bool IsActive { get; set; }
 
         public virtual CompanyCatalogue CompanyCatalogue { get; set; }
-        public virtual Configuration Config { get; set; }
+        public virtual Test Test { get; set; }
     }
 }
