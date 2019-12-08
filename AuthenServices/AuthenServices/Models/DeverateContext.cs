@@ -52,8 +52,6 @@ namespace AuthenServices.Models
             {
                 entity.Property(e => e.Address).HasMaxLength(250);
 
-                entity.Property(e => e.Avatar).HasMaxLength(250);
-
                 entity.Property(e => e.Email)
                     .IsRequired()
                     .HasMaxLength(250);
@@ -62,7 +60,7 @@ namespace AuthenServices.Models
                     .IsRequired()
                     .HasMaxLength(250);
 
-                entity.Property(e => e.JoinDate).HasColumnType("date");
+                entity.Property(e => e.JoinDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Password)
                     .IsRequired()
@@ -164,11 +162,13 @@ namespace AuthenServices.Models
 
             modelBuilder.Entity<CompanyCatalogue>(entity =>
             {
-                entity.Property(e => e.CreateDate).HasMaxLength(10);
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Description).HasMaxLength(10);
+                entity.Property(e => e.Description).HasMaxLength(250);
 
-                entity.Property(e => e.Name).HasMaxLength(10);
+                entity.Property(e => e.Name)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.CompanyCatalogue)
@@ -198,7 +198,7 @@ namespace AuthenServices.Models
             {
                 entity.HasKey(e => e.ConfigId);
 
-                entity.Property(e => e.CreateDate).HasColumnType("date");
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.EndDate).HasColumnType("datetime");
 
@@ -247,11 +247,14 @@ namespace AuthenServices.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.Question).HasMaxLength(250);
+                entity.Property(e => e.Question)
+                    .IsRequired()
+                    .HasMaxLength(250);
 
                 entity.HasOne(d => d.DefaultCatalogue)
                     .WithMany(p => p.DefaultQuestion)
                     .HasForeignKey(d => d.DefaultCatalogueId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DefaultQuestion_DefaultCatalogue");
             });
 
@@ -290,7 +293,7 @@ namespace AuthenServices.Models
                 entity.Property(e => e.Question1)
                     .IsRequired()
                     .HasColumnName("Question")
-                    .HasMaxLength(350);
+                    .HasMaxLength(250);
 
                 entity.HasOne(d => d.CompanyCatalogue)
                     .WithMany(p => p.Question)

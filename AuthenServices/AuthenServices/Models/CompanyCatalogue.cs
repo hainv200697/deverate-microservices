@@ -17,7 +17,7 @@ namespace AuthenServices.Models
         public int CompanyId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public string CreateDate { get; set; }
+        public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
 
         public virtual Company Company { get; set; }

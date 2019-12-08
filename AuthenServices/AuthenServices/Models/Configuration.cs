@@ -14,7 +14,6 @@ namespace AuthenServices.Models
 
         public int ConfigId { get; set; }
         public int AccountId { get; set; }
-        public int TotalQuestion { get; set; }
         public string Title { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime StartDate { get; set; }

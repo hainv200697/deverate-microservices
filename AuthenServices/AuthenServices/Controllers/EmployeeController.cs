@@ -34,7 +34,7 @@ namespace ResourceServices.Controllers
                     return BadRequest(existedMail);
                 }
                 int? companyId = ListAccountGenerate[0].CompanyId;
-                var check = AccountDAO.checkExistedEmail(listemail, companyId);
+                var check = AccountDAO.CheckExistedEmail(listemail, companyId);
                 if (check.Count > 0)
                 {
                     return BadRequest(check);

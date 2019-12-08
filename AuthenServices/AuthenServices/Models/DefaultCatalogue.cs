@@ -13,7 +13,7 @@ namespace AuthenServices.Models
         public int DefaultCatalogueId { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
-        public DateTime? CreateDate { get; set; }
+        public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
 
         public virtual ICollection<DefaultQuestion> DefaultQuestion { get; set; }

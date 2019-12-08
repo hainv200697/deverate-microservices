@@ -11,8 +11,6 @@ namespace AuthenServices.Service
 {
     public class AccountDAO
     {
-
-
         public static string CheckLogin(DeverateContext context, string username, string password)
         {
             username = username.ToUpper();
@@ -25,29 +23,26 @@ namespace AuthenServices.Service
             {
                 return null;
             }
-            bool? result = false;
+            bool result = false;
             try
             {
                 result = BCrypt.Net.BCrypt.Verify(password, account.Password);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }
 
-            if (result.Value == false)
+            if (!result)
             {
                 return null;
             }
-            else
-            {
-                return TokenManager.GenerateToken(account);
-            }
+            return TokenManager.GenerateToken(account);
         }
 
-        public static MessageAccountDTO GenerateCompanyAccount(DeverateContext context, MessageAccount ms)
+        public static MessageAccountDTO GenerateCompanyAccount(MessageAccount ms)
         {
-            try
+            using (DeverateContext context = new DeverateContext())
             {
                 var items = ms.Fullname.Split(' ');
                 string username = items[items.Length - 1];
@@ -55,7 +50,7 @@ namespace AuthenServices.Service
                 {
                     username += items[i].ElementAt(0);
                 }
-                if(AppConstrain.newestAccount == null)
+                if (AppConstrain.newestAccount == null)
                 {
                     List<Account> accounts = context.Account.ToList();
                     AppConstrain.newestAccount = accounts.Count + 1;
@@ -68,27 +63,23 @@ namespace AuthenServices.Service
                 username = username.ToUpper() + AppConstrain.newestAccount;
                 username = RemoveVietnameseTone(username);
 
-                Account account = new Account();
-                account.Username = username.ToUpper();
                 string password = "";
-                account.Password = generatePasswordHash(out password);
-                account.Fullname = ms.Fullname;
-                account.Email = ms.Email;
-                account.Gender = ms.Gender;
-                account.Address = ms.Address;
-                account.Phone = ms.Phone;
-                account.JoinDate = DateTime.UtcNow;
-                account.RoleId = ms.Role;
-                account.CompanyId = ms.CompanyId;
-                account.IsActive = true;
+                Account account = new Account {
+                    Username = username.ToUpper(),
+                    Password = GeneratePasswordHash(out password),
+                    Fullname = ms.Fullname,
+                    Email = ms.Email,
+                    Gender = ms.Gender,
+                    Address = ms.Address,
+                    Phone = ms.Phone,
+                    JoinDate = DateTime.UtcNow,
+                    RoleId = ms.Role,
+                    CompanyId = ms.CompanyId,
+                    IsActive = true
+                };
                 context.Account.Add(account);
                 context.SaveChanges();
                 return new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname);
-            } catch (Exception ex)
-            {
-                Console.WriteLine("Generate Account for " + ms.Fullname + " fail");
-                Console.WriteLine("Error " + ex);
-                return null;
             }
         }
 
@@ -98,7 +89,7 @@ namespace AuthenServices.Service
             {
                 List<MessageAccountDTO> result = new List<MessageAccountDTO>();
                 List<Account> accountsSave = new List<Account>();
-                foreach(MessageAccount ms in listAccountGenerate)
+                foreach (MessageAccount ms in listAccountGenerate)
                 {
                     var items = ms.Fullname.Split(' ');
                     string username = items[items.Length - 1];
@@ -119,19 +110,21 @@ namespace AuthenServices.Service
                     username = username.ToUpper() + AppConstrain.newestAccount;
                     username = RemoveVietnameseTone(username);
 
-                    Account account = new Account();
-                    account.Username = username.ToUpper();
                     string password = "";
-                    account.Password = generatePasswordHash(out password);
-                    account.Fullname = ms.Fullname;
-                    account.Email = ms.Email;
-                    account.Gender = ms.Gender;
-                    account.Address = ms.Address;
-                    account.Phone = ms.Phone;
-                    account.JoinDate = DateTime.UtcNow;
-                    account.RoleId = ms.Role;
-                    account.CompanyId = ms.CompanyId;
-                    account.IsActive = true;
+                    Account account = new Account
+                    {
+                        Username = username.ToUpper(),
+                        Fullname = ms.Fullname,
+                        Email = ms.Email,
+                        Gender = ms.Gender,
+                        Address = ms.Address,
+                        Phone = ms.Phone,
+                        JoinDate = DateTime.UtcNow,
+                        RoleId = ms.Role,
+                        CompanyId = ms.CompanyId,
+                        IsActive = true,
+                    };
+                    account.Password = GeneratePasswordHash(out password);
 
                     accountsSave.Add(account);
                     result.Add(new MessageAccountDTO(account.Username, password, ms.Email, ms.Fullname));
@@ -142,7 +135,7 @@ namespace AuthenServices.Service
             }
         }
 
-        private static string generatePasswordHash(out string password)
+        private static string GeneratePasswordHash(out string password)
         {
             bool includeLowercase = true;
             bool includeUppercase = true;
@@ -161,7 +154,7 @@ namespace AuthenServices.Service
         }
 
 
-        public static List<MessageAccountDTO> resend(List<String> listUsername)
+        public static List<MessageAccountDTO> Resend(List<String> listUsername)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -171,7 +164,7 @@ namespace AuthenServices.Service
                 foreach (Account account in accounts)
                 {
                     string password = "";
-                    account.Password = generatePasswordHash(out password);
+                    account.Password = GeneratePasswordHash(out password);
                     result.Add(new MessageAccountDTO(account.Username, password, account.Email, account.Fullname));
                 }
                 db.SaveChanges();
@@ -179,7 +172,7 @@ namespace AuthenServices.Service
             }
         }
 
-        public static bool changePassword(ChangePassRequest changePassRequest)
+        public static bool ChangePassword(ChangePassRequest changePassRequest)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -210,7 +203,7 @@ namespace AuthenServices.Service
             return result;
         }
 
-        public static List<string> checkExistedEmail(List<string> listemail, int? companyId)
+        public static List<string> CheckExistedEmail(List<string> listemail, int? companyId)
         {
             using (DeverateContext context = new DeverateContext())
             {

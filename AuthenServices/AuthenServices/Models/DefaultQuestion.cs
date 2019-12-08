@@ -11,11 +11,11 @@ namespace AuthenServices.Models
         }
 
         public int DefaultQuestionId { get; set; }
-        public int? DefaultCatalogueId { get; set; }
+        public int DefaultCatalogueId { get; set; }
         public string Question { get; set; }
-        public int? Point { get; set; }
-        public DateTime? CreateDate { get; set; }
-        public bool? IsActive { get; set; }
+        public double Point { get; set; }
+        public DateTime CreateDate { get; set; }
+        public bool IsActive { get; set; }
 
         public virtual DefaultCatalogue DefaultCatalogue { get; set; }
         public virtual ICollection<DefaultAnswer> DefaultAnswer { get; set; }

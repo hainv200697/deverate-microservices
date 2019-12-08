@@ -20,11 +20,11 @@ namespace AuthenServices.Controllers
         }
 
         [HttpPost("Login")]
-        public ActionResult<IEnumerable<string>> PostAuthenUser([FromBody]AccountDTO account)
+        public ActionResult<IEnumerable<string>> PostAuthenUser([FromBody]AccountLoginDTO account)
         {
             try
             {
-                string token = AccountDAO.CheckLogin(context, account.Username, account.Password);
+                string token = AccountDAO.CheckLogin(context, account.username, account.password);
                 if (token == null)
                 {
                     return BadRequest("Invalid username or password");
@@ -38,21 +38,12 @@ namespace AuthenServices.Controllers
             }
         }
 
-        [HttpPost("CreateManagerAccount")]
-        public ActionResult PostCreateManagerAccount([FromBody]MessageAccount account)
-        {
-            Producer producer = new Producer();
-            MessageAccountDTO messageDTO = AccountDAO.GenerateCompanyAccount(context, account);
-            producer.PublishMessage(message: JsonConvert.SerializeObject(messageDTO), "AccountToEmail");
-            return Ok(messageDTO);
-        }
-
         [HttpPut("ChangePassword")]
         public ActionResult PutChangePassword([FromBody]ChangePassRequest changePassRequest)
         {
             try
             {
-                bool result = AccountDAO.changePassword(changePassRequest);
+                bool result = AccountDAO.ChangePassword(changePassRequest);
                 if (result)
                 {
                     return Ok();
@@ -70,7 +61,7 @@ namespace AuthenServices.Controllers
         {
             try
             {
-                var listResendAccount = AccountDAO.resend(listUsername);
+                var listResendAccount = AccountDAO.Resend(listUsername);
                 Producer producer = new Producer();
                 foreach (MessageAccountDTO msAccount in listResendAccount)
                 {

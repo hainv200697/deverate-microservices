@@ -14,7 +14,7 @@ namespace AuthenServices.Models
         public int QuestionId { get; set; }
         public int CompanyCatalogueId { get; set; }
         public string Question1 { get; set; }
-        public int Point { get; set; }
+        public double Point { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreateAt { get; set; }
 
