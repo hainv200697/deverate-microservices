@@ -22,11 +22,11 @@ namespace ResourceServices.Service
             }
         }
 
-        public static List<CatalogueDTO> GetAllCatalogueDefault( bool status)
+        public static List<CatalogueDefaultDTO> GetAllCatalogueDefault( bool status)
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var cata = context.DefaultCatalogue.Where(x => x.IsActive == status).Select(x=> new CatalogueDTO(x)).ToList();
+                var cata = context.DefaultCatalogue.Where(x => x.IsActive == status).Select(x=> new CatalogueDefaultDTO(x)).ToList();
                 return cata;
             }
         }
@@ -46,7 +46,7 @@ namespace ResourceServices.Service
 
         }
 
-        public static void CreateCatalogueDefault(CatalogueDTO catalogue)
+        public static void CreateCatalogueDefault(CatalogueDefaultDTO catalogue)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -63,7 +63,20 @@ namespace ResourceServices.Service
 
         }
 
-        public static void UpdateCatalogueDefault(CatalogueDTO catalogue)
+        public static void UpdateCatalogue(CatalogueDTO catalogue)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                CompanyCatalogue cata = context.CompanyCatalogue.SingleOrDefault(c => c.CompanyCatalogueId == catalogue.catalogueId);
+                cata.Description = catalogue.description;
+                cata.Name = catalogue.name;
+                cata.IsActive = catalogue.isActive;
+                context.SaveChanges();
+            }
+
+        }
+
+        public static void UpdateCatalogueDefault(CatalogueDefaultDTO catalogue)
         {
             using (DeverateContext context = new DeverateContext())
             {
@@ -76,7 +89,7 @@ namespace ResourceServices.Service
 
         }
 
-        public static void removeCatalogueDefault(List<CatalogueDTO> catalogue)
+        public static void removeCatalogueDefault(List<CatalogueDefaultDTO> catalogue)
         {
             using (DeverateContext context = new DeverateContext())
             {

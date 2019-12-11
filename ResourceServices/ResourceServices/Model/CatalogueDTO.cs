@@ -22,13 +22,6 @@ namespace ResourceServices.Model
             this.isActive = catalogue.IsActive;
             this.description = catalogue.Description;
         }
-        public CatalogueDTO(DefaultCatalogue catalogue)
-        {
-            this.name = catalogue.Name;
-            this.catalogueId = catalogue.DefaultCatalogueId;
-            this.isActive = catalogue.IsActive;
-            this.description = catalogue.Description;
-        }
         public CatalogueDTO(CompanyCatalogue catalogue,bool status , int count)
         {
             this.name = catalogue.Name;
@@ -44,7 +37,6 @@ namespace ResourceServices.Model
             this.catalogueId = catalogue.CompanyCatalogueId;
             this.description = catalogue.Description;
             this.weightPoint = weightPoint;
-
         }
 
 

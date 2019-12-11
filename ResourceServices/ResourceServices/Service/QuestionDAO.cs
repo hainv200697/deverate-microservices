@@ -39,7 +39,6 @@ namespace ResourceServices.Service
                     question.IsActive = true;
                     question.Point = ques.point;
                     question.Answer = ques.answer;
-                    question.Answer = ques.answer;
                     context.Question.Add(question);
                 }
                 context.SaveChanges();
@@ -92,5 +91,40 @@ namespace ResourceServices.Service
             }
 
         }
+
+        public static void CreateDefaultQuestion(List<QuestionDefaultDTO> quest)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                var defaultQuestions = new List<DefaultQuestion>();
+                foreach (var ques in quest)
+                {
+                    defaultQuestions.Add(new DefaultQuestion
+                    {
+                        DefaultCatalogueId = ques.catalogueDefaultId,
+                        Question = ques.question,
+                        IsActive = true,
+                        Point = ques.point,
+                        CreateDate = DateTime.UtcNow,
+                        DefaultAnswer = ques.answer
+                    });
+                }
+                context.DefaultQuestion.AddRange(defaultQuestions);
+                context.SaveChanges();
+            }
+
+        }
+
+        public static void UpdateDefaultQuestion(QuestionDefaultDTO ques)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                DefaultQuestion question = context.DefaultQuestion.SingleOrDefault(x => x.DefaultQuestionId == ques.questionDefaultId);
+                question.Question = ques.question;
+                context.DefaultQuestion.Update(question);
+                context.SaveChanges();
+            }
+        }
+
     }
 }

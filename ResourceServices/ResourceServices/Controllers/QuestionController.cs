@@ -108,5 +108,43 @@ namespace ResourceServices.Controllers
             }
         }
 
+
+        [HttpPost("CreateDefaultQuestion")]
+        public ActionResult CreateDefaultQuestion([FromBody] List<QuestionDefaultDTO> question)
+        {
+            try
+            {
+                //    int companyCatalogue = question[0].companyCatalogueId;
+                //    List<string> listeQues = new List<string>();
+                //    foreach (var ques in question)
+                //    {
+
+                //        listeQues.Add(ques.question1);
+                //    }
+                //    var check = QuestionDAO.checkExistedQuestion(listeQues, companyCatalogue);
+                //    if (check.Count() > 0)
+                //    {
+                //        return BadRequest(check);
+                //    }
+                //    if (question == null)
+                //    {
+                //        return BadRequest();
+                //    }
+                //    foreach (var item in question)
+                //    {
+                //        if (item.answer.Count() < 3 || item.answer.Count() > 6)
+                //        {
+                //            return BadRequest();
+                //        }
+                //    }
+                QuestionDAO.CreateDefaultQuestion(question);
+                return Ok(Message.createQuestionSucceed);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
     }
 }

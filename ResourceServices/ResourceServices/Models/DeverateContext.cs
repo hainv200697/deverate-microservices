@@ -217,8 +217,6 @@ namespace ResourceServices.Models
 
             modelBuilder.Entity<DefaultAnswer>(entity =>
             {
-                entity.Property(e => e.DefaultAnswerId).ValueGeneratedNever();
-
                 entity.Property(e => e.Answer)
                     .IsRequired()
                     .HasMaxLength(250);
@@ -243,8 +241,6 @@ namespace ResourceServices.Models
 
             modelBuilder.Entity<DefaultQuestion>(entity =>
             {
-                entity.Property(e => e.DefaultQuestionId).ValueGeneratedNever();
-
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Question)
