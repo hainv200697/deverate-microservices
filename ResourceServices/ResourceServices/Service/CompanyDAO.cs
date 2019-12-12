@@ -50,7 +50,7 @@ namespace ResourceServices.Service
 
         
 
-        public static string UpdateCompany(CompanyDTO company)
+        public static void UpdateCompany(CompanyDTO company)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -60,17 +60,15 @@ namespace ResourceServices.Service
                 com.Phone = company.phone;
                 com.IsActive = company.isActive.Value;
                 db.SaveChanges();
-                return null;
             }
         }
 
-        public static string DisableCompany(List<int> company, bool? status)
+        public static void DisableCompany(List<int> company, bool? status)
         {
             using (DeverateContext db = new DeverateContext())
             {
                 db.Company.Where(x => company.Contains(x.CompanyId)).ToList().ForEach(x => x.IsActive = status.Value);
                 db.SaveChanges();
-                return null;
             }
         }
 

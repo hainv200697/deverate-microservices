@@ -20,6 +20,15 @@ namespace ResourceServices.Model
         public const string updateCompanyRankSucceed = "{\"message\" : \"Updating rank success\"}";
         public const string changeStatusCompanyRankSucceed = "{\"message\" : \"Change status rank success\"}";
 
+        public const string createDefaultRankSucceed = "{\"message\" : \"Creating rank success\"}";
+        public const string DefaultRankExisted = "{\"message\" : \"Rank name is existed\"}";
+        public const string updateDefaultRankSucceed = "{\"message\" : \"Updating rank success\"}";
+        public const string changeStatusDefaultRankSucceed = "{\"message\" : \"Change status rank success\"}";
+        public const string inputDefaultRank = "{\"message\" : \"Please input field required\"}";
+        public const string chooseDefaultRank = "{\"message\" : \"Please choose rank\"}";
+
+        public const string updateCompanySucceed = "{\"message\" : \"Updating company success\"}";
+        public const string removeCompanySucceed = "{\"message\" : \"Change status company success\"}";
 
         public const string createQuestionSucceed = "{\"message\" : \"Creating question success\"}";
         public const string updateQuestionSucceed = "{\"message\" : \"Updating question success\"}";
