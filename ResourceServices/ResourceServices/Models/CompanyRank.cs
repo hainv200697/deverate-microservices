@@ -7,7 +7,7 @@ namespace ResourceServices.Models
     {
         public CompanyRank()
         {
-            RankInConfiguration = new HashSet<RankInConfiguration>();
+            CatalogueInRank = new HashSet<CatalogueInRank>();
             Test = new HashSet<Test>();
         }
 
@@ -18,7 +18,7 @@ namespace ResourceServices.Models
         public bool IsActive { get; set; }
 
         public virtual Company Company { get; set; }
-        public virtual ICollection<RankInConfiguration> RankInConfiguration { get; set; }
+        public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
         public virtual ICollection<Test> Test { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace ResourceServices.Service
             }
         }
 
-        public static CompanyDataDTO GetCompanyById(int? id)
+        public static CompanyDataDTO GetCompanyById(int id)
         {
             using (DeverateContext db = new DeverateContext())
             {

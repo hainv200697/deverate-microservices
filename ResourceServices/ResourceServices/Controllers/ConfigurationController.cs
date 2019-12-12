@@ -52,20 +52,20 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [Route("GetConfigurationById")]
-        [HttpGet]
-        public ActionResult GetConfigurationById(int id)
-        {
-            try
-            {
-                ConfigurationDTO con = ConfigurationDAO.GetConfigurationById(id);
-                return Ok(con);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
+        //[Route("GetConfigurationById")]
+        //[HttpGet]
+        //public ActionResult GetConfigurationById(int id)
+        //{
+        //    try
+        //    {
+        //        ConfigurationDTO con = ConfigurationDAO.GetConfigurationById(id);
+        //        return Ok(con);
+        //    }
+        //    catch (Exception)
+        //    {
+        //        return StatusCode(500);
+        //    }
+        //}
 
         [Route("CreateConfiguration")]
         [HttpPost]

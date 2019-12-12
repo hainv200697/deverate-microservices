@@ -62,7 +62,6 @@ namespace ResourceServices.Service
                     configuration.Type = configurationDTO.type.Value;
                     configuration.IsActive = true;
                     configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
-                    configuration.RankInConfiguration = configurationDTO.ConfigurationRank;
                     var configSave = db.Configuration.Add(configuration);
 
                     foreach (var item in configurationDTO.ConfigurationRank)
@@ -89,7 +88,6 @@ namespace ResourceServices.Service
                     configuration.Type = configurationDTO.type.Value;
                     configuration.IsActive = true;
                     configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
-                    configuration.RankInConfiguration = configurationDTO.ConfigurationRank;
                     var configSave = db.Configuration.Add(configuration);
 
                     foreach (var item in configurationDTO.ConfigurationRank)
@@ -107,21 +105,21 @@ namespace ResourceServices.Service
             }
         }
 
-        public static ConfigurationDTO GetConfigurationById(int configId)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                var cass = db.RankInConfiguration
-                            .Include(cir => cir.Config.Account)
-                            .Include(cir => cir.CompanyRank)
-                            .Include(cir => cir.CatalogueInConfigRank)
-                            .Where(cir => cir.ConfigId == configId)
-                            .ToList();
-                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue).Where(c => c.ConfigId == configId).Select(c => new CatalogueInConfigDTO(c)).ToList();
-                List<CompanyCatalogue> catalogues = db.CompanyCatalogue.ToList();
-                return new ConfigurationDTO(cass[0].Config, cass[0].Config.CatalogueInConfiguration.Select(c => new CatalogueInConfigDTO(c)).ToList(), cass.Select(c => new ConfigurationRankDTO(c)).ToList(), cass[0].Config.Account.Fullname, 0);
-            }
-        }
+        //public static ConfigurationDTO GetConfigurationById(int configId)
+        //{
+        //    using (DeverateContext db = new DeverateContext())
+        //    {
+        //        var cass = db.RankInConfiguration
+        //                    .Include(cir => cir.Config.Account)
+        //                    .Include(cir => cir.CompanyRank)
+        //                    .Include(cir => cir.CatalogueInConfigRank)
+        //                    .Where(cir => cir.ConfigId == configId)
+        //                    .ToList();
+        //        List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue).Where(c => c.ConfigId == configId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+        //        List<CompanyCatalogue> catalogues = db.CompanyCatalogue.ToList();
+        //        return new ConfigurationDTO(cass[0].Config, cass[0].Config.CatalogueInConfiguration.Select(c => new CatalogueInConfigDTO(c)).ToList(), cass.Select(c => new ConfigurationRankDTO(c)).ToList(), cass[0].Config.Account.Fullname, 0);
+        //    }
+        //}
 
         public static string UpdateConfiguration(ConfigurationDTO configurationDTO)
         {

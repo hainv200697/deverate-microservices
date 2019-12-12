@@ -16,6 +16,11 @@ namespace ResourceServices.Model
         public const string updateConfigSucceed = "Updating configuration success";
         public const string removeConfigSucceed = "Removed configuration success";
 
+        public const string createCompanyRankSucceed = "{\"message\" : \"Creating rank success\"}";
+        public const string updateCompanyRankSucceed = "{\"message\" : \"Updating rank success\"}";
+        public const string changeStatusCompanyRankSucceed = "{\"message\" : \"Change status rank success\"}";
+
+
         public const string createQuestionSucceed = "{\"message\" : \"Creating question success\"}";
         public const string updateQuestionSucceed = "{\"message\" : \"Updating question success\"}";
         public const string removeQuestionSucceed = "{\"message\" : \"Removed question success\"}";

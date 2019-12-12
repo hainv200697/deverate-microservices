@@ -17,16 +17,16 @@ namespace ResourceServices.Service
             this.context = context;
         }
 
-        public static List<ConfigurationRankDTO> GetAllRank(bool isActive)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                var con = db.RankInConfiguration.Include(c => c.Config)
-                    .Include(c => c.CompanyRank)
-                    .Where(c => c.IsActive == isActive)
-                    .Select(c => new ConfigurationRankDTO(c, c.Config, c.CompanyRank));
-                return con.ToList();
-            }
-        }
+        //public static List<ConfigurationRankDTO> GetAllRank(bool isActive)
+        //{
+        //    using (DeverateContext db = new DeverateContext())
+        //    {
+        //        var con = db.RankInConfiguration.Include(c => c.Config)
+        //            .Include(c => c.CompanyRank)
+        //            .Where(c => c.IsActive == isActive)
+        //            .Select(c => new ConfigurationRankDTO(c, c.Config, c.CompanyRank));
+        //        return con.ToList();
+        //    }
+        //}
     }
 }
