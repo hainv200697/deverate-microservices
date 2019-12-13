@@ -92,6 +92,17 @@ namespace ResourceServices.Service
 
         }
 
+        public static List<string> checkExistedDefaultQuestion(List<string> ques, int defaultCatalogueId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.DefaultQuestion.Where(x => ques.Contains(x.Question) && x.DefaultCatalogueId == defaultCatalogueId).Select(x => x.Question).ToList();
+                return check;
+            }
+
+        }
+
         public static void CreateDefaultQuestion(List<QuestionDefaultDTO> quest)
         {
             using (DeverateContext context = new DeverateContext())
