@@ -146,5 +146,55 @@ namespace ResourceServices.Controllers
             }
         }
 
+        [HttpGet("GetQuestionByCatalogueDefault")]
+        public ActionResult GetQuestionByDefaultCatalogueId(int catalogueId,  bool status)
+        {
+            try
+            {
+                List<QuestionDefaultDTO> ques = QuestionDAO.GetQuestionByDefaultCatalogue(catalogueId, status);
+                if (ques == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(ques);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("UpdateQuestionDefault")]
+        public ActionResult UpdateQuestionDefault([FromBody]QuestionDefaultDTO ques)
+        {
+            try
+            {
+                if (ques == null)
+                {
+                    return BadRequest();
+                }
+                QuestionDAO.UpdateDefaultQuestion(ques);
+                return Ok(Message.updateQuestionSucceed);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("RemoveQuestionDefault")]
+        public ActionResult RemoveQuestionDefault([FromBody] List<QuestionDefaultDTO> ques)
+        {
+            try
+            {
+                QuestionDAO.removeQuestionDefault(ques);
+                return Ok(Message.removeQuestionSucceed);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
     }
 }
