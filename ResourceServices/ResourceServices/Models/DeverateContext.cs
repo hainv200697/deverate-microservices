@@ -113,8 +113,6 @@ namespace ResourceServices.Models
                 entity.HasKey(e => e.CatalogueInConfigId)
                     .HasName("PK_CatalogueInConfiguration_1");
 
-                entity.Property(e => e.CatalogueInConfigId).ValueGeneratedNever();
-
                 entity.HasOne(d => d.CompanyCatalogue)
                     .WithMany(p => p.CatalogueInConfiguration)
                     .HasForeignKey(d => d.CompanyCatalogueId)

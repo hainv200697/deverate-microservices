@@ -34,94 +34,64 @@ namespace ResourceServices.Service
             }
         }
 
-
-
-        public static ConfigurationDTO CreateConfiguration(ConfigurationDTO configurationDTO)
+        public static void CreateConfiguration(ConfigurationDTO configurationDTO)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                if (configurationDTO.type.Value)
+
+                Configuration configuration = new Configuration();
+
+                var newlstcatalougeinconfig = new List<CatalogueInConfiguration>();
+
+                foreach (var item in configurationDTO.catalogueInConfigurationDTO)
                 {
-                    var result = db.Account.Where(a => a.AccountId == configurationDTO.testOwnerId).Select(a => a.CompanyId);
-                    int? companyId = result.First();
-                    //int companyId = db.Account.FirstOrDefault(a => a.AccountId == configurationDTO.testOwnerId).CompanyId.Value;
-                    var emps = db.Account.Where(a => a.CompanyId == companyId && a.IsActive && a.RoleId == 3).Select(a => new AccountDTO(a));
-                    if (emps.ToList().Count == 0)
+                    var newCatalogueInRank = new List<CatalogueInRank>();
+                    foreach (var item2 in item.catalogueInRankDTO)
                     {
-                        return null;
+                        var clstatalougeinrank = new CatalogueInRank
+                        {
+                            CompanyRankId = item2.companyRankId,
+                            IsActive = true,
+                            Point = item2.point,
+                        };
+                        newCatalogueInRank.Add(clstatalougeinrank);
                     }
-
-                    Configuration configuration = new Configuration();
-                    configuration.AccountId = configurationDTO.testOwnerId.Value;
-                    configuration.Title = configurationDTO.title;
-                    configuration.CreateDate = configurationDTO.createDate;
-                    configuration.StartDate = configurationDTO.startDate;
-                    configuration.EndDate = configurationDTO.endDate;
-                    configuration.Duration = configurationDTO.duration.Value;
-                    configuration.Title = configurationDTO.title;
-                    configuration.Type = configurationDTO.type.Value;
-                    configuration.IsActive = true;
-                    configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
-                    var configSave = db.Configuration.Add(configuration);
-
-                    foreach (var item in configurationDTO.ConfigurationRank)
+                    var catalougeinconfig = new CatalogueInConfiguration
                     {
-                        CatalogueInConfigRank catalogueInRank = new CatalogueInConfigRank();
-                        catalogueInRank.CompanyRankId = item.CompanyRankId;
-                        catalogueInRank.CompanyCatalogueId = item.CatalogueInConfigRank.ToList()[0].CompanyCatalogueId;
-                        catalogueInRank.Point = item.CatalogueInConfigRank.ToList()[0].Point;
-                        catalogueInRank.IsActive = true;
-                    }
-                    db.SaveChanges();
-                    configurationDTO.configId = configSave.Entity.ConfigId;
-                    return configurationDTO;
+                        CatalogueInRank = newCatalogueInRank,
+                        CompanyCatalogueId = item.companyCatalogueId,
+                        WeightPoint = item.weightPoint,
+                        NumberQuestion = item.numberQuestion,
+                        IsActive = true
+                    };
+                    newlstcatalougeinconfig.Add(catalougeinconfig);
                 }
-                else
-                {
-                    Configuration configuration = new Configuration();
-                    configuration.AccountId = configurationDTO.testOwnerId.Value;
-                    configuration.Title = configurationDTO.title;
-                    configuration.CreateDate = configurationDTO.createDate;
-                    configuration.StartDate = configurationDTO.startDate;
-                    configuration.Duration = configurationDTO.duration.Value;
-                    configuration.Title = configurationDTO.title;
-                    configuration.Type = configurationDTO.type.Value;
-                    configuration.IsActive = true;
-                    configuration.CatalogueInConfiguration = configurationDTO.catalogueInConfigurations;
-                    var configSave = db.Configuration.Add(configuration);
 
-                    foreach (var item in configurationDTO.ConfigurationRank)
-                    {
-                        CatalogueInConfigRank catalogueInRank = new CatalogueInConfigRank();
-                        catalogueInRank.CompanyRankId = item.CompanyRankId;
-                        catalogueInRank.CompanyCatalogueId = item.CatalogueInConfigRank.ToList()[0].CompanyCatalogueId;
-                        catalogueInRank.Point = item.CatalogueInConfigRank.ToList()[0].Point;
-                        catalogueInRank.IsActive = true;
-                    }
-                    db.SaveChanges();
-                    configurationDTO.configId = configSave.Entity.ConfigId;
-                    return configurationDTO;
-                }
+                configuration.AccountId = configurationDTO.accountId;
+                configuration.Title = configurationDTO.title;
+                configuration.CreateDate = DateTime.UtcNow;
+                configuration.StartDate = configurationDTO.startDate;
+                configuration.EndDate = configurationDTO.endDate;
+                configuration.Duration = configurationDTO.duration;
+                configuration.Title = configurationDTO.title;
+                configuration.Type = configurationDTO.type;
+                configuration.IsActive = true;
+                configuration.CatalogueInConfiguration = newlstcatalougeinconfig;
+                db.Configuration.Add(configuration);
+                db.SaveChanges();
             }
         }
 
-        //public static ConfigurationDTO GetConfigurationById(int configId)
-        //{
-        //    using (DeverateContext db = new DeverateContext())
-        //    {
-        //        var cass = db.RankInConfiguration
-        //                    .Include(cir => cir.Config.Account)
-        //                    .Include(cir => cir.CompanyRank)
-        //                    .Include(cir => cir.CatalogueInConfigRank)
-        //                    .Where(cir => cir.ConfigId == configId)
-        //                    .ToList();
-        //        List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue).Where(c => c.ConfigId == configId).Select(c => new CatalogueInConfigDTO(c)).ToList();
-        //        List<CompanyCatalogue> catalogues = db.CompanyCatalogue.ToList();
-        //        return new ConfigurationDTO(cass[0].Config, cass[0].Config.CatalogueInConfiguration.Select(c => new CatalogueInConfigDTO(c)).ToList(), cass.Select(c => new ConfigurationRankDTO(c)).ToList(), cass[0].Config.Account.Fullname, 0);
-        //    }
-        //}
+        public static ConfigurationDTO GetConfigurationById(int configId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                var config = db.Configuration.Include(c => c.CatalogueInConfiguration).ThenInclude(x => x.CatalogueInRank).Where(c => c.ConfigId == configId).Select(c => new ConfigurationDTO(c));
+                return config.FirstOrDefault();
+            }
+        }
 
-        public static string UpdateConfiguration(ConfigurationDTO configurationDTO)
+        public static void UpdateConfiguration(ConfigurationDTO configurationDTO)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -129,26 +99,22 @@ namespace ResourceServices.Service
                 configuration.Title = configurationDTO.title;
                 configuration.StartDate = configurationDTO.startDate;
                 configuration.EndDate = configurationDTO.endDate;
-                configuration.Duration = configurationDTO.duration.Value;
-
+                configuration.Duration = configurationDTO.duration;
                 db.SaveChanges();
-
-                return null;
             }
         }
 
-        public static string ChangeStatusConfiguration(List<ConfigurationDTO> configurationDTO)
+        public static void ChangeStatusConfiguration(List<ConfigurationDTO> configurationDTO)
         {
             using (DeverateContext db = new DeverateContext())
             {
                 foreach (var item in configurationDTO)
                 {
                     Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == item.configId);
-                    configuration.IsActive = item.isActive.Value;
+                    configuration.IsActive = item.isActive;
                     db.Configuration.Update(configuration);
                     db.SaveChanges();
                 }
-                return null;
             }
         }
     }

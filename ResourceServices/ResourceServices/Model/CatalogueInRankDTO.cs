@@ -10,22 +10,18 @@ namespace ResourceServices.Model
     [JsonObject("CatalogueInRankDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CatalogueInRankDTO
     {
-        public int? rankId { get; set; }
-        public string rank { get; set; }
-        public List<CatalogueDTO> catalogues { get; set; }
-        public CatalogueDTO catalogue { get; set; }
+        public int catalogueInConfigId { get; set; }
+        public int companyRankId { get; set; }
+        public double? point { get; set; }
+        public bool? isActive { get; set; }
         public CatalogueInRankDTO() { }
-        public CatalogueInRankDTO(int? rankId, string rank, List<CatalogueDTO> catalogues)
-        {
-            this.rankId = rankId;
-            this.rank = rank;
-            this.catalogues = catalogues;
-        }
 
-        public CatalogueInRankDTO(CatalogueInConfigRank c)
+        public CatalogueInRankDTO(CatalogueInRank catalogueInRank)
         {
-            catalogue = new CatalogueDTO(c.CompanyCatalogue, c.Point);
+            this.catalogueInConfigId = catalogueInRank.CatalogueInConfigId;
+            this.companyRankId = catalogueInRank.CompanyRankId;
+            this.point = catalogueInRank.Point;
+            this.isActive = catalogueInRank.IsActive;
         }
-
     }
 }
