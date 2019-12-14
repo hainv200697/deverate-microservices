@@ -114,33 +114,83 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                //    int companyCatalogue = question[0].companyCatalogueId;
-                //    List<string> listeQues = new List<string>();
-                //    foreach (var ques in question)
-                //    {
+                    int defaultCatalogue = question[0].catalogueDefaultId;
+                    List<string> listeQues = new List<string>();
+                    foreach (var ques in question)
+                    {
 
-                //        listeQues.Add(ques.question1);
-                //    }
-                //    var check = QuestionDAO.checkExistedQuestion(listeQues, companyCatalogue);
-                //    if (check.Count() > 0)
-                //    {
-                //        return BadRequest(check);
-                //    }
-                //    if (question == null)
-                //    {
-                //        return BadRequest();
-                //    }
-                //    foreach (var item in question)
-                //    {
-                //        if (item.answer.Count() < 3 || item.answer.Count() > 6)
-                //        {
-                //            return BadRequest();
-                //        }
-                //    }
+                        listeQues.Add(ques.question);
+                    }
+                    var check = QuestionDAO.checkExistedDefaultQuestion(listeQues, defaultCatalogue);
+                    if (check.Count() > 0)
+                    {
+                        return BadRequest(check);
+                    }
+                    if (question == null)
+                    {
+                        return BadRequest();
+                    }
+                    foreach (var item in question)
+                    {
+                        if (item.answer.Count() < 3 || item.answer.Count() > 6)
+                        {
+                            return BadRequest();
+                        }
+                    }
                 QuestionDAO.CreateDefaultQuestion(question);
                 return Ok(Message.createQuestionSucceed);
             }
             catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("GetQuestionByCatalogueDefault")]
+        public ActionResult GetQuestionByDefaultCatalogueId(int catalogueId,  bool status)
+        {
+            try
+            {
+                List<QuestionDefaultDTO> ques = QuestionDAO.GetQuestionByDefaultCatalogue(catalogueId, status);
+                if (ques == null)
+                {
+                    return BadRequest();
+                }
+                return Ok(ques);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("UpdateQuestionDefault")]
+        public ActionResult UpdateQuestionDefault([FromBody]QuestionDefaultDTO ques)
+        {
+            try
+            {
+                if (ques == null)
+                {
+                    return BadRequest();
+                }
+                QuestionDAO.UpdateDefaultQuestion(ques);
+                return Ok(Message.updateQuestionSucceed);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut("RemoveQuestionDefault")]
+        public ActionResult RemoveQuestionDefault([FromBody] List<QuestionDefaultDTO> ques)
+        {
+            try
+            {
+                QuestionDAO.removeQuestionDefault(ques);
+                return Ok(Message.removeQuestionSucceed);
+            }
+            catch (Exception)
             {
                 return StatusCode(500);
             }

@@ -28,6 +28,16 @@ namespace ResourceServices.Model
             this.isActive = ques.IsActive;
         }
 
+        public QuestionDefaultDTO(DefaultQuestion ques, string cataName)
+        {
+            this.questionDefaultId = ques.DefaultQuestionId;
+            this.catalogueName = cataName;
+            this.question = ques.Question;
+            this.point = ques.Point;
+            this.creatAt = DateTime.UtcNow;
+            this.isActive = ques.IsActive;
+        }
+
         [JsonProperty("QuestionDefaultId")]
         public int questionDefaultId { get; set; }
         public int catalogueDefaultId { get; set; }

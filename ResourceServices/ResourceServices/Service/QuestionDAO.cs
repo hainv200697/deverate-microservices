@@ -92,6 +92,17 @@ namespace ResourceServices.Service
 
         }
 
+        public static List<string> checkExistedDefaultQuestion(List<string> ques, int defaultCatalogueId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.DefaultQuestion.Where(x => ques.Contains(x.Question) && x.DefaultCatalogueId == defaultCatalogueId).Select(x => x.Question).ToList();
+                return check;
+            }
+
+        }
+
         public static void CreateDefaultQuestion(List<QuestionDefaultDTO> quest)
         {
             using (DeverateContext context = new DeverateContext())
@@ -126,5 +137,40 @@ namespace ResourceServices.Service
             }
         }
 
+        public static List<QuestionDefaultDTO> GetQuestionByDefaultCatalogue(int catalogueId, bool status)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var defaultCata = context.DefaultQuestion.Include(x => x.DefaultCatalogue)
+                    .Where(x =>  x.DefaultCatalogueId == catalogueId)
+                    .Select(x => new QuestionDefaultDTO(x, x.DefaultCatalogue.Name)).ToList();
+                return defaultCata;
+            }
+
+        }
+
+        public static void removeQuestionDefault(List<QuestionDefaultDTO> Question)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                foreach (var ques in Question)
+                {
+                    DefaultQuestion questionDb = context.DefaultQuestion.SingleOrDefault(c => c.DefaultQuestionId == ques.questionDefaultId);
+                    questionDb.IsActive = ques.isActive;
+                    if (ques.isActive == false)
+                    {
+                        List<AnswerDefaultDTO> answers = context.DefaultAnswer.Where(answer => answer.DefaultQuestionId == questionDb.DefaultQuestionId).Select(answer => new AnswerDefaultDTO(answer)).ToList();
+                        foreach (var item in answers)
+                        {
+                            DefaultAnswer AnswerDb = context.DefaultAnswer.SingleOrDefault(c => c.DefaultAnswerId == item.answerId);
+                            AnswerDb.IsActive = false;
+                        }
+                    }
+                }
+
+                context.SaveChanges();
+            }
+        }
     }
 }
