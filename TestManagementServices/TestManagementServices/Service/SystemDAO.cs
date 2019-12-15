@@ -231,14 +231,18 @@ namespace TestManagementServices.Service
 
         public static string GenerateTestForApplicants(string configId, List<ApplicantDTO> applicants, bool oneForAll = false)
         {
-            using (DeverateContext context = new DeverateContext())
+            using (DeverateContext db = new DeverateContext())
             {
-                Configuration con = context.Configuration.Include(c => c.Account).SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
+                Configuration con = db.Configuration
+                    .Include(c => c.CatalogueInConfiguration)
+                    .ThenInclude(t => t.CompanyCatalogue)
+                    .ThenInclude(t => t.Question)
+                    .SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
                 if (con.Duration < AppConstrain.minDuration)
                 {
                     return Message.durationExceptopn;
                 }
-                List<CompanyCatalogueDTO> catas = GetCatalogueWeights(context, con.ConfigId);
+                List<CompanyCatalogueDTO> catas = GetCatalogueWeights(con.ConfigId);
                 if (catas.Count == 0 || catas == null)
                 {
                     return Message.noCatalogueException;
@@ -406,12 +410,16 @@ namespace TestManagementServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                Configuration con = db.Configuration.SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
+                Configuration con = db.Configuration
+                    .Include(c => c.CatalogueInConfiguration)
+                    .ThenInclude(t => t.CompanyCatalogue)
+                    .ThenInclude(t => t.Question)
+                    .SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
                 if (con.Duration < AppConstrain.minDuration)
                 {
                     return Message.durationExceptopn;
                 }
-                List<CompanyCatalogueDTO> catas = GetCatalogueWeights(db, con.ConfigId);
+                List<CompanyCatalogueDTO> catas = GetCatalogueWeights(con.ConfigId);
                 if (catas.Count == 0)
                 {
                     return Message.noCatalogueException;
@@ -603,6 +611,7 @@ namespace TestManagementServices.Service
                         t.ConfigId = config.ConfigId;
                         t.CreateDate = DateTime.UtcNow;
                         t.Code = GenerateCode();
+                        t.IsActive = true;
                         t.Status = "Pending";
                         tests.Add(t);
                     }
@@ -646,6 +655,7 @@ namespace TestManagementServices.Service
                         t.CreateDate = DateTime.UtcNow;
                         t.Code = GenerateCode();
                         t.Status = "Pending";
+                        t.IsActive = true;
                         tests.Add(t);
                         questions = new List<QuestionDTO>();
                     }
@@ -985,17 +995,21 @@ namespace TestManagementServices.Service
             return catalogues;
         }
 
-        public static List<CompanyCatalogueDTO> GetCatalogueWeights(DeverateContext db, int? configId)
+        public static List<CompanyCatalogueDTO> GetCatalogueWeights( int? configId)
         {
-            var result = from cf in db.Configuration
-                         join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
-                         where cf.ConfigId == configId
-                         select new CompanyCatalogueDTO(cif.CompanyCatalogueId, cif.CompanyCatalogue.Name, 0, cif.WeightPoint, null, cif.CompanyCatalogue.IsActive);
-            if (result.ToList().Count == 0)
+            using(DeverateContext db = new DeverateContext())
             {
-                return null;
+                var result = from cf in db.Configuration
+                             join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
+                             where cf.ConfigId == configId
+                             select new CompanyCatalogueDTO(cif.CompanyCatalogueId, cif.CompanyCatalogue.Name, 0, cif.WeightPoint, null, cif.CompanyCatalogue.IsActive);
+                if (result.ToList().Count == 0)
+                {
+                    return null;
+                }
+                return result.ToList();
             }
-            return result.ToList();
+
         }
 
 

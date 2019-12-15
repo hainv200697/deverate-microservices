@@ -49,7 +49,7 @@ namespace TestManagementServices.Controllers
 
         //    return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetHistory(accountId)));
         //}
-        [HttpGet("Gen/")]
+        [HttpPost("Gen/")]
         public ActionResult<IEnumerable<string>> GenTest([FromBody]EmployeeTestDTO employeeTest)
         {
             SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);

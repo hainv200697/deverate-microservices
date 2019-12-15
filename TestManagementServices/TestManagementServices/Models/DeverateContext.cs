@@ -76,6 +76,11 @@ namespace TestManagementServices.Models
                     .HasForeignKey(d => d.CompanyId)
                     .HasConstraintName("FK_Account_Company");
 
+                entity.HasOne(d => d.CompanyRank)
+                    .WithMany(p => p.Account)
+                    .HasForeignKey(d => d.CompanyRankId)
+                    .HasConstraintName("FK_Account_CompanyRank");
+
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Account)
                     .HasForeignKey(d => d.RoleId)
@@ -302,7 +307,6 @@ namespace TestManagementServices.Models
                 entity.HasOne(d => d.Answer)
                     .WithMany(p => p.QuestionInTest)
                     .HasForeignKey(d => d.AnswerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_QuestionInTest_Answer");
 
                 entity.HasOne(d => d.Question)
