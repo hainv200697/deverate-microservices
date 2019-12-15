@@ -37,6 +37,7 @@ namespace ResourceServices.Service
                     question.CompanyCatalogueId = ques.companyCatalogueId;
                     question.Question1 = ques.question1;
                     question.IsActive = true;
+                    question.CreateAt = DateTime.UtcNow;
                     question.Point = ques.point;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
@@ -143,7 +144,7 @@ namespace ResourceServices.Service
 
             {
                 var defaultCata = context.DefaultQuestion.Include(x => x.DefaultCatalogue)
-                    .Where(x =>  x.DefaultCatalogueId == catalogueId)
+                    .Where(x =>  x.DefaultCatalogueId == catalogueId && x.IsActive == status)
                     .Select(x => new QuestionDefaultDTO(x, x.DefaultCatalogue.Name)).ToList();
                 return defaultCata;
             }

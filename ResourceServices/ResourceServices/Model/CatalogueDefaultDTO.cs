@@ -12,15 +12,17 @@ namespace ResourceServices.Model
         public CatalogueDefaultDTO()
         {
         }
-        public CatalogueDefaultDTO(DefaultCatalogue catalogue)
+        public CatalogueDefaultDTO(DefaultCatalogue catalogue, int counts)
         {
             this.name = catalogue.Name;
             this.catalogueId = catalogue.DefaultCatalogueId;
             this.isActive = catalogue.IsActive;
+            this.count = counts;
             this.description = catalogue.Description;
         }
 
         public int catalogueId { get; set; }
+        public int count { get; set; }
         public string name { get; set; }
         public bool isActive { get; set; }
         public string description { get; set; }

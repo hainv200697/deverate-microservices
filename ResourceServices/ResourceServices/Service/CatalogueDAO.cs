@@ -26,7 +26,10 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var cata = context.DefaultCatalogue.Where(x => x.IsActive == status).Select(x=> new CatalogueDefaultDTO(x)).ToList();
+                var cata = context.DefaultCatalogue
+                    .Include(x=> x.DefaultQuestion)
+                    .Where(x => x.IsActive == status)
+                    .Select(x=> new CatalogueDefaultDTO(x, x.DefaultQuestion.Count(ques => ques.IsActive == true))).ToList();
                 return cata;
             }
         }
@@ -36,10 +39,11 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 CompanyCatalogue cata = new CompanyCatalogue();
+                cata.CompanyId = catalogue.companyId;
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
                 cata.IsActive =true;
-                cata.IsActive = true;
+                cata.CreateDate = DateTime.UtcNow;
                 context.CompanyCatalogue.Add(cata);
                 context.SaveChanges();
             }
