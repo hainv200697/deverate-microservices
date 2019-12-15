@@ -13,7 +13,6 @@ namespace TestManagementServices.Model
         public string title { get; set; }
         public int? accountId { get; set; }
         public int? applicantId { get; set; }
-        public int? totalQuestion { get; set; }
         public DateTime? createDate { get; set; }
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }
@@ -28,7 +27,6 @@ namespace TestManagementServices.Model
             this.title = config.Title;
             this.configId = config.ConfigId;
             this.testOwnerId = config.AccountId;
-            this.totalQuestion = config.TotalQuestion;
             this.createDate = config.CreateDate;
             this.startDate = config.StartDate;
             this.endDate = config.EndDate;

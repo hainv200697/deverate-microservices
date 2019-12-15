@@ -5,13 +5,12 @@ namespace TestManagementServices.Models
 {
     public partial class CatalogueInRank
     {
-        public int Cirid { get; set; }
-        public int ConfigurationRankId { get; set; }
-        public int CatalogueId { get; set; }
-        public double WeightPoint { get; set; }
-        public bool IsActive { get; set; }
+        public int CatalogueInConfigId { get; set; }
+        public int CompanyRankId { get; set; }
+        public double? Point { get; set; }
+        public bool? IsActive { get; set; }
 
-        public virtual Catalogue Catalogue { get; set; }
-        public virtual ConfigurationRank ConfigurationRank { get; set; }
+        public virtual CatalogueInConfiguration CatalogueInConfig { get; set; }
+        public virtual CompanyRank CompanyRank { get; set; }
     }
 }

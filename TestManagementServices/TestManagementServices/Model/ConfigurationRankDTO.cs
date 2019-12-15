@@ -8,17 +8,15 @@ namespace TestManagementServices.Model
 {
     public class ConfigurationRankDTO
     {
-        public int? configurationRankId { get; set; }
-        public int rankId { get; set; }
-        public double? point { get; set; }
-        public bool isActive { get; set; }
+        public int companyRankId { get; set; }
+        public double point { get; set; }
+
         public ConfigurationRankDTO() { }
-        public ConfigurationRankDTO(ConfigurationRank configuration)
+        public ConfigurationRankDTO(int companyRankId, double weightPoint)
         {
-            this.configurationRankId = configuration.ConfigurationRankId;
-            this.rankId = configuration.RankId;
-            this.point = configuration.WeightPoint;
-            this.isActive = configuration.IsActive;
+            this.companyRankId = companyRankId;
+            this.point = weightPoint;
+
         }
     }
 }

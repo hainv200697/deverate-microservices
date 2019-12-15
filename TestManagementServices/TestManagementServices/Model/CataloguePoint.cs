@@ -10,10 +10,10 @@ namespace TestManagementServices.Model
     public class CataloguePointDTO
     {
         public int catalogueId { get; set; }
-        public float cataloguePoint { get; set; }
+        public double cataloguePoint { get; set; }
 
         public CataloguePointDTO() { }
-        public CataloguePointDTO(int catalogueId, float cataloguePoint)
+        public CataloguePointDTO(int catalogueId, double cataloguePoint)
         {
             this.catalogueId = catalogueId;
             this.cataloguePoint = cataloguePoint;

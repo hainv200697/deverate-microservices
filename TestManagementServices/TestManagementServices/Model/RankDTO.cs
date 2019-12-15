@@ -10,26 +10,25 @@ namespace TestManagementServices.Model
     [JsonObject("RankDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class RankDTO
     {
-        public int? rankId { get; set; }
+        public int? companyRankId { get; set; }
         public string name { get; set; }
         public DateTime? create_at { get; set; }
-        public DateTime? update_at { get; set; }
         public bool? isActive { get; set; }
         [JsonProperty(PropertyName = "value")]
         public int? count { get; set; }
         public RankDTO() { }
-        public RankDTO(Rank rank)
+        public RankDTO(CompanyRank rank)
         {
-            this.rankId = rank.RankId;
+            this.companyRankId = rank.CompanyRankId;
             this.name = rank.Name;
             this.isActive = rank.IsActive;
-            this.create_at = rank.CreateAt;
-            this.update_at = rank.UpdateAt;
+            this.create_at = rank.CreateDate;
+
         }
 
-        public RankDTO(int? rankId, string name, int? count)
+        public RankDTO(int? companyRankId, string name, int? count)
         {
-            this.rankId = rankId;
+            this.companyRankId = companyRankId;
             this.name = name;
             this.count = count;
         }

@@ -1,0 +1,9 @@
+diff a/TestManagementServices/TestManagementServices/Models/Account.cs b/TestManagementServices/TestManagementServices/Models/Account.cs	(rejected hunks)
+@@ -8,7 +8,6 @@
+         public Account()
+         {
+             Configuration = new HashSet<Configuration>();
+-            Question = new HashSet<Question>();
+             Test = new HashSet<Test>();
+         }
+ 

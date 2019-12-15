@@ -10,18 +10,18 @@ namespace TestManagementServices.Models
     [JsonObject("CandidateResultDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CandidateResultDTO
     {
-        public int? accountId { get; set; } 
+        public int? accountId { get; set; }
         public List<ConfigurationRankDTO> configurationRanks { get; set; }
         public List<CatalogueInRankDTO> catalogueInRanks { get; set; }
         public List<CatalogueInConfigDTO> catalogueInConfigs { get; set; }
-        public List<CatalogueDTO> catalogues { get; set; }
+        public List<CompanyCatalogueDTO> catalogues { get; set; }
         public double? point { get; set; }
         public int? rankId { get; set; }
         public string rank { get; set; }
 
         public CandidateResultDTO() { }
 
-        public CandidateResultDTO(int? accountId, List<ConfigurationRankDTO> configurationRanks, List<CatalogueDTO> catalogues, List<CatalogueInRankDTO> catalogueInRanks, List<CatalogueInConfigDTO> catalogueInConfigs, double? point, int? rankId, string rank)
+        public CandidateResultDTO(int? accountId, List<ConfigurationRankDTO> configurationRanks, List<CompanyCatalogueDTO> catalogues, List<CatalogueInRankDTO> catalogueInRanks, List<CatalogueInConfigDTO> catalogueInConfigs, double? point, int? rankId, string rank)
         {
             this.accountId = accountId;
             this.configurationRanks = configurationRanks;
