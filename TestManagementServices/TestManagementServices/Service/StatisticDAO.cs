@@ -410,65 +410,68 @@ namespace TestManagementServices.Service
                 return new GeneralStatisticDTO(generalStatisticItems);
             }
         }
-        //public static CandidateResultDTO GetStatisticByTestId(int? testId)
-        //{
-        //    using (DeverateContext db = new DeverateContext())
-        //    {
-        //        Test test = db.Test.Include(o => o.Config).Include(o => o.Statistic).Where(o => o.TestId == testId).First();
+        public static CandidateResultDTO GetStatisticByTestId(int? testId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                Test test = db.Test
+                    .Include(t => t.CompanyRank)
+                    .Include(o => o.Config)
+                    .ThenInclude(c => c.CatalogueInConfiguration)
+                    .Include(o => o.DetailResult)
+                    .ThenInclude(c => c.CatalogueInConfig)
+                    .Where(o => o.TestId == testId).First();
 
-        //        Statistic statistic = db.Statistic.Include(o => o.Rank).LastOrDefault(o => o.TestId == test.TestId);
-        //        if (statistic == null)
-        //        {
-        //            return null;
-        //        }
-        //        var cass = db.ConfigurationRank
-        //                    .Include(cir => cir.Rank)
-        //                    .Include(cir => cir.CatalogueInRank)
-        //                    .Where(cir => cir.ConfigId == cir.Config.ConfigId && cir.Config.ConfigId == test.ConfigId)
-        //                    .ToList();
-        //        List<ConfigurationRank> configurations = cass.ToList();
-        //        List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.Catalogue).Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
-        //        List<int?> catalogueIds = new List<int?>();
-        //        catalogueInConfigs.ForEach(c => catalogueIds.Add(c.catalogueId));
-        //        List<CatalogueInRankDTO> catalogueInRanks = new List<CatalogueInRankDTO>();
-        //        List<CatalogueDTO> catas = db.Catalogue.Where(c => catalogueIds.Contains(c.CatalogueId)).Select(o => new CatalogueDTO(o)).ToList();
-        //        List<ConfigurationRankDTO> configurationRanks = new List<ConfigurationRankDTO>();
-        //        for (int i = 0; i < configurations.Count; i++)
-        //        {
-        //            configurationRanks.Add(new ConfigurationRankDTO(configurations[i]));
-        //            CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurations[i].RankId, configurations[i].Rank.Name, null);
-        //            List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
-        //            foreach (CatalogueInRank cir in configurations[i].CatalogueInRank.ToList())
-        //            {
-        //                foreach (CatalogueDTO c in catas)
-        //                {
-        //                    if (cir.CatalogueId == c.catalogueId)
-        //                    {
-        //                        catalogues.Add(new CatalogueDTO(cir.CatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.WeightPoint, 1)));
-        //                    }
-        //                }
-        //            }
-        //            catalogueInRank.catalogues = catalogues;
-        //            catalogueInRanks.Add(catalogueInRank);
-        //        }
-        //        List<DetailStatisticDTO> details = (from ds in db.DetailStatistic
-        //                                            where ds.StatisticId == statistic.StatisticId
-        //                                            select new DetailStatisticDTO(ds)).ToList();
-        //        for (int i = 0; i < details.Count; i++)
-        //        {
-        //            for (int j = 0; j < catas.Count; j++)
-        //            {
-        //                if (details[i].catalogueId == catas[j].catalogueId)
-        //                {
-        //                    catas[j].overallPoint = AppConstrain.RoundDownNumber(details[i].point.Value, 100);
-        //                    break;
-        //                }
-        //            }
-        //        }
-        //        double statisticPoint = AppConstrain.RoundDownNumber(statistic.Point, 1);
-        //        return new CandidateResultDTO(test.AccountId, configurationRanks, catas, catalogueInRanks, catalogueInConfigs, statisticPoint, statistic.RankId, statistic.Rank.Name);
-        //    }
-        //}
+                if (test.DetailResult.Count == 0)
+                {
+                    return null;
+                }
+                List<ConfigurationRankDTO> configurationRankDTOs = SystemDAO.GetRankPoint(test);
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue).Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+                List<int?> catalogueIds = new List<int?>();
+                List<int> catalogeInConfigIds = new List<int>();
+                foreach(CatalogueInConfigDTO cic in catalogueInConfigs)
+                {
+                    catalogueIds.Add(cic.companyCatalogueId);
+                    catalogeInConfigIds.Add(cic.catalogueInConfigId);
+                }
+                List<CatalogueInRankDTO> catalogueInRankDTOs = new List<CatalogueInRankDTO>();
+                List<CompanyCatalogueDTO> catas = db.CompanyCatalogue.Where(c => catalogueIds.Contains(c.CompanyCatalogueId)).Select(o => new CompanyCatalogueDTO(o)).ToList();
+                List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank.Where(cic => catalogeInConfigIds.Contains(cic.CatalogueInConfigId)).ToList();
+                for (int i = 0; i < configurationRankDTOs.Count; i++)
+                {
+
+                    CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurationRankDTOs[i].companyRankId, configurationRankDTOs[i].rank, null);
+                    List<CompanyCatalogueDTO> catalogues = new List<CompanyCatalogueDTO>();
+                    foreach (CatalogueInRank cir in catalogueInRanks)
+                    {
+                        foreach (CompanyCatalogueDTO c in catas)
+                        {
+                            if (cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId == c.companyCatalogueId)
+                            {
+                                catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.Point.Value, 1)));
+                            }
+                        }
+                    }
+                    catalogueInRank.catalogues = catalogues;
+                    catalogueInRankDTOs.Add(catalogueInRank);
+                }
+
+                for (int i = 0; i < test.DetailResult.Count; i++)
+                {
+                    for (int j = 0; j < catas.Count; j++)
+                    {
+                        if (test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId == catas[j].companyCatalogueId)
+                        {
+                            catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, 100);
+                            break;
+                        }
+                    }
+                }
+                double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, 1);
+                return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas, catalogueInRankDTOs, catalogueInConfigs, statisticPoint, test.CompanyRankId, test.CompanyRank.Name);
+            }
+        }
 
         //public static List<TestHistoryDTO> GetHistory(int? accountId)
         //{

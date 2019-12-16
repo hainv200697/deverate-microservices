@@ -62,9 +62,9 @@ namespace TestManagementServices.Service
 
         public static int GetApplicantId(int testId)
         {
-            using (DeverateContext context = new DeverateContext())
+            using (DeverateContext db = new DeverateContext())
             {
-                var test = context.Test.FirstOrDefault(t => t.TestId == testId);
+                var test = db.Test.FirstOrDefault(t => t.TestId == testId);
                 if (test.ApplicantId == null)
                 {
                     return 0;
@@ -223,10 +223,7 @@ namespace TestManagementServices.Service
 
                 }
                 questions = ShuffleQuestion(questions);
-                SampleTestDTO sampleTest = new SampleTestDTO();
-                sampleTest.questions = questions;
-                sampleTest.catalogues = companyCatalogues;
-                return sampleTest;
+                return new SampleTestDTO(companyCatalogues, questions);
             }
         }
 
@@ -260,19 +257,24 @@ namespace TestManagementServices.Service
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach (QuestionDTO q in questions)
                         {
-                            QuestionInTest qit = new QuestionInTest();
-                            qit.QuestionId = q.questionId;
-                            qit.IsActive = true;
+                            QuestionInTest qit = new QuestionInTest()
+                            {
+                                QuestionId = q.questionId,
+                                IsActive = true
+                            };
                             inTests.Add(qit);
                         }
 
-                        Test t = new Test();
-                        t.ApplicantId = app.applicantId;
-                        t.QuestionInTest = inTests;
-                        t.ConfigId = config.ConfigId;
-                        t.CreateDate = DateTime.UtcNow;
-                        t.Code = GenerateCode();
-                        t.Status = "Pending";
+                        Test t = new Test()
+                        {
+                            ApplicantId = app.applicantId,
+                            QuestionInTest = inTests,
+                            ConfigId = config.ConfigId,
+                            CreateDate = DateTime.UtcNow,
+                            Code = GenerateCode(),
+                            Status = "Pending",
+                            IsActive = true
+                        };
                         tests.Add(t);
                     }
                 }
@@ -295,19 +297,24 @@ namespace TestManagementServices.Service
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach (QuestionDTO q in questions)
                         {
-                            QuestionInTest qit = new QuestionInTest();
-                            qit.QuestionId = q.questionId;
-                            qit.IsActive = true;
+                            QuestionInTest qit = new QuestionInTest()
+                            {
+                                QuestionId = q.questionId,
+                                IsActive = true
+                            };
                             inTests.Add(qit);
                         }
 
-                        Test t = new Test();
-                        t.ApplicantId = app.applicantId;
-                        t.QuestionInTest = inTests;
-                        t.ConfigId = config.ConfigId;
-                        t.CreateDate = DateTime.UtcNow;
-                        t.Code = GenerateCode();
-                        t.Status = "Pending";
+                        Test t = new Test()
+                        {
+                            ApplicantId = app.applicantId,
+                            QuestionInTest = inTests,
+                            ConfigId = config.ConfigId,
+                            CreateDate = DateTime.UtcNow,
+                            Code = GenerateCode(),
+                            Status = "Pending",
+                            IsActive = true
+                        };
                         tests.Add(t);
                         questions = new List<QuestionDTO>();
                     }
@@ -354,20 +361,23 @@ namespace TestManagementServices.Service
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach(QuestionDTO q in questions)
                         {
-                            QuestionInTest qit = new QuestionInTest();
-                            qit.QuestionId = q.questionId;
-                            qit.IsActive = true;
+                            QuestionInTest qit = new QuestionInTest()
+                            {
+                                QuestionId = q.questionId,
+                                IsActive = true
+                            };
                             inTests.Add(qit);
                         }
-
-                        Test t = new Test();
-                        t.AccountId = acc.accountId;
-                        t.QuestionInTest = inTests;
-                        t.ConfigId = config.ConfigId;
-                        t.CreateDate = DateTime.UtcNow;
-                        t.Code = GenerateCode();
-                        t.IsActive = true;
-                        t.Status = "Pending";
+                        Test t = new Test()
+                        {
+                            AccountId = acc.accountId,
+                            QuestionInTest = inTests,
+                            ConfigId = config.ConfigId,
+                            CreateDate = DateTime.UtcNow,
+                            Code = GenerateCode(),
+                            Status = "Pending",
+                            IsActive = true
+                        };
                         tests.Add(t);
                     }
                 }
@@ -397,20 +407,24 @@ namespace TestManagementServices.Service
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach (QuestionDTO q in questions)
                         {
-                            QuestionInTest qit = new QuestionInTest();
-                            qit.QuestionId = q.questionId;
-                            qit.IsActive = true;
+                            QuestionInTest qit = new QuestionInTest()
+                            {
+                                QuestionId = q.questionId,
+                                IsActive = true
+                            };
                             inTests.Add(qit);
                         }
 
-                        Test t = new Test();
-                        t.AccountId = acc.accountId;
-                        t.QuestionInTest = inTests;
-                        t.ConfigId = config.ConfigId;
-                        t.CreateDate = DateTime.UtcNow;
-                        t.Code = GenerateCode();
-                        t.Status = "Pending";
-                        t.IsActive = true;
+                        Test t = new Test()
+                        {
+                            AccountId = acc.accountId,
+                            QuestionInTest = inTests,
+                            ConfigId = config.ConfigId,
+                            CreateDate = DateTime.UtcNow,
+                            Code = GenerateCode(),
+                            Status = "Pending",
+                            IsActive = true
+                        };
                         tests.Add(t);
                         questions = new List<QuestionDTO>();
                     }
@@ -422,7 +436,6 @@ namespace TestManagementServices.Service
 
         public static string GenerateCode()
         {
-
             string code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
                 AppConstrain.includeNumeric, AppConstrain.includeSpecial,
                 AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
@@ -437,30 +450,30 @@ namespace TestManagementServices.Service
             return code;
         }
 
-        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? companyCatalogueId, int? companyId)
+        public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? companyCatalogueId)
         {
 
-            var ques = from ca in db.CompanyCatalogue
-                       join q in db.Question on ca.CompanyCatalogueId equals q.CompanyCatalogueId
-                       where ca.CompanyCatalogueId == companyCatalogueId && ca.CompanyId == companyId && q.IsActive == true
-                       select new QuestionDTO(q.QuestionId, q.Question1, null);
-            List<QuestionDTO> questions = ques.ToList();
+            List<QuestionDTO> questions = db.Question
+                               .Include(c => c.CompanyCatalogue)
+                               .Where(c => c.CompanyCatalogueId == companyCatalogueId && c.IsActive == true)
+                               .Select(c => new QuestionDTO(c.QuestionId, c.Question1, null)).ToList();
             for (int i = 0; i < questions.Count; i++)
             {
-                questions[i].answers = GetAnswerOfQuestion(db, questions[i].questionId);
+                questions[i].answers = GetAnswerOfQuestion(questions[i].questionId);
             }
             return questions;
         }
 
-        public static List<AnswerDTO> GetAnswerOfQuestion(DeverateContext db, int? questionId)
+        public static List<AnswerDTO> GetAnswerOfQuestion(int? questionId)
         {
-
-            var answers = from q in db.Question
-                          join a in db.Answer on q.QuestionId equals a.QuestionId
-                          where q.QuestionId == questionId && q.IsActive == true
-                          select new AnswerDTO(a);
-            return answers.ToList();
-
+            using(DeverateContext db = new DeverateContext())
+            {
+                List<AnswerDTO> answerDTOs = db.Answer
+                .Include(a => a.Question)
+                .Where(a => a.Question.QuestionId == questionId)
+                .Select(a => new AnswerDTO(a)).ToList();
+                return answerDTOs;
+            }
         }
 
         public static List<CompanyCatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db, int? totalQuestion, List<CompanyCatalogueDTO> catalogues)
@@ -489,15 +502,16 @@ namespace TestManagementServices.Service
         {
             using(DeverateContext db = new DeverateContext())
             {
-                var result = from cf in db.Configuration
-                             join cif in db.CatalogueInConfiguration on cf.ConfigId equals cif.ConfigId
-                             where cf.ConfigId == configId
-                             select new CompanyCatalogueDTO(cif.CompanyCatalogueId, cif.CompanyCatalogue.Name, 0, cif.WeightPoint, null, cif.CompanyCatalogue.IsActive);
-                if (result.ToList().Count == 0)
+
+                List<CompanyCatalogueDTO> companyCatalogues = db.CatalogueInConfiguration
+                                           .Include(c => c.Config)
+                                           .Where(c => c.ConfigId == configId)
+                                           .Select(c => new CompanyCatalogueDTO(c.CompanyCatalogueId, c.CompanyCatalogue.Name, 0, c.WeightPoint, null, c.CompanyCatalogue.IsActive)).ToList();
+                if (companyCatalogues.Count == 0)
                 {
                     return null;
                 }
-                return result.ToList();
+                return companyCatalogues;
             }
 
         }
@@ -535,7 +549,7 @@ namespace TestManagementServices.Service
 
 
                     totalPoint = AppConstrain.RoundDownNumber(totalPoint, 1);
-                    List<ConfigurationRankDTO> configurationRanks = GetRankPoint(testAnswer);
+                    List<ConfigurationRankDTO> configurationRanks = GetRankPoint(test);
                     configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                     ConfigurationRankDTO tmp = new ConfigurationRankDTO();
                     tmp.companyRankId = configurationRanks[0].companyRankId;
@@ -609,22 +623,17 @@ namespace TestManagementServices.Service
             }
         }
 
-        public static List<ConfigurationRankDTO> GetRankPoint(TestAnswerDTO answer)
+        public static List<ConfigurationRankDTO> GetRankPoint(Test test)
         {
             using(DeverateContext db = new DeverateContext())
             {
-                if (answer.testId == null)
-                {
-                    return null;
-                }
-                Test test = db.Test.Include(t => t.Config).ThenInclude(t => t.CatalogueInConfiguration).Where(t => t.TestId == answer.testId).FirstOrDefault();
-                if(test == null)
-                {
-                    return null;
-                }
+
                 List<ConfigurationRankDTO> rankDTOs = new List<ConfigurationRankDTO>();
                 int numbOfCatalogue = test.Config.CatalogueInConfiguration.Count;
                 List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
+                    .Include(cir => cir.CompanyRank)
+                    .Include(cir => cir.CatalogueInConfig)
+                    .ThenInclude(cir => cir.CompanyCatalogue)
                     .Where(cir => cir.CatalogueInConfig.ConfigId == test.ConfigId).ToList();
                 foreach(CatalogueInRank cir in catalogueInRanks)
                 {
@@ -642,12 +651,12 @@ namespace TestManagementServices.Service
                         }
                         if (isContain == false)
                         {
-                            rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, (cir.Point / numbOfCatalogue).Value));
+                            rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name, (cir.Point / numbOfCatalogue).Value));
                         }
                     }
                     else
                     {
-                        rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, (cir.Point / numbOfCatalogue).Value));
+                        rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name, (cir.Point / numbOfCatalogue).Value));
                     }
                 }
                 return rankDTOs;
@@ -844,9 +853,9 @@ namespace TestManagementServices.Service
 
         public static TestInfoDTO GetTestByTestId(int testId)
         {
-            using (DeverateContext context = new DeverateContext())
+            using (DeverateContext db = new DeverateContext())
             {
-                return context.Test.Where(t => t.TestId == testId).Select(t => new TestInfoDTO(t)).FirstOrDefault();
+                return db.Test.Where(t => t.TestId == testId).Select(t => new TestInfoDTO(t)).FirstOrDefault();
             }
         }
 

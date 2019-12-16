@@ -10,7 +10,7 @@ namespace TestManagementServices.Model
     [JsonObject("CatalogueInConfigDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CatalogueInConfigDTO
     {
-        public int? cicId { get; set; }
+        public int catalogueInConfigId { get; set; }
         public int? configId { get; set; }
         public int? companyCatalogueId { get; set; }
         public string companyCatalogueName { get; set; }
@@ -19,7 +19,7 @@ namespace TestManagementServices.Model
         public CatalogueInConfigDTO() { }
         public CatalogueInConfigDTO(CatalogueInConfiguration c)
         {
-            this.cicId = c.CatalogueInConfigId;
+            this.catalogueInConfigId = c.CatalogueInConfigId;
             this.configId = c.ConfigId;
             this.companyCatalogueId = c.CompanyCatalogueId;
             this.companyCatalogueName = c.CompanyCatalogue.Name;
