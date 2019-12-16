@@ -34,13 +34,13 @@ namespace TestManagementServices.Controllers
         }
 
 
-        //[HttpGet("Statistic/{testId}")]
-        //public ActionResult<IEnumerable<string>> GetStatistic(int? testId)
-        //{
+        [HttpGet("Statistic/{testId}")]
+        public ActionResult<IEnumerable<string>> GetStatistic(int? testId)
+        {
 
 
-        //    return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByTestId(testId)));
-        //}
+            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByTestId(testId)));
+        }
 
         //[HttpGet("History/{accountId}")]
         //public ActionResult<IEnumerable<string>> GetHistory(int? accountId)
