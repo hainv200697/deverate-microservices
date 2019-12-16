@@ -11,7 +11,7 @@ namespace TestManagementServices.Model
         public int questionId { get; set; }
         public string question { get; set; }
         public List<AnswerDTO> answers { get; set; }
-        public int? catalogueId { get; set; }
+        public int catalogueId { get; set; }
         public QuestionDTO() { }
         public QuestionDTO(int questionId, List<AnswerDTO> answers)
         {
@@ -32,11 +32,11 @@ namespace TestManagementServices.Model
             this.answers = answers.Select(a => new AnswerDTO(a)).ToList();
             this.question = question;
         }
-        public QuestionDTO(int questionId, string question, int? catalogueId, List<AnswerDTO> answers)
+        public QuestionDTO(int questionId, string question, int companyCatalogueId, List<AnswerDTO> answers)
         {
             this.questionId = questionId;
             this.answers = answers;
-            this.catalogueId = catalogueId;
+            this.catalogueId = companyCatalogueId;
             this.question = question;
         }
     }

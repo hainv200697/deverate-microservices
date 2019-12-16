@@ -13,7 +13,7 @@ namespace TestManagementServices.Model
         public string title { get; set; }
         public int? accountId { get; set; }
         public int? applicantId { get; set; }
-        public DateTime? createDate { get; set; }
+        public DateTime createDate { get; set; }
         public DateTime? startDate { get; set; }
         public DateTime? endDate { get; set; }
         public int duration { get; set; }

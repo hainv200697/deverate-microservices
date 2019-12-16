@@ -13,12 +13,12 @@ namespace TestManagementServices.Model
         public string username { get; set; }
         public DateTime? startDate { get; set; }
         public string rank { get; set; }
-        public double? overallPoint { get; set; }
+        public double overallPoint { get; set; }
         public string configName { get; set; }
         public DateTime? configCreateDate { get; set; }
-        public int? testId { get; set; }
+        public int testId { get; set; }
         public UserStatisticDTO() { }
-        public UserStatisticDTO(int? accountId, string username, DateTime? startDate, double? overallPoint, string configName, DateTime? configCreateDate)
+        public UserStatisticDTO(int? accountId, string username, DateTime? startDate, double overallPoint, string configName, DateTime? configCreateDate)
         {
             this.accountId = accountId;
             this.username = username;
@@ -28,7 +28,7 @@ namespace TestManagementServices.Model
             this.configCreateDate = configCreateDate;
         }
 
-        public UserStatisticDTO(int? accountId, string username, DateTime? startDate, string rank, double? overallPoint, string configName, int? testId)
+        public UserStatisticDTO(int? accountId, string username, DateTime? startDate, string rank, double overallPoint, string configName, int testId)
         {
             this.accountId = accountId;
             this.username = username;

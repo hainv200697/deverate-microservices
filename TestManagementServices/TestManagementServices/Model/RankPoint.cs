@@ -8,9 +8,9 @@ namespace TestManagementServices.Model
     public class RankPoint
     {
         public string rank { get; set; }
-        public double? point { get; set; }
+        public double point { get; set; }
         public RankPoint() { }
-        public RankPoint(string rank, double? point)
+        public RankPoint(string rank, double point)
         {
             this.rank = rank;
             this.point = point;

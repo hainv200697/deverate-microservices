@@ -112,7 +112,7 @@ namespace TestManagementServices.Service
                 }
                 if (testIds.Count == 0) return null;
                 List<Test> tests = db.Test.Where(t => testIds.Contains(t.TestId)).ToList();
-                List<RankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new RankDTO(r)).ToList();
+                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
 
@@ -134,10 +134,10 @@ namespace TestManagementServices.Service
                     rankStatisticItem.createDate = applicantConfigs[j].CreateDate;
                     rankStatisticItem.endDate = applicantConfigs[j].EndDate;
                     rankStatisticItem.name = applicantConfigs[j].Title;
-                    List<RankDTO> cloneRanks = new List<RankDTO>();
-                    foreach (RankDTO r in ranks)
+                    List<CompanyRankDTO> cloneRanks = new List<CompanyRankDTO>();
+                    foreach (CompanyRankDTO r in ranks)
                     {
-                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
+                        cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, 0));
                     }
                     for (int k = 0; k < tests.Count; k++)
                     {
@@ -270,7 +270,7 @@ namespace TestManagementServices.Service
                              where acc.CompanyId == account.CompanyId
                              select t;
                 List<Test> tests = result.ToList();
-                List<RankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new RankDTO(r)).ToList();
+                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
                 for (int i = 0; i < accounts.Count; i++)
@@ -293,10 +293,10 @@ namespace TestManagementServices.Service
                         rankStatisticItem.createDate = configurations[j].CreateDate;
                         rankStatisticItem.endDate = configurations[j].EndDate;
                         rankStatisticItem.name = configurations[j].Title;
-                        List<RankDTO> cloneRanks = new List<RankDTO>();
-                        foreach (RankDTO r in ranks)
+                        List<CompanyRankDTO> cloneRanks = new List<CompanyRankDTO>();
+                        foreach (CompanyRankDTO r in ranks)
                         {
-                            cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
+                            cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, 0));
                         }
                         for (int k = 0; k < tests.Count; k++)
                         {
@@ -473,73 +473,67 @@ namespace TestManagementServices.Service
             }
         }
 
-        //public static List<TestHistoryDTO> GetHistory(int? accountId)
-        //{
-        //    using (DeverateContext db = new DeverateContext())
-        //    {
-        //        List<Statistic> statistics = db.Statistic.Include(t => t.Test.Config).Include(t => t.Test.Account).Include(t => t.DetailStatistic).Where(t => t.Test.AccountId == accountId).ToList();
-        //        if (statistics.Count == 0) return null;
-        //        List<Rank> ranks = db.Rank.ToList();
-        //        List<TestHistoryDTO> testHistories = new List<TestHistoryDTO>();
-        //        List<Catalogue> catas = db.Catalogue.ToList();
-        //        List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
-        //                                                         join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
-        //                                                         join c in db.Catalogue on cic.CatalogueId equals c.CatalogueId
-        //                                                         join cicom in db.CatalogueInCompany on c.CatalogueId equals cicom.CatalogueId
-        //                                                         where cicom.CompanyId == statistics[0].Test.Account.CompanyId
-        //                                                         select cicom).ToList();
-        //        List<Catalogue> catalogues = db.Catalogue.ToList();
-        //        catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.Cicid).Select(c => c.First()).ToList();
-        //        for (int i = 0; i < catalogueInCompanies.Count; i++)
-        //        {
-        //            foreach (Catalogue c in catalogues)
-        //            {
-        //                if (c.CatalogueId == catalogueInCompanies[i].CatalogueId)
-        //                {
-        //                    catalogueInCompanies[i].Catalogue = c;
-        //                    break;
-        //                }
-        //            }
-        //        }
+        public static List<TestHistoryDTO> GetHistory(int? accountId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                List<Test> tests = db.Test
+                    .Include(t => t.Account)
+                    .Include(t => t.DetailResult)
+                    .ThenInclude(t => t.CatalogueInConfig)
+                    .Where(t => t.AccountId == accountId).ToList();
+                if (tests.Count == 0) return null;
+                List<CompanyRank> ranks = db.CompanyRank.ToList();
+                List<TestHistoryDTO> testHistories = new List<TestHistoryDTO>();
+                List<CompanyCatalogue> catas = db.CompanyCatalogue.ToList();
 
-        //        for (int i = 0; i < statistics.Count; i++)
-        //        {
-        //            TestHistoryDTO test = new TestHistoryDTO();
-        //            test.testId = statistics[i].TestId;
-        //            test.title = statistics[i].Test.Config.Title;
-        //            test.point = statistics[i].Point;
-        //            test.rankId = statistics[i].RankId;
-        //            test.createDate = statistics[i].Test.CreateDate;
-        //            test.startTime = statistics[i].Test.StartTime;
-        //            foreach (Rank r in ranks)
-        //            {
-        //                if (r.RankId == statistics[i].RankId)
-        //                {
-        //                    test.rank = r.Name;
-        //                    break;
-        //                }
-        //            }
-        //            List<CompanyCatalogueDTO> cloneCatalogues = new List<CompanyCatalogueDTO>();
-        //            foreach (CatalogueInCompany c in catalogueInCompanies)
-        //            {
-        //                cloneCatalogues.Add(new CompanyCatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0, 0));
-        //            }
-        //            foreach (DetailStatistic ds in statistics[i].DetailStatistic.ToList())
-        //            {
-        //                for (int j = 0; j < cloneCatalogues.Count; j++)
-        //                {
-        //                    if (cloneCatalogues[j].companyCatalogueId == ds.CatalogueId)
-        //                    {
-        //                        cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleUpNumb);
-        //                    }
-        //                }
-        //            }
-        //            test.catalogues = cloneCatalogues;
-        //            testHistories.Add(test);
-        //        }
-        //        return testHistories;
-        //    }
-        //}
+                List<CompanyCatalogue> companyCatalogues = db.CompanyCatalogue
+                    .Include(c => c.CatalogueInConfiguration)
+                    .ThenInclude(c => c.Config)
+                    .Where(c => c.CompanyId == tests.ToList()[0].Account.CompanyId)
+                    .ToList();
+
+                companyCatalogues = companyCatalogues.GroupBy(c => c.CompanyCatalogueId).Select(c => c.First()).ToList();
+
+
+                for (int i = 0; i < tests.Count; i++)
+                {
+                    TestHistoryDTO test = new TestHistoryDTO();
+                    test.testId = tests[i].TestId;
+                    test.title = tests[i].Config.Title;
+                    test.point = tests[i].Point;
+                    test.rankId = tests[i].CompanyRankId;
+                    test.createDate = tests[i].CreateDate;
+                    test.startTime = tests[i].StartTime;
+                    foreach (CompanyRank r in ranks)
+                    {
+                        if (r.CompanyRankId == tests[i].CompanyRankId)
+                        {
+                            test.rank = r.Name;
+                            break;
+                        }
+                    }
+                    List<CompanyCatalogueDTO> cloneCatalogues = new List<CompanyCatalogueDTO>();
+                    foreach (CompanyCatalogue c in companyCatalogues)
+                    {
+                        cloneCatalogues.Add(new CompanyCatalogueDTO(c.CompanyCatalogueId, c.Name, 0, 0));
+                    }
+                    foreach (DetailResult ds in tests[i].DetailResult.ToList())
+                    {
+                        for (int j = 0; j < cloneCatalogues.Count; j++)
+                        {
+                            if (cloneCatalogues[j].companyCatalogueId == ds.CatalogueInConfig.CompanyCatalogueId)
+                            {
+                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleUpNumb);
+                            }
+                        }
+                    }
+                    test.catalogues = cloneCatalogues;
+                    testHistories.Add(test);
+                }
+                return testHistories;
+            }
+        }
         public static object GetInfoByTestId(int testId)
         {
             using (DeverateContext db = new DeverateContext())

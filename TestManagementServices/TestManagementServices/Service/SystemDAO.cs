@@ -212,7 +212,7 @@ namespace TestManagementServices.Service
                         {
                             companyCatalogues[i].numberOfQuestion = sc.numberQuestion > companyCatalogues[i].questionList.Count ? companyCatalogues[i].questionList.Count : sc.numberQuestion;
                             companyCatalogues[i].questionList = ShuffleQuestion(companyCatalogues[i].questionList.ToList());
-                            List<Question> tempQuestions = companyCatalogues[i].questionList.Take(companyCatalogues[i].numberOfQuestion.Value).ToList();
+                            List<Question> tempQuestions = companyCatalogues[i].questionList.Take(companyCatalogues[i].numberOfQuestion).ToList();
                             foreach (Question q in tempQuestions)
                             {
                                 questions.Add(new QuestionDTO(q.QuestionId, q.Question1, q.Answer.ToList()));
@@ -491,10 +491,10 @@ namespace TestManagementServices.Service
                 {
                     catalogues[i].numberOfQuestion = 1;
                 }
-                currentQuestion += catalogues[i].numberOfQuestion.Value;
+                currentQuestion += catalogues[i].numberOfQuestion;
             }
             int dif = currentQuestion - totalQuestion.Value;
-            catalogues[catalogues.Count - 1].numberOfQuestion = catalogues[catalogues.Count - 1].numberOfQuestion.Value - dif;
+            catalogues[catalogues.Count - 1].numberOfQuestion = catalogues[catalogues.Count - 1].numberOfQuestion - dif;
             return catalogues;
         }
 
@@ -545,7 +545,7 @@ namespace TestManagementServices.Service
                 {
                     anss.ForEach(a => answers.Add(new AnswerDTO(a)));
                     TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-                    totalPoint = CalculateResultPoint(testAnswer, test, test.Config.Account.CompanyId, userTest.testId);
+                    totalPoint = CalculateResultPoint(testAnswer, test, test.Config.Account.CompanyId, userTest.testId, test.ConfigId);
 
 
                     totalPoint = AppConstrain.RoundDownNumber(totalPoint, 1);
@@ -664,23 +664,19 @@ namespace TestManagementServices.Service
 
         }
 
-        public static double CalculateResultPoint(TestAnswerDTO answers, Test test, int? companyId, int? testId)
+        public static double CalculateResultPoint(TestAnswerDTO answers, Test test, int? companyId, int? testId, int configId)
         {
             using (DeverateContext db = new DeverateContext())
             {
                 double totalPoint = 0;
                 List<CataloguePointDTO> defaultCataloguePoints = CalculateCataloguePoints(db, answers, companyId, testId);
-                if (answers.testId == null)
-                {
-                    return -1;
-                }
                 List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
                 List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(answers.testId);
                 for (int i = 0; i < defaultCataloguePoints.Count; i++)
                 {
                     for (int j = 0; j < catalogueWeightPoints.Count; j++)
                     {
-                        if (defaultCataloguePoints[i].catalogueId == catalogueWeightPoints[j].catalogueId)
+                        if (defaultCataloguePoints[i].companyCatalogueId == catalogueWeightPoints[j].catalogueId)
                         {
                             if (!cataloguePoints.Contains(defaultCataloguePoints[i]))
                             {
@@ -691,17 +687,28 @@ namespace TestManagementServices.Service
                         }
                     }
                 }
+                List<CatalogueInConfiguration> catalogueInConfigurations = db.CatalogueInConfiguration.Where(c => c.ConfigId == configId).ToList();
+                for(int i = 0; i < cataloguePoints.Count; i++)
+                {
+                    for(int j = 0; j < catalogueInConfigurations.Count; j++)
+                    {
+                        if(cataloguePoints[i].companyCatalogueId == catalogueInConfigurations[j].CompanyCatalogueId)
+                        {
+                            cataloguePoints[i].companyCatalogueId = catalogueInConfigurations[j].CatalogueInConfigId;
+                        }
+                    }
+                }
                 List<DetailResult> details = new List<DetailResult>();
                 for (int i = 0; i < cataloguePoints.Count; i++)
                 {
                     DetailResult detail = new DetailResult();
-                    detail.CatalogueInConfigId = cataloguePoints[i].catalogueId;
-                    if (cataloguePoints[i].cataloguePoint < 0)
+                    detail.CatalogueInConfigId = cataloguePoints[i].companyCatalogueId;
+                    if (cataloguePoints[i].companyCataloguePoint < 0)
                     {
                         continue;
                     }
-                    double point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint;
-                    detail.Point = cataloguePoints[i].cataloguePoint;
+                    double point = cataloguePoints[i].companyCataloguePoint * catalogueWeightPoints[i].weightPoint;
+                    detail.Point = cataloguePoints[i].companyCataloguePoint;
                     detail.IsActive = true;
                     details.Add(detail);
                     totalPoint += point;
@@ -735,10 +742,6 @@ namespace TestManagementServices.Service
 
         public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers, int? companyId, int? testId)
         {
-            if (answers.testId == null)
-            {
-                return null;
-            }
             var cataInCompany = db.CompanyCatalogue.Where(c => c.CompanyId == companyId).ToList();
             List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
             List<AnswerDTO> anss = new List<AnswerDTO>(answers.answers);
