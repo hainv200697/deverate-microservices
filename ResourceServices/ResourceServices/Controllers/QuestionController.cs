@@ -42,6 +42,10 @@ namespace ResourceServices.Controllers
         {
             try
             {
+                if (question == null)
+                {
+                    return BadRequest();
+                }
                 int companyCatalogue = question[0].companyCatalogueId;
                 List<string> listeQues = new List<string>();
                 foreach (var ques in question)
@@ -53,10 +57,6 @@ namespace ResourceServices.Controllers
                 if (check.Count() > 0)
                 {
                     return BadRequest(check);
-                }
-                if (question == null)
-                {
-                    return BadRequest();
                 }
                 foreach(var item in question)
                 {
@@ -114,29 +114,28 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                    int defaultCatalogue = question[0].catalogueDefaultId;
+                if (question == null)
+                {
+                    return BadRequest();
+                }
+                int defaultCatalogue = question[0].catalogueDefaultId;
                     List<string> listeQues = new List<string>();
-                    foreach (var ques in question)
-                    {
-
+                foreach (var ques in question)
+                {
                         listeQues.Add(ques.question);
-                    }
-                    var check = QuestionDAO.checkExistedDefaultQuestion(listeQues, defaultCatalogue);
-                    if (check.Count() > 0)
-                    {
-                        return BadRequest(check);
-                    }
-                    if (question == null)
+                }
+                var check = QuestionDAO.checkExistedDefaultQuestion(listeQues, defaultCatalogue);
+                if (check.Count() > 0)
+                {
+                    return BadRequest(check);
+                }
+                foreach (var item in question)
+                {
+                    if (item.answer.Count() < 3 || item.answer.Count() > 6)
                     {
                         return BadRequest();
                     }
-                    foreach (var item in question)
-                    {
-                        if (item.answer.Count() < 3 || item.answer.Count() > 6)
-                        {
-                            return BadRequest();
-                        }
-                    }
+                }
                 QuestionDAO.CreateDefaultQuestion(question);
                 return Ok(Message.createQuestionSucceed);
             }

@@ -76,6 +76,11 @@ namespace ResourceServices.Models
                     .HasForeignKey(d => d.CompanyId)
                     .HasConstraintName("FK_Account_Company");
 
+                entity.HasOne(d => d.CompanyRank)
+                    .WithMany(p => p.Account)
+                    .HasForeignKey(d => d.CompanyRankId)
+                    .HasConstraintName("FK_Account_CompanyRank");
+
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.Account)
                     .HasForeignKey(d => d.RoleId)

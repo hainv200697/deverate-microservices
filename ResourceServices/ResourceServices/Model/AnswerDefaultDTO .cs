@@ -30,7 +30,7 @@ namespace ResourceServices.Model
         public int questionId { get; set; }
         public string answer { get; set; }
         public int percent { get; set; }
-        public bool? isActive { get; set; }
+        public bool isActive { get; set; }
 
     }
 }
