@@ -26,7 +26,7 @@ namespace TestManagementServices.Controllers
         {
 
             string message = SystemDAO.SendTestMail(configId, false);
-            if(message == null)
+            if (message == null)
             {
                 return new JsonResult(rm.Error(Message.noEmployeeException));
             }
@@ -34,25 +34,25 @@ namespace TestManagementServices.Controllers
         }
 
 
-        [HttpGet("Statistic/{testId}")]
-        public ActionResult<IEnumerable<string>> GetStatistic(int? testId)
+        //[HttpGet("Statistic/{testId}")]
+        //public ActionResult<IEnumerable<string>> GetStatistic(int? testId)
+        //{
+
+
+        //    return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByTestId(testId)));
+        //}
+
+        //[HttpGet("History/{accountId}")]
+        //public ActionResult<IEnumerable<string>> GetHistory(int? accountId)
+        //{
+
+
+        //    return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetHistory(accountId)));
+        //}
+        [HttpPost("Gen/")]
+        public ActionResult<IEnumerable<string>> GenTest([FromBody]EmployeeTestDTO employeeTest)
         {
-
-            
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByTestId(testId)));
-        }
-
-        [HttpGet("History/{accountId}")]
-        public ActionResult<IEnumerable<string>> GetHistory(int? accountId)
-        {
-
-
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetHistory(accountId)));
-        }
-        [HttpGet("Gen/")]
-        public ActionResult<IEnumerable<string>> GenTest(string configId)
-        {
-            SystemDAO.GenerateTest(configId);
+            SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
 
             return new JsonResult(rm.Success(Message.createSucceed));
         }

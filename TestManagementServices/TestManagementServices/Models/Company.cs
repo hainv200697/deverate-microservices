@@ -8,18 +8,19 @@ namespace TestManagementServices.Models
         public Company()
         {
             Account = new HashSet<Account>();
-            CatalogueInCompany = new HashSet<CatalogueInCompany>();
+            CompanyCatalogue = new HashSet<CompanyCatalogue>();
+            CompanyRank = new HashSet<CompanyRank>();
         }
 
         public int CompanyId { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
-        public DateTime? CreateAt { get; set; }
+        public DateTime CreateDate { get; set; }
         public string Phone { get; set; }
-        public string Fax { get; set; }
         public bool IsActive { get; set; }
 
         public virtual ICollection<Account> Account { get; set; }
-        public virtual ICollection<CatalogueInCompany> CatalogueInCompany { get; set; }
+        public virtual ICollection<CompanyCatalogue> CompanyCatalogue { get; set; }
+        public virtual ICollection<CompanyRank> CompanyRank { get; set; }
     }
 }

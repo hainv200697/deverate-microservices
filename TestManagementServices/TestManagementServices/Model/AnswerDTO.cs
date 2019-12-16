@@ -16,7 +16,7 @@ namespace TestManagementServices.Model
         [JsonProperty("answer")]
         public string answer { get; set; }
         [JsonProperty("point")]
-        public int? point { get; set; }
+        public int percent { get; set; }
         [JsonProperty("isActive")]
         public bool? isActive { get; set; }
         public AnswerDTO()
@@ -28,7 +28,7 @@ namespace TestManagementServices.Model
         {
             this.answerId = answer.AnswerId;
             this.answer = answer.Answer1;
-            this.point = answer.Point;
+            this.percent = answer.Percent;
             this.isActive = answer.IsActive;
         }
 

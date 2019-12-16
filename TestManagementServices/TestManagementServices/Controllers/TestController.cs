@@ -31,7 +31,8 @@ namespace TestManagementServices.Controllers
             {
                 SystemDAO.ExpireTest(testId);
                 con = SystemDAO.GetConfig(context, testId);
-            } else if (con.status == "Doing" && con.timeRemaining <= 10)
+            }
+            else if (con.status == "Doing" && con.timeRemaining <= 10)
             {
                 SystemDAO.AutoSubmit(testId);
                 con = SystemDAO.GetConfig(context, testId);
@@ -64,7 +65,7 @@ namespace TestManagementServices.Controllers
                 int applicantId = SystemDAO.GetApplicantId(userTest.testId);
                 return Ok(applicantId);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return StatusCode(500);
             }
@@ -199,7 +200,7 @@ namespace TestManagementServices.Controllers
             try
             {
 
-                return Ok(SystemDAO.GenerateQuestionsForSampleTest(context, sample));
+                return Ok(SystemDAO.CreateSampleTest(sample));
             }
             catch (Exception)
             {
@@ -221,12 +222,12 @@ namespace TestManagementServices.Controllers
         }
 
         [HttpGet("CheckCode")]
-        public IActionResult CheckCode(int testId,string code)
+        public IActionResult CheckCode(int testId, string code)
         {
             try
             {
-                int check = SystemDAO.CheckCode(testId,code);
-                if(check == 0)
+                int check = SystemDAO.CheckCode(testId, code);
+                if (check == 0)
                 {
                     return BadRequest();
                 }

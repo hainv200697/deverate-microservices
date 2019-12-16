@@ -20,7 +20,6 @@ namespace AuthenServices.Model
         public string email { get; set; }
         public string address { get; set; }
         public bool? gender { get; set; }
-        public string avatar { get; set; }
         public int? companyId { get; set; }
         public DateTime? joinDate { get; set; }
         public int? roleId { get; set; }
@@ -39,7 +38,6 @@ namespace AuthenServices.Model
             this.email = account.Email;
             this.address = account.Address;
             this.gender = account.Gender;
-            this.avatar = account.Avatar;
             this.joinDate = account.JoinDate;
             this.roleId = account.RoleId;
             this.companyId = account.CompanyId;

@@ -20,7 +20,7 @@ namespace TestManagementServices.RabbitMQ
         private string queueName;
         private string exch;
         public Consumer(string exch)
-        { 
+        {
             InitRabbitMQ(exch);
         }
         private void InitRabbitMQ(string exch)
@@ -44,13 +44,14 @@ namespace TestManagementServices.RabbitMQ
             var consumer = new EventingBasicConsumer(channel);
             consumer.Received += (model, ea) =>
             {
-               var body = ea.Body;
+                var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
                 Console.WriteLine(" [x] Receive {0}", message);
                 switch (this.exch)
                 {
                     case AppConstrain.gen_test_consumer:
-                        SystemDAO.GenerateTest(message);
+                        EmployeeTestDTO employeeTest = JsonConvert.DeserializeObject<EmployeeTestDTO>(message);
+                        SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
                         break;
                     case AppConstrain.gen_test_applicant:
                         ApplicantTestDTO applicantTest = JsonConvert.DeserializeObject<ApplicantTestDTO>(message);
