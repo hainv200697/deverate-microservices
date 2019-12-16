@@ -23,7 +23,7 @@ namespace TestManagementServices.Models
 
         }
 
-        public TestInfoDTO(int? configId, int? accountId, int? testId, string title, string code,string status,DateTime start, DateTime? end)
+        public TestInfoDTO(int? configId, int? accountId, int? testId, string title, string code,string status,DateTime start, DateTime? end, bool isActive)
         {
             this.configId = configId;
             this.accountId = accountId;
@@ -33,6 +33,7 @@ namespace TestManagementServices.Models
             this.status = status;
             this.startDate = start;
             this.endDate = end;
+            this.isActive = isActive;
         }
 
         public TestInfoDTO(Test test, string configTitle, string name, string applicantName)
