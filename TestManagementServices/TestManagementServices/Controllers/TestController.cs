@@ -120,7 +120,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return StatusCode(500);
             }
