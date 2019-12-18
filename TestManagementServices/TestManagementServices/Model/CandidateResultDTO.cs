@@ -18,10 +18,15 @@ namespace TestManagementServices.Models
         public double? point { get; set; }
         public int? rankId { get; set; }
         public string rank { get; set; }
+        public int? potentialRankId { get; set; }
+        public string potentialRank { get; set; }
 
         public CandidateResultDTO() { }
 
-        public CandidateResultDTO(int? accountId, List<ConfigurationRankDTO> configurationRanks, List<CompanyCatalogueDTO> catalogues, List<CatalogueInRankDTO> catalogueInRanks, List<CatalogueInConfigDTO> catalogueInConfigs, double? point, int? rankId, string rank)
+        public CandidateResultDTO(int? accountId, List<ConfigurationRankDTO> configurationRanks,
+            List<CompanyCatalogueDTO> catalogues, List<CatalogueInRankDTO> catalogueInRanks,
+            List<CatalogueInConfigDTO> catalogueInConfigs, double? point, int? rankId, string rank,
+            int? potentialRankId, string potentialRank)
         {
             this.accountId = accountId;
             this.configurationRanks = configurationRanks;
@@ -31,6 +36,8 @@ namespace TestManagementServices.Models
             this.rankId = rankId;
             this.rank = rank;
             this.catalogueInConfigs = catalogueInConfigs;
+            this.potentialRankId = potentialRankId;
+            this.potentialRank = potentialRank;
         }
 
 

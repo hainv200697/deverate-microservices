@@ -445,12 +445,10 @@ namespace TestManagementServices.Service
                     List<CompanyCatalogueDTO> catalogues = new List<CompanyCatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
-                        foreach (CompanyCatalogueDTO c in catas)
+
+                        if (cir.CompanyRankId == configurationRankDTOs[i].companyRankId)
                         {
-                            if (cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId == c.companyCatalogueId)
-                            {
-                                catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.Point.Value, 1)));
-                            }
+                            catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId, cir.CatalogueInConfig.CompanyCatalogue.Name, null, AppConstrain.RoundDownNumber(cir.Point.Value, 1)));
                         }
                     }
                     catalogueInRank.catalogues = catalogues;
@@ -469,7 +467,7 @@ namespace TestManagementServices.Service
                     }
                 }
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, 1);
-                return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas, catalogueInRankDTOs, catalogueInConfigs, statisticPoint, test.CompanyRankId, test.CompanyRank.Name);
+                return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas, catalogueInRankDTOs, catalogueInConfigs, statisticPoint, test.CompanyRankId, test.CompanyRank.Name, null, null);
             }
         }
 

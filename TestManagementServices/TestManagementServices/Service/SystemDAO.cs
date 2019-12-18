@@ -522,7 +522,11 @@ namespace TestManagementServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                Test test = db.Test.Include(t => t.Account).Include(t => t.Config.Account).SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
+                Test test = db.Test.Include(t => t.Account)
+                    .Include(t => t.Config.Account)
+                    .Include(t => t.Config)
+                    .ThenInclude(t => t.CatalogueInConfiguration)
+                    .SingleOrDefault(t => t.TestId == userTest.testId && t.Code == userTest.code);
                 if (test == null)
                 {
                     return null;
@@ -547,7 +551,7 @@ namespace TestManagementServices.Service
                     TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
                     totalPoint = CalculateResultPoint(testAnswer, test, test.Config.Account.CompanyId, userTest.testId, test.ConfigId);
 
-
+                    List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank.Where(c => c.CatalogueInConfig.ConfigId == test.ConfigId).ToList();
                     totalPoint = AppConstrain.RoundDownNumber(totalPoint, 1);
                     List<ConfigurationRankDTO> configurationRanks = GetRankPoint(test);
                     configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
@@ -558,7 +562,30 @@ namespace TestManagementServices.Service
                     {
                         if (totalPoint > cr.point)
                         {
-                            tmp = cr;
+                            bool isPass = true;
+                            foreach(CatalogueInRank cir in catalogueInRanks)
+                            {
+                                if(cir.CompanyRankId == cr.companyRankId)
+                                {
+                                    foreach (DetailResult dr in test.DetailResult)
+                                    {
+                                        if(dr.CatalogueInConfigId == cir.CatalogueInConfigId)
+                                        {
+                                            if(dr.Point < cir.Point)
+                                            {
+                                                isPass = false;
+                                                break;
+                                            }
+                                        }
+                                    } 
+                                }
+
+                            }
+                            if(isPass == true)
+                            {
+                                tmp = cr;
+                            }
+                            
                         }
                     }
                     rank = db.CompanyRank.SingleOrDefault(r => r.CompanyRankId == tmp.companyRankId).Name;
@@ -568,11 +595,6 @@ namespace TestManagementServices.Service
                     }
                     test.CompanyRankId = tmp.companyRankId;
                     test.Point = totalPoint;
-                }
-                else
-                {
-                    test.CompanyRankId = 4;
-                    test.Point = 0;
                 }
                 db.SaveChanges();
 
@@ -707,7 +729,7 @@ namespace TestManagementServices.Service
                     {
                         continue;
                     }
-                    double point = cataloguePoints[i].companyCataloguePoint * catalogueWeightPoints[i].weightPoint;
+                    double point = cataloguePoints[i].companyCataloguePoint * catalogueWeightPoints[i].weightPoint / AppConstrain.scaleUpNumb;
                     detail.Point = cataloguePoints[i].companyCataloguePoint;
                     detail.IsActive = true;
                     details.Add(detail);
@@ -780,7 +802,7 @@ namespace TestManagementServices.Service
                 }
 
 
-                double cataloguePoint = maxPoint == 0 ? 0 : (point / maxPoint);
+                double cataloguePoint = maxPoint == 0 ? 0 : (point / maxPoint) * AppConstrain.scaleUpNumb;
                 cataloguePoints.Add(new CataloguePointDTO(cata.CompanyCatalogueId, cataloguePoint));
             }
             return cataloguePoints;
