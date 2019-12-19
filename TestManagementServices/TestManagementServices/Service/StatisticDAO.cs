@@ -267,7 +267,7 @@ namespace TestManagementServices.Service
                              where acc.CompanyId == account.CompanyId
                              select t;
                 List<Test> tests = result.ToList();
-                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
+                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r =>r.CompanyId == account.CompanyId && r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
                 for (int i = 0; i < accounts.Count; i++)

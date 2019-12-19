@@ -542,7 +542,7 @@ namespace TestManagementServices.Service
                     answerIds.Add(userTest.questionInTest[i].answerId);
                 }
                 var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
-                string rank = "Dev0";
+                string rank = "Unknown Rank";
                 double totalPoint = 0;
 
                 if (anss.Count != 0)
