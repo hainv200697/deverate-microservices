@@ -23,8 +23,8 @@ namespace TestManagementServices.Model
             this.isActive = catalogue.IsActive;
         }
 
-        public CompanyCatalogueDTO(int? companyCatalogueId, string name, int? numberOfQuestion, double? weightPoint,
-            List<QuestionDTO> questions, bool? isActive)
+        public CompanyCatalogueDTO(int companyCatalogueId, string name, int numberOfQuestion, double weightPoint,
+            List<QuestionDTO> questions, bool isActive)
         {
             this.companyCatalogueId = companyCatalogueId;
             this.name = name;
@@ -34,7 +34,7 @@ namespace TestManagementServices.Model
             this.isActive = isActive;
         }
 
-        public CompanyCatalogueDTO(int? companyCatalogueId, string name, int? numberOfQuestion, double? weightPoint,
+        public CompanyCatalogueDTO(int companyCatalogueId, string name, int numberOfQuestion, double weightPoint,
             List<Question> questionList)
         {
             this.companyCatalogueId = companyCatalogueId;
@@ -44,44 +44,44 @@ namespace TestManagementServices.Model
             this.questionList = questionList;
         }
 
-        public CompanyCatalogueDTO(int? companyCatalogueId, string name, double? overallPoint, double? thresholdPoint)
+        public CompanyCatalogueDTO(int companyCatalogueId, string name, double? overallPoint, double? thresholdPoint)
         {
             this.companyCatalogueId = companyCatalogueId;
             this.name = name;
             this.overallPoint = overallPoint;
             this.thresholdPoint = thresholdPoint;
         }
-        public CompanyCatalogueDTO(int? companyCatalogueId, string name, double? value)
+        public CompanyCatalogueDTO(int companyCatalogueId, string name, double value)
         {
             this.companyCatalogueId = companyCatalogueId;
             this.name = name;
             this.value = value;
         }
 
-        public CompanyCatalogueDTO(int? companyCatalogueId, string name, double? overallPoint, int identify = 1)
+        public CompanyCatalogueDTO(int companyCatalogueId, string name, double? overallPoint, int identify = 1)
         {
             this.companyCatalogueId = companyCatalogueId;
             this.name = name;
             this.overallPoint = overallPoint;
         }
-        public CompanyCatalogueDTO(int? configId)
+        public CompanyCatalogueDTO(int configId)
         {
             this.configId = configId;
         }
-        public int? companyCatalogueId { get; set; }
-        public int? companyId { get; set; }
-        public int? configId { get; set; }
+        public int companyCatalogueId { get; set; }
+        public int companyId { get; set; }
+        public int configId { get; set; }
         public string name { get; set; }
-        public int? numberOfQuestion { get; set; }
+        public int numberOfQuestion { get; set; }
         public double? overallPoint { get; set; }
         public double? weightPoint { get; set; }
         public double? thresholdPoint { get; set; }
         /// <summary>
         /// điểm trung bình
         /// </summary>
-        public double? value { get; set; }
+        public double value { get; set; }
         public List<QuestionDTO> questions { get; set; }
         public List<Question> questionList { get; set; }
-        public bool? isActive { get; set; }
+        public bool isActive { get; set; }
     }
 }

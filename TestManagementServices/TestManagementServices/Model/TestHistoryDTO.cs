@@ -9,7 +9,7 @@ namespace TestManagementServices.Model
     public class TestHistoryDTO
     {
 
-        public int? testId { get; set; }
+        public int testId { get; set; }
         [JsonProperty(PropertyName = "name")]
         public string title { get; set; }
         [JsonProperty(PropertyName = "series")]
@@ -20,7 +20,7 @@ namespace TestManagementServices.Model
         public DateTime? createDate { get; set; }
         public DateTime? startTime { get; set; }
         public TestHistoryDTO() { }
-        public TestHistoryDTO(int? testId, string title, List<CompanyCatalogueDTO> catalogues, double? point,
+        public TestHistoryDTO(int testId, string title, List<CompanyCatalogueDTO> catalogues, double? point,
                 int? rankId, string rank, DateTime? createDate, DateTime? startTime)
         {
             this.testId = testId;

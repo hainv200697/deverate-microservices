@@ -11,11 +11,11 @@ namespace TestManagementServices.Model
     public class CatalogueInConfigDTO
     {
         public int catalogueInConfigId { get; set; }
-        public int? configId { get; set; }
-        public int? companyCatalogueId { get; set; }
+        public int configId { get; set; }
+        public int companyCatalogueId { get; set; }
         public string companyCatalogueName { get; set; }
-        public double? weightPoint { get; set; }
-        public bool? isActive { get; set; }
+        public double weightPoint { get; set; }
+        public bool isActive { get; set; }
         public CatalogueInConfigDTO() { }
         public CatalogueInConfigDTO(CatalogueInConfiguration c)
         {

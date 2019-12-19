@@ -13,7 +13,7 @@ namespace TestManagementServices.Model
         public int applicantId { get; set; }
         public string fullName { get; set; }
         public string email { get; set; }
-        public bool? isActive { get; set; }
+        public bool isActive { get; set; }
 
         public ApplicantDTO() { }
         public ApplicantDTO(Applicant applicant) {
@@ -21,7 +21,7 @@ namespace TestManagementServices.Model
             this.fullName = applicant.Fullname;
             this.email = applicant.Email;
         }
-        public ApplicantDTO(int applicantId, string fullName, string email, bool? isActive)
+        public ApplicantDTO(int applicantId, string fullName, string email, bool isActive)
         {
             this.applicantId = applicantId;
             this.fullName = fullName;

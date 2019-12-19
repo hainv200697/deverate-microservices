@@ -12,13 +12,13 @@ namespace TestManagementServices.Model
     public class AnswerDTO
     {
         [JsonProperty("answerId")]
-        public int? answerId { get; set; }
+        public int answerId { get; set; }
         [JsonProperty("answer")]
         public string answer { get; set; }
         [JsonProperty("point")]
         public int percent { get; set; }
         [JsonProperty("isActive")]
-        public bool? isActive { get; set; }
+        public bool isActive { get; set; }
         public AnswerDTO()
         {
 

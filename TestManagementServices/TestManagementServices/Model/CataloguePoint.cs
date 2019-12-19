@@ -9,14 +9,14 @@ namespace TestManagementServices.Model
     [JsonObject("CataloguePointDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CataloguePointDTO
     {
-        public int catalogueId { get; set; }
-        public double cataloguePoint { get; set; }
+        public int companyCatalogueId { get; set; }
+        public double companyCataloguePoint { get; set; }
 
         public CataloguePointDTO() { }
-        public CataloguePointDTO(int catalogueId, double cataloguePoint)
+        public CataloguePointDTO(int companyCatalogueId, double companyCataloguePoint)
         {
-            this.catalogueId = catalogueId;
-            this.cataloguePoint = cataloguePoint;
+            this.companyCatalogueId = companyCatalogueId;
+            this.companyCataloguePoint = companyCataloguePoint;
         }
     }
 }

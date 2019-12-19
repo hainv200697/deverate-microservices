@@ -20,23 +20,17 @@ namespace TestManagementServices.Service
                                                      .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == false).ToList();
                 List<int?> configIds = new List<int?>();
                 configurations.ForEach(c => configIds.Add(c.ConfigId));
-                List<CompanyCatalogue> catalogueInCompanies = (from con in db.Configuration
-                                                                 join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
-                                                                 join cicom in db.CompanyCatalogue on cic.CompanyCatalogueId equals cicom.CompanyCatalogueId
-                                                                 where cicom.CompanyId == account.CompanyId
-                                                                 select cicom).ToList();
+                List<CompanyCatalogue> catalogueInCompanies = db.CompanyCatalogue
+                                        .Include(c => c.CatalogueInConfiguration)
+                                        .Where(c => c.CompanyId == account.CompanyId).ToList();
                 catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.CompanyCatalogueId).Select(c => c.First()).ToList();
 
 
-                List<int?> testIds = new List<int?>();
-                for (int i = 0; i < configurations.Count; i++)
-                {
-                    for (int j = 0; j < configurations[i].Test.Count; j++)
-                    {
-                        testIds.Add(configurations[i].Test.ToList()[j].TestId);
-                    }
-                }
-                List<Test> tests = db.Test.Where(t => testIds.Contains(t.TestId)).ToList();
+                List<Test> tests = db.Test
+                    .Include(t => t.Account)
+                    .Include(t => t.DetailResult)
+                    .Include(t => t.Config.CatalogueInConfiguration)
+                    .Where(t => t.Account.CompanyId == account.CompanyId && t.ApplicantId != null).ToList();
 
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for (int j = 0; j < configurations.Count; j++)
@@ -56,9 +50,12 @@ namespace TestManagementServices.Service
                     {
                         if (tests[k].ConfigId == configurations[j].ConfigId)
                         {
-                            numberOfFinishedTest += 1;
-                            totalGPA += tests[k].Point.Value;
+                            totalGPA += tests[k].Point == null ? 0 : tests[k].Point.Value;
                             List<DetailResult> details = tests[k].DetailResult.ToList();
+                            if (details.Count > 0)
+                            {
+                                numberOfFinishedTest += 1;
+                            }
                             for (int m = 0; m < details.Count; m++)
                             {
 
@@ -66,7 +63,7 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueInConfig.CompanyCatalogueId == cloneCatalogues[n].companyCatalogueId)
                                     {
-                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleUpNumb);
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, 1);
                                         if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
                                         {
                                             cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
@@ -78,7 +75,7 @@ namespace TestManagementServices.Service
                         }
 
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleUpNumb);
+                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, 1);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -112,7 +109,7 @@ namespace TestManagementServices.Service
                 }
                 if (testIds.Count == 0) return null;
                 List<Test> tests = db.Test.Where(t => testIds.Contains(t.TestId)).ToList();
-                List<RankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new RankDTO(r)).ToList();
+                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
 
@@ -134,10 +131,10 @@ namespace TestManagementServices.Service
                     rankStatisticItem.createDate = applicantConfigs[j].CreateDate;
                     rankStatisticItem.endDate = applicantConfigs[j].EndDate;
                     rankStatisticItem.name = applicantConfigs[j].Title;
-                    List<RankDTO> cloneRanks = new List<RankDTO>();
-                    foreach (RankDTO r in ranks)
+                    List<CompanyRankDTO> cloneRanks = new List<CompanyRankDTO>();
+                    foreach (CompanyRankDTO r in ranks)
                     {
-                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
+                        cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, 0));
                     }
                     for (int k = 0; k < tests.Count; k++)
                     {
@@ -270,7 +267,7 @@ namespace TestManagementServices.Service
                              where acc.CompanyId == account.CompanyId
                              select t;
                 List<Test> tests = result.ToList();
-                List<RankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new RankDTO(r)).ToList();
+                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
                 for (int i = 0; i < accounts.Count; i++)
@@ -293,10 +290,10 @@ namespace TestManagementServices.Service
                         rankStatisticItem.createDate = configurations[j].CreateDate;
                         rankStatisticItem.endDate = configurations[j].EndDate;
                         rankStatisticItem.name = configurations[j].Title;
-                        List<RankDTO> cloneRanks = new List<RankDTO>();
-                        foreach (RankDTO r in ranks)
+                        List<CompanyRankDTO> cloneRanks = new List<CompanyRankDTO>();
+                        foreach (CompanyRankDTO r in ranks)
                         {
-                            cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
+                            cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, 0));
                         }
                         for (int k = 0; k < tests.Count; k++)
                         {
@@ -336,31 +333,24 @@ namespace TestManagementServices.Service
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
                 List<Configuration> configurations = db.Configuration.Include(c => c.Account).Include(c => c.CatalogueInConfiguration)
                                                      .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == true).ToList();
-                List<int?> configIds = new List<int?>();
-                configurations.ForEach(c => configIds.Add(c.ConfigId));
 
-                var result = from t in db.Test
-                             join con in db.Configuration on t.ConfigId equals con.ConfigId
-                             join cif in db.CatalogueInConfiguration on con.ConfigId equals cif.ConfigId
-                             join acc in db.Account on con.AccountId equals acc.AccountId
-                             where acc.CompanyId == account.CompanyId
-                             select t;
-                List<CompanyCatalogue> catalogueInCompanies = (from con in db.Configuration
-                                                               join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
-                                                               join cicom in db.CompanyCatalogue on cic.CompanyCatalogueId equals cicom.CompanyCatalogueId
-                                                               where cicom.CompanyId == account.CompanyId
-                                                               select cicom).ToList();
+                List<CompanyCatalogue> catalogueInCompanies = db.CompanyCatalogue
+                                        .Include(c => c.CatalogueInConfiguration)
+                                        .Where(c => c.CompanyId == account.CompanyId).ToList();
                 catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.CompanyCatalogueId).Select(c => c.First()).ToList();
 
 
-                List<Test> tests = result.ToList();
+                List<Test> tests = db.Test
+                    .Include(t => t.Account)
+                    .Include(t => t.DetailResult)
+                    .Include(t => t.Config.CatalogueInConfiguration)
+                    .Where(t => t.Account.CompanyId == account.CompanyId && t.AccountId != null).ToList();
 
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for (int j = 0; j < configurations.Count; j++)
                 {
                     int totalTest = configurations[j].Test.Count;
                     int numberOfTest = configurations[j].Test.Where(t => t.Status == "Submitted").ToList().Count();
-                    //int numberOfTest = configurations[j].Test.ToList().Count();
                     int numberOfFinishedTest = 0;
                     List<CompanyCatalogueDTO> cloneCatalogues = new List<CompanyCatalogueDTO>();
                     foreach (CompanyCatalogue c in catalogueInCompanies)
@@ -374,9 +364,13 @@ namespace TestManagementServices.Service
                     {
                         if (tests[k].ConfigId == configurations[j].ConfigId)
                         {
-                            numberOfFinishedTest += 1;
-                            totalGPA += tests[k].Point.Value;
+                            
+                            totalGPA += tests[k].Point == null ? 0: tests[k].Point.Value;
                             List<DetailResult> details = tests[k].DetailResult.ToList();
+                            if(details.Count > 0)
+                            {
+                                numberOfFinishedTest += 1;
+                            }
                             for (int m = 0; m < details.Count; m++)
                             {
 
@@ -384,7 +378,7 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueInConfig.CompanyCatalogueId == cloneCatalogues[n].companyCatalogueId)
                                     {
-                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleUpNumb);
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, 1);
                                         if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
                                         {
                                             cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
@@ -396,7 +390,7 @@ namespace TestManagementServices.Service
                         }
 
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleUpNumb);
+                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, 1);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -445,12 +439,10 @@ namespace TestManagementServices.Service
                     List<CompanyCatalogueDTO> catalogues = new List<CompanyCatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
-                        foreach (CompanyCatalogueDTO c in catas)
+
+                        if (cir.CompanyRankId == configurationRankDTOs[i].companyRankId)
                         {
-                            if (cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId == c.companyCatalogueId)
-                            {
-                                catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId, c.name, null, AppConstrain.RoundDownNumber(cir.Point.Value, 1)));
-                            }
+                            catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId, cir.CatalogueInConfig.CompanyCatalogue.Name, null, AppConstrain.RoundDownNumber(cir.Point.Value, 1)));
                         }
                     }
                     catalogueInRank.catalogues = catalogues;
@@ -469,77 +461,71 @@ namespace TestManagementServices.Service
                     }
                 }
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, 1);
-                return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas, catalogueInRankDTOs, catalogueInConfigs, statisticPoint, test.CompanyRankId, test.CompanyRank.Name);
+                return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas, catalogueInRankDTOs, catalogueInConfigs, statisticPoint, test.CompanyRankId, test.CompanyRank.Name, null, null);
             }
         }
 
-        //public static List<TestHistoryDTO> GetHistory(int? accountId)
-        //{
-        //    using (DeverateContext db = new DeverateContext())
-        //    {
-        //        List<Statistic> statistics = db.Statistic.Include(t => t.Test.Config).Include(t => t.Test.Account).Include(t => t.DetailStatistic).Where(t => t.Test.AccountId == accountId).ToList();
-        //        if (statistics.Count == 0) return null;
-        //        List<Rank> ranks = db.Rank.ToList();
-        //        List<TestHistoryDTO> testHistories = new List<TestHistoryDTO>();
-        //        List<Catalogue> catas = db.Catalogue.ToList();
-        //        List<CatalogueInCompany> catalogueInCompanies = (from con in db.Configuration
-        //                                                         join cic in db.CatalogueInConfiguration on con.ConfigId equals cic.ConfigId
-        //                                                         join c in db.Catalogue on cic.CatalogueId equals c.CatalogueId
-        //                                                         join cicom in db.CatalogueInCompany on c.CatalogueId equals cicom.CatalogueId
-        //                                                         where cicom.CompanyId == statistics[0].Test.Account.CompanyId
-        //                                                         select cicom).ToList();
-        //        List<Catalogue> catalogues = db.Catalogue.ToList();
-        //        catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.Cicid).Select(c => c.First()).ToList();
-        //        for (int i = 0; i < catalogueInCompanies.Count; i++)
-        //        {
-        //            foreach (Catalogue c in catalogues)
-        //            {
-        //                if (c.CatalogueId == catalogueInCompanies[i].CatalogueId)
-        //                {
-        //                    catalogueInCompanies[i].Catalogue = c;
-        //                    break;
-        //                }
-        //            }
-        //        }
+        public static List<TestHistoryDTO> GetHistory(int? accountId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                List<Test> tests = db.Test
+                    .Include(t => t.Account)
+                    .Include(t => t.DetailResult)
+                    .ThenInclude(t => t.CatalogueInConfig)
+                    .Where(t => t.AccountId == accountId).ToList();
+                if (tests.Count == 0) return null;
+                List<CompanyRank> ranks = db.CompanyRank.ToList();
+                List<TestHistoryDTO> testHistories = new List<TestHistoryDTO>();
+                List<CompanyCatalogue> catas = db.CompanyCatalogue.ToList();
 
-        //        for (int i = 0; i < statistics.Count; i++)
-        //        {
-        //            TestHistoryDTO test = new TestHistoryDTO();
-        //            test.testId = statistics[i].TestId;
-        //            test.title = statistics[i].Test.Config.Title;
-        //            test.point = statistics[i].Point;
-        //            test.rankId = statistics[i].RankId;
-        //            test.createDate = statistics[i].Test.CreateDate;
-        //            test.startTime = statistics[i].Test.StartTime;
-        //            foreach (Rank r in ranks)
-        //            {
-        //                if (r.RankId == statistics[i].RankId)
-        //                {
-        //                    test.rank = r.Name;
-        //                    break;
-        //                }
-        //            }
-        //            List<CompanyCatalogueDTO> cloneCatalogues = new List<CompanyCatalogueDTO>();
-        //            foreach (CatalogueInCompany c in catalogueInCompanies)
-        //            {
-        //                cloneCatalogues.Add(new CompanyCatalogueDTO(c.Catalogue.CatalogueId, c.Catalogue.Name, 0, 0));
-        //            }
-        //            foreach (DetailStatistic ds in statistics[i].DetailStatistic.ToList())
-        //            {
-        //                for (int j = 0; j < cloneCatalogues.Count; j++)
-        //                {
-        //                    if (cloneCatalogues[j].companyCatalogueId == ds.CatalogueId)
-        //                    {
-        //                        cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleUpNumb);
-        //                    }
-        //                }
-        //            }
-        //            test.catalogues = cloneCatalogues;
-        //            testHistories.Add(test);
-        //        }
-        //        return testHistories;
-        //    }
-        //}
+                List<CompanyCatalogue> companyCatalogues = db.CompanyCatalogue
+                    .Include(c => c.CatalogueInConfiguration)
+                    .ThenInclude(c => c.Config)
+                    .Where(c => c.CompanyId == tests.ToList()[0].Account.CompanyId)
+                    .ToList();
+
+                companyCatalogues = companyCatalogues.GroupBy(c => c.CompanyCatalogueId).Select(c => c.First()).ToList();
+
+
+                for (int i = 0; i < tests.Count; i++)
+                {
+                    TestHistoryDTO test = new TestHistoryDTO();
+                    test.testId = tests[i].TestId;
+                    test.title = tests[i].Config.Title;
+                    test.point = tests[i].Point;
+                    test.rankId = tests[i].CompanyRankId;
+                    test.createDate = tests[i].CreateDate;
+                    test.startTime = tests[i].StartTime;
+                    foreach (CompanyRank r in ranks)
+                    {
+                        if (r.CompanyRankId == tests[i].CompanyRankId)
+                        {
+                            test.rank = r.Name;
+                            break;
+                        }
+                    }
+                    List<CompanyCatalogueDTO> cloneCatalogues = new List<CompanyCatalogueDTO>();
+                    foreach (CompanyCatalogue c in companyCatalogues)
+                    {
+                        cloneCatalogues.Add(new CompanyCatalogueDTO(c.CompanyCatalogueId, c.Name, 0, 0));
+                    }
+                    foreach (DetailResult ds in tests[i].DetailResult.ToList())
+                    {
+                        for (int j = 0; j < cloneCatalogues.Count; j++)
+                        {
+                            if (cloneCatalogues[j].companyCatalogueId == ds.CatalogueInConfig.CompanyCatalogueId)
+                            {
+                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleUpNumb);
+                            }
+                        }
+                    }
+                    test.catalogues = cloneCatalogues;
+                    testHistories.Add(test);
+                }
+                return testHistories;
+            }
+        }
         public static object GetInfoByTestId(int testId)
         {
             using (DeverateContext db = new DeverateContext())
