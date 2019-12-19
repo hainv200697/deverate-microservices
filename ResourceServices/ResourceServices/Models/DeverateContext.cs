@@ -307,7 +307,6 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Answer)
                     .WithMany(p => p.QuestionInTest)
                     .HasForeignKey(d => d.AnswerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_QuestionInTest_Answer");
 
                 entity.HasOne(d => d.Question)

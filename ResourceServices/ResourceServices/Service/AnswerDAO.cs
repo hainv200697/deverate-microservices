@@ -67,7 +67,7 @@ namespace ResourceServices.Service
                 foreach (var ans in answer)
                 {
                     Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.answerId);
-                    AnswerDb.IsActive = ans.isActive.Value;
+                    AnswerDb.IsActive = ans.isActive;
                 }
                 context.SaveChanges();
             }
@@ -126,7 +126,7 @@ namespace ResourceServices.Service
                 foreach (var ans in answer)
                 {
                     DefaultAnswer AnswerDb = context.DefaultAnswer.SingleOrDefault(c => c.DefaultAnswerId == ans.answerId);
-                    AnswerDb.IsActive = ans.isActive.Value;
+                    AnswerDb.IsActive = ans.isActive;
                 }
                 context.SaveChanges();
             }

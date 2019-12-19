@@ -12,8 +12,8 @@ namespace ResourceServices.Model
     {
         public int catalogueInConfigId { get; set; }
         public int companyRankId { get; set; }
-        public double? point { get; set; }
-        public bool? isActive { get; set; }
+        public double point { get; set; }
+        public bool isActive { get; set; }
         public CatalogueInRankDTO() { }
 
         public CatalogueInRankDTO(CatalogueInRank catalogueInRank)
