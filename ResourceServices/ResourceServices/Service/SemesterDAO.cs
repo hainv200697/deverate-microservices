@@ -20,11 +20,11 @@ namespace ResourceServices.Service
         }
 
 
-        public static List<SemesterDTO> getAllEmployeeInCompany(int companyId)
+        public static List<EmployeeDTO> getAllEmployeeInCompany(int companyId)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var listEmployee = db.Account.Include(x => x.CompanyRank).Where(x => x.CompanyId == companyId && x.RoleId == 3).Select(x => new SemesterDTO(x)).ToList();
+                var listEmployee = db.Account.Include(x => x.CompanyRank).Where(x => x.CompanyId == companyId && x.RoleId == 3).Select(x => new EmployeeDTO(x)).ToList();
                 return listEmployee;
             }
         }

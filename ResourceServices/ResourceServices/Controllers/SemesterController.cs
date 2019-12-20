@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Controllers
 {
-    [Route("SemesterAPI")]
+    [Route("api/[controller]")]
     public class SemesterController : Controller
     {
         DeverateContext context;
@@ -25,7 +25,7 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                List<SemesterDTO> emp = SemesterDAO.getAllEmployeeInCompany(companyId);
+                List<EmployeeDTO> emp = SemesterDAO.getAllEmployeeInCompany(companyId);
                 return Ok(emp);
             }
             catch (Exception)

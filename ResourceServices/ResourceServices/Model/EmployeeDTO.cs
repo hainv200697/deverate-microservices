@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    public class SemesterDTO
+    public class EmployeeDTO
     {
         public int accountId { get; set; }
         public string username { get; set; }
@@ -18,15 +18,15 @@ namespace ResourceServices.Model
         public bool gender { get; set; }
         public int roleId { get; set; }
         public bool isActive { get; set; }
-        public int? companyId { get; set; }
+        public int companyId { get; set; }
         public string rankName { get; set; }
 
-        public SemesterDTO()
+        public EmployeeDTO()
         {
 
         }
 
-        public SemesterDTO(Account account)
+        public EmployeeDTO(Account account)
         {
             this.accountId = account.AccountId;
             this.username = account.Username;
@@ -37,7 +37,7 @@ namespace ResourceServices.Model
             this.gender = account.Gender;
             this.roleId = account.RoleId;
             this.isActive = account.IsActive;
-            this.companyId = account.CompanyId;
+            this.companyId = account.CompanyId.Value;
             if (account.CompanyRankId == null)
             {
                 this.rankName = "Unknow rank";
