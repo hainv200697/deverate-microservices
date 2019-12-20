@@ -1,5 +1,6 @@
 ﻿using AuthenServices.Model;
 using AuthenServices.Models;
+using Microsoft.EntityFrameworkCore;
 using ResourceServices.Model;
 using ResourceServices.Models;
 using System;
@@ -90,7 +91,7 @@ namespace AuthenServices.Service
 
             {
 
-                var employee = context.Account.Where(acc => acc.CompanyId == companyId && (acc.RoleId == 3 || acc.RoleId == 4) && acc.IsActive == status).Select(acc => new AccountDTO(acc,acc.CompanyRank.Name));
+                var employee = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId != 2 && acc.IsActive == status).Select(acc => new AccountDTO(acc, true));
                 return employee.ToList();
             }
 
@@ -146,7 +147,7 @@ namespace AuthenServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var account = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc, acc.CompanyRank.Name));
+                var account = context.Account.Include(x => x.CompanyRank).Where(acc => acc.CompanyId == companyId && acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc, true));
                 return account.ToList();
             }
 

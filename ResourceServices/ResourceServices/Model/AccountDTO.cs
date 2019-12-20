@@ -8,13 +8,10 @@ using System.Threading.Tasks;
 
 namespace AuthenServices.Model
 {
-    [JsonObject("AccountDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class AccountDTO
     {
-        [JsonProperty("accountId")]
-        public int? accountId { get; set; }
+        public int accountId { get; set; }
         public string username { get; set; }
-        public string password { get; set; }
         public string fullname { get; set; }
         public string phone { get; set; }
         public string email { get; set; }
@@ -25,48 +22,40 @@ namespace AuthenServices.Model
         public int roleId { get; set; }
         public int? rankId { get; set; }
         public string rankName { get; set; }
-        public bool? isActive { get; set; }
-        public int? companyId { get; set; }
+        public bool isActive { get; set; }
+        public int companyId { get; set; }
 
         public AccountDTO()
         {
         }
         public AccountDTO(Account account)
         {
-            if (account != null)
-            {
-                this.accountId = account.AccountId;
-                this.username = account.Username;
-                this.fullname = account.Fullname;
-                this.phone = account.Phone;
-                this.email = account.Email;
-                this.address = account.Address;
-                this.gender = account.Gender;
-                this.joinDate = account.JoinDate;
-                this.roleId = account.RoleId;
-                this.isActive = account.IsActive;
-            }
-            
+            this.accountId = account.AccountId;
+            this.username = account.Username;
+            this.fullname = account.Fullname;
+            this.phone = account.Phone;
+            this.email = account.Email;
+            this.address = account.Address;
+            this.gender = account.Gender;
+            this.joinDate = account.JoinDate;
+            this.roleId = account.RoleId;
+            this.isActive = account.IsActive;
         }
 
-        public AccountDTO(Account account,string rankName)
+        public AccountDTO(Account account, bool employee)
         {
-            if (account != null)
-            {
-                this.accountId = account.AccountId;
-                this.username = account.Username;
-                this.fullname = account.Fullname;
-                this.phone = account.Phone;
-                this.email = account.Email;
-                this.rankId = account.CompanyRankId;
-                this.rankName = rankName;
-                this.address = account.Address;
-                this.gender = account.Gender;
-                this.joinDate = account.JoinDate;
-                this.roleId = account.RoleId;
-                this.isActive = account.IsActive;
-            }
-
+            this.accountId = account.AccountId;
+            this.username = account.Username;
+            this.fullname = account.Fullname;
+            this.phone = account.Phone;
+            this.email = account.Email;
+            this.rankId = account.CompanyRankId;
+            this.rankName = account.CompanyRank.Name;
+            this.address = account.Address;
+            this.gender = account.Gender;
+            this.joinDate = account.JoinDate;
+            this.roleId = account.RoleId;
+            this.isActive = account.IsActive;
         }
     }
 }
