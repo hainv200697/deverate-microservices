@@ -91,7 +91,7 @@ namespace AuthenServices.Service
 
             {
 
-                var employee = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId != 2 && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                var employee = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId != 2 && acc.IsActive == status).Select(acc => new AccountDTO(acc, true));
                 return employee.ToList();
             }
 
@@ -147,7 +147,7 @@ namespace AuthenServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var account = context.Account.Include(x => x.CompanyRank).Where(acc => acc.CompanyId == companyId && acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc));
+                var account = context.Account.Include(x => x.CompanyRank).Where(acc => acc.CompanyId == companyId && acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc, true));
                 return account.ToList();
             }
 
