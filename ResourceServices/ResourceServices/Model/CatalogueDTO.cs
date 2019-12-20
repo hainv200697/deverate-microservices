@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    [JsonObject("CatalogueDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CatalogueDTO
     {
         
@@ -19,13 +18,6 @@ namespace ResourceServices.Model
         {
             this.name = catalogue.Name;
             this.catalogueId = catalogue.CompanyCatalogueId;
-            this.isActive = catalogue.IsActive;
-            this.description = catalogue.Description;
-        }
-        public CatalogueDTO(DefaultCatalogue catalogue)
-        {
-            this.name = catalogue.Name;
-            this.catalogueId = catalogue.DefaultCatalogueId;
             this.isActive = catalogue.IsActive;
             this.description = catalogue.Description;
         }
@@ -44,7 +36,6 @@ namespace ResourceServices.Model
             this.catalogueId = catalogue.CompanyCatalogueId;
             this.description = catalogue.Description;
             this.weightPoint = weightPoint;
-
         }
 
 

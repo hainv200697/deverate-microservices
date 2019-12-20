@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 namespace ResourceServices.Controllers
 {
     [Route("ConfigurationApi")]
-    public class ConfigurationController: Controller
+    public class ConfigurationController : Controller
     {
         DeverateContext context;
 
@@ -73,29 +73,15 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                if(configuration.type.Value)
-                {
-                    var save = ConfigurationDAO.CreateConfiguration(configuration);
-                    if (save == null)
-                    {
-                        return BadRequest("No employee");
-                    }
-                    Producer producer = new Producer();
-                    producer.PublishMessage(save.configId + "", "GenerateTest");
-                    return Ok("Save success");
-                }
-                else
-                {
-                    ConfigurationDAO.CreateConfiguration(configuration);
-                    return Ok("Save success");
-                }
+                ConfigurationDAO.CreateConfiguration(configuration);
+                return Ok(Message.createConfigSucceed);
             }
             catch (Exception)
             {
                 return StatusCode(500);
             }
         }
-            
+
 
         [Route("UpdateConfiguration")]
         [HttpPut]
@@ -103,13 +89,13 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = ConfigurationDAO.UpdateConfiguration(configuration);
-                return Ok(message);
+                ConfigurationDAO.UpdateConfiguration(configuration);
+                return Ok(Message.updateConfigSucceed);
             }
             catch (Exception)
             {
                 return StatusCode(500);
-            }  
+            }
         }
 
         [Route("ChangeStatusConfiguration")]
@@ -118,14 +104,14 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                var message = ConfigurationDAO.ChangeStatusConfiguration(configuration);
-                return Ok(message);
+                ConfigurationDAO.ChangeStatusConfiguration(configuration);
+                return Ok(Message.changeStatusConfigSucceed);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
-            
+
         }
     }
 }

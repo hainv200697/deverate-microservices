@@ -37,8 +37,8 @@ namespace ResourceServices.Service
                     question.CompanyCatalogueId = ques.companyCatalogueId;
                     question.Question1 = ques.question1;
                     question.IsActive = true;
+                    question.CreateAt = DateTime.UtcNow;
                     question.Point = ques.point;
-                    question.Answer = ques.answer;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
                 }
@@ -91,6 +91,87 @@ namespace ResourceServices.Service
                 return check;
             }
 
+        }
+
+        public static List<string> checkExistedDefaultQuestion(List<string> ques, int defaultCatalogueId)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var check = context.DefaultQuestion.Where(x => ques.Contains(x.Question) && x.DefaultCatalogueId == defaultCatalogueId).Select(x => x.Question).ToList();
+                return check;
+            }
+
+        }
+
+        public static void CreateDefaultQuestion(List<QuestionDefaultDTO> quest)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                var defaultQuestions = new List<DefaultQuestion>();
+                foreach (var ques in quest)
+                {
+                    defaultQuestions.Add(new DefaultQuestion
+                    {
+                        DefaultCatalogueId = ques.catalogueDefaultId,
+                        Question = ques.question,
+                        IsActive = true,
+                        Point = ques.point,
+                        CreateDate = DateTime.UtcNow,
+                        DefaultAnswer = ques.answer
+                    });
+                }
+                context.DefaultQuestion.AddRange(defaultQuestions);
+                context.SaveChanges();
+            }
+
+        }
+
+        public static void UpdateDefaultQuestion(QuestionDefaultDTO ques)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                DefaultQuestion question = context.DefaultQuestion.SingleOrDefault(x => x.DefaultQuestionId == ques.questionDefaultId);
+                question.Question = ques.question;
+                context.DefaultQuestion.Update(question);
+                context.SaveChanges();
+            }
+        }
+
+        public static List<QuestionDefaultDTO> GetQuestionByDefaultCatalogue(int catalogueId, bool status)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var defaultCata = context.DefaultQuestion.Include(x => x.DefaultCatalogue)
+                    .Where(x =>  x.DefaultCatalogueId == catalogueId && x.IsActive == status)
+                    .Select(x => new QuestionDefaultDTO(x, x.DefaultCatalogue.Name)).ToList();
+                return defaultCata;
+            }
+
+        }
+
+        public static void removeQuestionDefault(List<QuestionDefaultDTO> Question)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                foreach (var ques in Question)
+                {
+                    DefaultQuestion questionDb = context.DefaultQuestion.SingleOrDefault(c => c.DefaultQuestionId == ques.questionDefaultId);
+                    questionDb.IsActive = ques.isActive;
+                    if (ques.isActive == false)
+                    {
+                        List<AnswerDefaultDTO> answers = context.DefaultAnswer.Where(answer => answer.DefaultQuestionId == questionDb.DefaultQuestionId).Select(answer => new AnswerDefaultDTO(answer)).ToList();
+                        foreach (var item in answers)
+                        {
+                            DefaultAnswer AnswerDb = context.DefaultAnswer.SingleOrDefault(c => c.DefaultAnswerId == item.answerId);
+                            AnswerDb.IsActive = false;
+                        }
+                    }
+                }
+
+                context.SaveChanges();
+            }
         }
     }
 }

@@ -23,8 +23,10 @@ namespace ResourceServices.Models
         public DateTime? JoinDate { get; set; }
         public int RoleId { get; set; }
         public bool IsActive { get; set; }
+        public int? CompanyRankId { get; set; }
 
         public virtual Company Company { get; set; }
+        public virtual CompanyRank CompanyRank { get; set; }
         public virtual Role Role { get; set; }
         public virtual ICollection<Configuration> Configuration { get; set; }
         public virtual ICollection<Test> Test { get; set; }

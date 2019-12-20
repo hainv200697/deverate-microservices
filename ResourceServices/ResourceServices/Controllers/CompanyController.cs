@@ -75,8 +75,12 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                string message = CompanyDAO.UpdateCompany(company);
-                return Ok(message);
+                if(company == null)
+                {
+                    return BadRequest();
+                }
+                CompanyDAO.UpdateCompany(company);
+                return Ok(Message.updateCompanySucceed);
             }
             catch (Exception)
             {
@@ -90,8 +94,12 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                string message = CompanyDAO.DisableCompany(company, status);
-                return Ok(message);
+                if(company == null)
+                {
+                    return BadRequest();
+                }
+                CompanyDAO.DisableCompany(company, status);
+                return Ok(Message.removeCompanySucceed);
             }
             catch (Exception)
             {

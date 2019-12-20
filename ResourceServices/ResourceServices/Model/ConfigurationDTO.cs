@@ -8,35 +8,27 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    [JsonObject("ConfigurationDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class ConfigurationDTO
     {
         public int configId { get; set; }
-        public int? testOwnerId { get; set; }
-        public int? totalQuestion { get; set; }
-        public DateTime createDate { get; set; } = DateTime.UtcNow;
+        public int accountId { get; set; }
+        public string title { get; set; }
+        public DateTime createDate { get; set; }
         public DateTime startDate { get; set; }
         public DateTime? endDate { get; set; }
-        public int? duration { get; set; }
-        public string title { get; set; }
-        public bool? isActive { get; set; } = true;
-        public bool? type { get; set; }
-        public string TestOwnerName { get; set; }
-        public List<CatalogueInConfiguration> catalogueInConfigurations { get; set; }
-        public List<RankInConfiguration> ConfigurationRank { get; set; }
-
-        public List<CatalogueInConfigDTO> catalogueInConfigs { get; set; }
-        public List<ConfigurationRankDTO> configurationRanks { get; set; }
+        public int duration { get; set; }
+        public bool isActive { get; set; }
+        public bool type { get; set; }
+        public List<CatalogueInConfigurationDTO> catalogueInConfigurationDTO;
 
         public ConfigurationDTO()
         {
 
         }
-
         public ConfigurationDTO(Configuration configuration)
         {
             this.configId = configuration.ConfigId;
-            this.testOwnerId = configuration.AccountId;
+            this.accountId = configuration.AccountId;
             this.title = configuration.Title;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate;
@@ -44,40 +36,7 @@ namespace ResourceServices.Model
             this.duration = configuration.Duration;
             this.type = configuration.Type;
             this.isActive = configuration.IsActive;
+            catalogueInConfigurationDTO = configuration.CatalogueInConfiguration.Select(x => new CatalogueInConfigurationDTO(x)).ToList();
         }
-
-        public ConfigurationDTO(Configuration configuration, List<CatalogueInConfiguration> catalogueInConfiguration, List<RankInConfiguration> configurationRank, string name)
-        {
-            this.configId = configuration.ConfigId;
-            this.testOwnerId = configuration.AccountId;
-            this.createDate = configuration.CreateDate;
-            this.startDate = configuration.StartDate.AddHours(7);
-            this.endDate = configuration.EndDate.Value.AddHours(7);
-            this.duration = configuration.Duration;
-            this.isActive = configuration.IsActive;
-            this.title = configuration.Title;
-            this.type = configuration.Type;
-            this.TestOwnerName = name;
-            this.catalogueInConfigurations = catalogueInConfiguration;
-            this.ConfigurationRank = configurationRank;
-        }
-
-
-        public ConfigurationDTO(Configuration configuration, List<CatalogueInConfigDTO> catalogueInConfigs, List<ConfigurationRankDTO> configurationRanks, string name, int a = 0)
-        {
-            this.configId = configuration.ConfigId;
-            this.testOwnerId = configuration.AccountId;
-            this.createDate = configuration.CreateDate;
-            this.startDate = configuration.StartDate;
-            this.endDate = configuration.EndDate;
-            this.duration = configuration.Duration;
-            this.isActive = configuration.IsActive;
-            this.title = configuration.Title;
-            this.type = configuration.Type;
-            this.TestOwnerName = name;
-            this.catalogueInConfigs = catalogueInConfigs;
-            this.configurationRanks = configurationRanks;
-        }
-
     }
 }

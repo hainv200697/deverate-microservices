@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    [JsonObject("QuestionDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class QuestionDTO
     {
         
