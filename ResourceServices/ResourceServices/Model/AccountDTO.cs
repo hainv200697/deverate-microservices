@@ -30,40 +30,32 @@ namespace AuthenServices.Model
         }
         public AccountDTO(Account account)
         {
-            if (account != null)
-            {
-                this.accountId = account.AccountId;
-                this.username = account.Username;
-                this.fullname = account.Fullname;
-                this.phone = account.Phone;
-                this.email = account.Email;
-                this.address = account.Address;
-                this.gender = account.Gender;
-                this.joinDate = account.JoinDate;
-                this.roleId = account.RoleId;
-                this.isActive = account.IsActive;
-            }
-            
+            this.accountId = account.AccountId;
+            this.username = account.Username;
+            this.fullname = account.Fullname;
+            this.phone = account.Phone;
+            this.email = account.Email;
+            this.address = account.Address;
+            this.gender = account.Gender;
+            this.joinDate = account.JoinDate;
+            this.roleId = account.RoleId;
+            this.isActive = account.IsActive;
         }
 
-        public AccountDTO(Account account,string rankName)
+        public AccountDTO(Account account, bool employee)
         {
-            if (account != null)
-            {
-                this.accountId = account.AccountId;
-                this.username = account.Username;
-                this.fullname = account.Fullname;
-                this.phone = account.Phone;
-                this.email = account.Email;
-                this.rankId = account.CompanyRankId;
-                this.rankName = rankName;
-                this.address = account.Address;
-                this.gender = account.Gender;
-                this.joinDate = account.JoinDate;
-                this.roleId = account.RoleId;
-                this.isActive = account.IsActive;
-            }
-
+            this.accountId = account.AccountId;
+            this.username = account.Username;
+            this.fullname = account.Fullname;
+            this.phone = account.Phone;
+            this.email = account.Email;
+            this.rankId = account.CompanyRankId;
+            this.rankName = account.CompanyRank.Name;
+            this.address = account.Address;
+            this.gender = account.Gender;
+            this.joinDate = account.JoinDate;
+            this.roleId = account.RoleId;
+            this.isActive = account.IsActive;
         }
     }
 }
