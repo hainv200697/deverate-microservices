@@ -33,7 +33,7 @@ namespace ResourceServices.Service
             {
                 Answer answer = new Answer();
                 answer.Answer1 = ans.answer;
-                answer.Point = ans.point;
+                answer.Percent = ans.percent;
                 answer.IsActive = true;
                 answer.QuestionId = ans.questionId.Value;
                 context.Answer.Add(answer);
@@ -42,16 +42,6 @@ namespace ResourceServices.Service
 
         }
 
-        public static void UpdateMaxPoint(int? id)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                int maxPoint = context.Answer.Where(a => a.QuestionId == id && a.IsActive == true).Max(a => a.Point);
-                Question quesDb = context.Question.SingleOrDefault(ques => ques.QuestionId == id);
-                quesDb.MaxPoint = maxPoint;
-                context.SaveChanges();
-            }
-        }
 
         public static void UpdateAnswer(AnswerDTO ans)
         {
@@ -60,7 +50,7 @@ namespace ResourceServices.Service
                     Answer answer = new Answer();
                     answer.AnswerId = ans.answerId; 
                     answer.Answer1 = ans.answer;
-                    answer.Point = ans.point;
+                    answer.Percent = ans.percent;
                     answer.IsActive = true;
                     answer.QuestionId = ans.questionId.Value;
                     context.Answer.Update(answer);
@@ -77,12 +67,70 @@ namespace ResourceServices.Service
                 foreach (var ans in answer)
                 {
                     Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == ans.answerId);
-                    AnswerDb.IsActive = ans.isActive.Value;
+                    AnswerDb.IsActive = ans.isActive;
                 }
                 context.SaveChanges();
             }
         }
 
+        public static List<AnswerDefaultDTO> GetDefaultAnswerByQuestion(int? id, bool status)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var answer = context.DefaultAnswer.Where(ans => ans.DefaultQuestionId == id && ans.IsActive == status).Select(ans => new AnswerDefaultDTO(ans));
+
+                return answer.ToList();
+            }
+
+        }
+
+
+        public static void CreateDefaultAnswer(AnswerDefaultDTO ans)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                DefaultAnswer answer = new DefaultAnswer();
+                answer.Answer = ans.answer;
+                answer.Percent = ans.percent;
+                answer.IsActive = true;
+                answer.DefaultQuestionId = ans.questionId;
+                context.DefaultAnswer.Add(answer);
+                context.SaveChanges();
+            }
+
+        }
+
+
+        public static void UpdateDefaultAnswer(AnswerDefaultDTO ans)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                DefaultAnswer answer = new DefaultAnswer();
+                answer.DefaultAnswerId = ans.answerId;
+                answer.Answer = ans.answer;
+                answer.Percent = ans.percent;
+                answer.IsActive = true;
+                answer.DefaultQuestionId = ans.questionId;
+                context.DefaultAnswer.Update(answer);
+                context.SaveChanges();
+            }
+
+
+        }
+
+        public static void removeDefaultAnswer(List<AnswerDefaultDTO> answer)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                foreach (var ans in answer)
+                {
+                    DefaultAnswer AnswerDb = context.DefaultAnswer.SingleOrDefault(c => c.DefaultAnswerId == ans.answerId);
+                    AnswerDb.IsActive = ans.isActive;
+                }
+                context.SaveChanges();
+            }
+        }
 
     }
 }

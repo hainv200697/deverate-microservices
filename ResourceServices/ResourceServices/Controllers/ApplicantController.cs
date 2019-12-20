@@ -21,7 +21,6 @@ namespace ResourceServices.Controllers
     public class ApplicantController : Controller
     {
 
-        ResponseMessage rm = new ResponseMessage();
         DeverateContext context;
 
         public ApplicantController(DeverateContext context)

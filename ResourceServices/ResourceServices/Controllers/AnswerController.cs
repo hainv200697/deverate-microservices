@@ -48,7 +48,6 @@ namespace ResourceServices.Controllers
                     return BadRequest();
                 }
                 AnswerDAO.CreateAnswer(answer);
-                AnswerDAO.UpdateMaxPoint(answer.questionId);
                 return Ok(Message.createAnswerSucceed);
             }
             catch (Exception)
@@ -64,7 +63,6 @@ namespace ResourceServices.Controllers
             try
             {
                 AnswerDAO.UpdateAnswer(ans);
-                AnswerDAO.UpdateMaxPoint(ans.questionId);
                 return Ok(Message.updateAnswerSucceed);
             }
             catch (Exception)
@@ -81,7 +79,74 @@ namespace ResourceServices.Controllers
             {
                 int? id = ans[0].questionId;
                 AnswerDAO.removeAnswer(ans);
-                AnswerDAO.UpdateMaxPoint(id);
+                return Ok(Message.removeAnswerSucceed);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("GetDefaultAnswerByQuestion")]
+        public ActionResult GetDefaultAnswerByCatalogueId(int id, bool status)
+        {
+            try
+            {
+                List<AnswerDefaultDTO> Answers = AnswerDAO.GetDefaultAnswerByQuestion(id, status);
+                return Ok(Answers);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+
+
+
+
+        [HttpPost("CreateAnswerDefault")]
+        public ActionResult CreateAnswerDefault([FromBody] AnswerDefaultDTO answer)
+        {
+            try
+            {
+                List<AnswerDefaultDTO> Answers = AnswerDAO.GetDefaultAnswerByQuestion(answer.questionId, true);
+                if (Answers.Count() > 6)
+                {
+                    return BadRequest();
+                }
+                AnswerDAO.CreateDefaultAnswer(answer);
+                return Ok(Message.createAnswerSucceed);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+
+        [HttpPut("UpdateAnswerDefault")]
+        public ActionResult UpdateDefaultAnswer([FromBody]AnswerDefaultDTO ans)
+        {
+            try
+            {
+                AnswerDAO.UpdateDefaultAnswer(ans);
+                return Ok(Message.updateAnswerSucceed);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpPut]
+        [Route("RemoveAnswerDefault")]
+        public ActionResult RemoveDefaultAnswer([FromBody] List<AnswerDefaultDTO> ans)
+        {
+            try
+            {
+                int? id = ans[0].questionId;
+                AnswerDAO.removeDefaultAnswer(ans);
                 return Ok(Message.removeAnswerSucceed);
             }
             catch (Exception)

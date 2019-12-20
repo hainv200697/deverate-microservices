@@ -8,26 +8,26 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    public class AnswerDTO
+    public class AnswerDefaultDTO
     {
         
 
-        public AnswerDTO()
+        public AnswerDefaultDTO()
         {
         }
 
-        public AnswerDTO(Answer ans)
+        public AnswerDefaultDTO(DefaultAnswer ans)
         {
-            this.answerId = ans.AnswerId;
-            this.answer = ans.Answer1;
+            this.answerId = ans.DefaultAnswerId;
+            this.answer = ans.Answer;
             this.percent = ans.Percent;
-            this.questionId = ans.QuestionId;
+            this.questionId = ans.DefaultQuestionId;
             this.isActive = ans.IsActive;
         }
 
         [JsonProperty("AnswerId")]
         public int answerId { get; set; }
-        public int? questionId { get; set; }
+        public int questionId { get; set; }
         public string answer { get; set; }
         public int percent { get; set; }
         public bool isActive { get; set; }

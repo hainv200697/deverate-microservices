@@ -23,6 +23,8 @@ namespace AuthenServices.Model
         public string avatar { get; set; }
         public DateTime? joinDate { get; set; }
         public int roleId { get; set; }
+        public int? rankId { get; set; }
+        public string rankName { get; set; }
         public bool? isActive { get; set; }
         public int? companyId { get; set; }
 
@@ -39,13 +41,32 @@ namespace AuthenServices.Model
                 this.phone = account.Phone;
                 this.email = account.Email;
                 this.address = account.Address;
-                this.gender = account.Gender.Value;
-                this.avatar = account.Avatar;
+                this.gender = account.Gender;
                 this.joinDate = account.JoinDate;
                 this.roleId = account.RoleId;
                 this.isActive = account.IsActive;
             }
             
+        }
+
+        public AccountDTO(Account account,string rankName)
+        {
+            if (account != null)
+            {
+                this.accountId = account.AccountId;
+                this.username = account.Username;
+                this.fullname = account.Fullname;
+                this.phone = account.Phone;
+                this.email = account.Email;
+                this.rankId = account.CompanyRankId;
+                this.rankName = rankName;
+                this.address = account.Address;
+                this.gender = account.Gender;
+                this.joinDate = account.JoinDate;
+                this.roleId = account.RoleId;
+                this.isActive = account.IsActive;
+            }
+
         }
     }
 }

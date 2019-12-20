@@ -1,4 +1,5 @@
-﻿using ResourceServices.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using ResourceServices.Model;
 using ResourceServices.Models;
 using System;
 using System.Collections.Generic;
@@ -16,30 +17,31 @@ namespace ResourceServices.Service
             this.context = context;
         }
 
-        public static List<ConfigurationCatalogueDTO> GetAllConfigurationCatalogue(bool isActive)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                var con = from configCata in db.CatalogueInConfiguration
-                          join config in db.Configuration on configCata.ConfigId equals config.ConfigId
-                          join cata in db.Catalogue on configCata.CatalogueId equals cata.CatalogueId
-                          where configCata.IsActive == isActive 
-                          select new ConfigurationCatalogueDTO(configCata, config, cata);
-                return con.ToList();
-            }
-        }
+        //public static List<ConfigurationCatalogueDTO> GetAllConfigurationCatalogue(bool isActive)
+        //{
+        //    using (DeverateContext db = new DeverateContext())
+        //    {
+        //        var con = db.CatalogueInConfiguration
+        //            .Include(c => c.Config)
+        //            .Include(c => c.CompanyCatalogue)
+        //            .Where(c => c.IsActive == isActive)
+        //            .Select(c => new ConfigurationCatalogueDTO(c, c.Config, c.CompanyCatalogue));
 
-        public static List<ConfigurationCatalogueDTO> GetConfigurationCatalogueByConfigId(int id)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                var con = from configCata in db.CatalogueInConfiguration
-                          join config in db.Configuration on configCata.ConfigId equals config.ConfigId
-                          join cata in db.Catalogue on configCata.CatalogueId equals cata.CatalogueId
-                          where configCata.ConfigId == id
-                          select new ConfigurationCatalogueDTO(configCata, config, cata);
-                return con.ToList();
-            }
-        }
+        //        return con.ToList();
+        //    }
+        //}
+
+        //public static List<ConfigurationCatalogueDTO> GetConfigurationCatalogueByConfigId(int id)
+        //{
+        //    using (DeverateContext db = new DeverateContext())
+        //    {
+        //        var con = db.CatalogueInConfiguration
+        //            .Include(c => c.Config)
+        //            .Include(c => c.CompanyCatalogue)
+        //            .Where(c => c.ConfigId == id)
+        //            .Select(c => new ConfigurationCatalogueDTO(c, c.Config, c.CompanyCatalogue));
+        //        return con.ToList();
+        //    }
+        //}
     }
 }

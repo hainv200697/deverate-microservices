@@ -64,7 +64,7 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                CatalogueDAO.UpdateCatalogueDefault(catalog);
+                CatalogueDAO.UpdateCatalogue(catalog);
                 return Ok(Message.updateCatalogueSucceed);
             }
             catch (Exception)
@@ -97,7 +97,7 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                List<CatalogueDTO> catalogues = CatalogueDAO.GetAllCatalogueDefault(status);
+                List<CatalogueDefaultDTO> catalogues = CatalogueDAO.GetAllCatalogueDefault(status);
                 return Ok(catalogues);
             }
             catch (Exception)
@@ -109,7 +109,7 @@ namespace ResourceServices.Controllers
 
 
         [HttpPost("CreateCatalogueDefault")]
-        public ActionResult CreateCatalogueDefault([FromBody]CatalogueDTO catalog)
+        public ActionResult CreateCatalogueDefault([FromBody]CatalogueDefaultDTO catalog)
         {
             try
             {
@@ -120,14 +120,14 @@ namespace ResourceServices.Controllers
                 CatalogueDAO.CreateCatalogueDefault(catalog);
                 return Ok(Message.createCatalogueSucceed);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 return StatusCode(500);
             }
         }
 
         [HttpPut("UpdateCatalogueDefault")]
-        public ActionResult UpdateCatalogueDefault([FromBody]CatalogueDTO catalog)
+        public ActionResult UpdateCatalogueDefault([FromBody]CatalogueDefaultDTO catalog)
         {
             try
             {
@@ -145,7 +145,7 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPut("RemoveCatalogueDefault")]
-        public ActionResult RemoveCatalogueDefault([FromBody]List<CatalogueDTO> catalog)
+        public ActionResult RemoveCatalogueDefault([FromBody]List<CatalogueDefaultDTO> catalog)
         {
             try
             {

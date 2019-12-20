@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    [JsonObject("CatalogueDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CatalogueDTO
     {
         
@@ -15,32 +14,28 @@ namespace ResourceServices.Model
         public CatalogueDTO()
         {
         }
-        public CatalogueDTO(Catalogue catalogue)
+        public CatalogueDTO(CompanyCatalogue catalogue)
         {
             this.name = catalogue.Name;
-            this.catalogueId = catalogue.CatalogueId;
+            this.catalogueId = catalogue.CompanyCatalogueId;
             this.isActive = catalogue.IsActive;
-            this.type = catalogue.Type;
             this.description = catalogue.Description;
         }
-        public CatalogueDTO(Catalogue catalogue,bool status , int count)
+        public CatalogueDTO(CompanyCatalogue catalogue,bool status , int count)
         {
             this.name = catalogue.Name;
             this.quescount = count;
-            this.catalogueId = catalogue.CatalogueId;
+            this.catalogueId = catalogue.CompanyCatalogueId;
             this.isActive = status;
-            this.type = catalogue.Type;
             this.description = catalogue.Description;
         }
 
-        public CatalogueDTO(Catalogue catalogue, double? weightPoint)
+        public CatalogueDTO(CompanyCatalogue catalogue, double? weightPoint)
         {
             this.name = catalogue.Name;
-            this.catalogueId = catalogue.CatalogueId;
-            this.type = catalogue.Type;
+            this.catalogueId = catalogue.CompanyCatalogueId;
             this.description = catalogue.Description;
             this.weightPoint = weightPoint;
-
         }
 
 
@@ -49,7 +44,6 @@ namespace ResourceServices.Model
         public string name { get; set; }
         public int companyId { get; set; }
         public bool isActive { get; set; }
-        public bool? type { get; set; }
         public string description { get; set; }
         public int quescount { get; set; }
         public double? weightPoint { get; set; }
