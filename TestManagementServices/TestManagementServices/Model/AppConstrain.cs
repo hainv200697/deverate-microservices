@@ -8,6 +8,9 @@ namespace TestManagementServices.Model
     public class AppConstrain
     {
 
+        public const string SUBMITTED = "Submitted";
+        public const string UNKNOWN_RANK = "Unknown rank";
+
         public const string logFile = "bug.txt";
 
         public const bool includeLowercase = true;
@@ -28,6 +31,7 @@ namespace TestManagementServices.Model
         public const int empRole = 3;
 
         public const int scaleUpNumb = 100;
+        public const int scaleDownNumb = 1;
 
         public const string hostname = "35.198.215.101";
 

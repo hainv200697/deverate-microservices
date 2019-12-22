@@ -9,5 +9,6 @@ namespace TestManagementServices.Models
         public string Name { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
+        public int Position { get; set; }
     }
 }

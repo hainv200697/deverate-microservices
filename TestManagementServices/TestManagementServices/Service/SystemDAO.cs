@@ -179,7 +179,10 @@ namespace TestManagementServices.Service
                 {
                     return Message.noCatalogueException;
                 }
-                List<AccountDTO> accounts = db.Account.Where(a => accountIds.Contains(a.AccountId) && a.IsActive == true).Select(a => new AccountDTO(a)).ToList();
+                List<AccountDTO> accounts = db.Account
+                    .Where(a => accountIds.Contains(a.AccountId) && a.IsActive == true)
+                    .Select(a => new AccountDTO(a))
+                    .ToList();
                 if (accounts.Count == 0)
                 {
                     return Message.noEmployeeException;
@@ -203,7 +206,8 @@ namespace TestManagementServices.Service
                 List<CompanyCatalogueDTO> companyCatalogues = db.CompanyCatalogue.Include(c => c.Question)
                                                             .ThenInclude(c => c.Answer)
                                                             .Where(c => catalogueIds.Contains(c.CompanyCatalogueId))
-                                                            .Select(c => new CompanyCatalogueDTO(c.CompanyCatalogueId, c.Name, 0, 0, c.Question.ToList())).ToList();
+                                                            .Select(c => new CompanyCatalogueDTO(c.CompanyCatalogueId, c.Name, 0, 0, c.Question.ToList()))
+                                                            .ToList();
                 for (int i = 0; i < companyCatalogues.Count; i++)
                 {
                     foreach (CatalogueInSampleTestDTO sc in sampleConfig.catalogueInSamples)
@@ -341,7 +345,8 @@ namespace TestManagementServices.Service
                     for (int i = 0; i < catalogues.Count; i++)
                     {
                         catalogues[i].CompanyCatalogue.Question = ShuffleQuestion(catalogues[i].CompanyCatalogue.Question.ToList());
-                        List<Question> tempQuestions = catalogues[i].CompanyCatalogue.Question.Take(catalogues[i].NumberQuestion).ToList();
+                        List<Question> tempQuestions = catalogues[i].CompanyCatalogue
+                            .Question.Take(catalogues[i].NumberQuestion).ToList();
                         foreach (Question q in tempQuestions)
                         {
                             questions.Add(new QuestionDTO(q.QuestionId, q.Question1, q.Answer.ToList()));
@@ -506,7 +511,9 @@ namespace TestManagementServices.Service
                 List<CompanyCatalogueDTO> companyCatalogues = db.CatalogueInConfiguration
                                            .Include(c => c.Config)
                                            .Where(c => c.ConfigId == configId)
-                                           .Select(c => new CompanyCatalogueDTO(c.CompanyCatalogueId, c.CompanyCatalogue.Name, 0, c.WeightPoint, null, c.CompanyCatalogue.IsActive)).ToList();
+                                           .Select(c => new CompanyCatalogueDTO(c.CompanyCatalogueId, c.CompanyCatalogue.Name,
+                                           0, c.WeightPoint, null, c.CompanyCatalogue.IsActive))
+                                           .ToList();
                 if (companyCatalogues.Count == 0)
                 {
                     return null;
@@ -551,8 +558,10 @@ namespace TestManagementServices.Service
                     TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
                     totalPoint = CalculateResultPoint(testAnswer, test, test.Config.Account.CompanyId, userTest.testId, test.ConfigId);
 
-                    List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank.Where(c => c.CatalogueInConfig.ConfigId == test.ConfigId).ToList();
-                    totalPoint = AppConstrain.RoundDownNumber(totalPoint, 1);
+                    List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
+                        .Where(c => c.CatalogueInConfig.ConfigId == test.ConfigId)
+                        .ToList();
+                    totalPoint = AppConstrain.RoundDownNumber(totalPoint, AppConstrain.scaleDownNumb);
                     List<ConfigurationRankDTO> configurationRanks = GetRankPoint(test);
                     configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                     ConfigurationRankDTO tmp = new ConfigurationRankDTO();
@@ -656,7 +665,8 @@ namespace TestManagementServices.Service
                     .Include(cir => cir.CompanyRank)
                     .Include(cir => cir.CatalogueInConfig)
                     .ThenInclude(cir => cir.CompanyCatalogue)
-                    .Where(cir => cir.CatalogueInConfig.ConfigId == test.ConfigId).ToList();
+                    .Where(cir => cir.CatalogueInConfig.ConfigId == test.ConfigId)
+                    .ToList();
                 foreach(CatalogueInRank cir in catalogueInRanks)
                 {
                     if(rankDTOs.Count > 0)
@@ -667,18 +677,20 @@ namespace TestManagementServices.Service
                             if(rankDTOs[i].companyRankId == cir.CompanyRankId)
                             {
                                 isContain = true;
-                                rankDTOs[i].point += (cir.Point / numbOfCatalogue).Value;
+                                rankDTOs[i].point += (cir.Point / numbOfCatalogue);
                                 break;
                             }
                         }
                         if (isContain == false)
                         {
-                            rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name, (cir.Point / numbOfCatalogue).Value));
+                            rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name,
+                                (cir.Point / numbOfCatalogue)));
                         }
                     }
                     else
                     {
-                        rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name, (cir.Point / numbOfCatalogue).Value));
+                        rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name,
+                            (cir.Point / numbOfCatalogue)));
                     }
                 }
                 return rankDTOs;
@@ -770,7 +782,11 @@ namespace TestManagementServices.Service
             List<int?> questIds = new List<int?>();
             anss.ForEach(a => questIds.Add(a.answerId));
             var quess = db.Answer.Include(a => a.Question).Where(an => questIds.Contains(an.AnswerId)).ToList();
-            var ans = db.QuestionInTest.Include(q => q.Question).ThenInclude(q => q.Answer).Where(q => q.TestId == testId).ToList();
+            var ans = db.QuestionInTest
+                .Include(q => q.Question)
+                .ThenInclude(q => q.Answer)
+                .Where(q => q.TestId == testId)
+                .ToList();
             foreach(CompanyCatalogue cata in cataInCompany)
             {
                 double point = 0;
@@ -813,7 +829,9 @@ namespace TestManagementServices.Service
             var result = from cf in db.Configuration
                          join t in db.Test on cf.ConfigId equals t.ConfigId
                          where t.AccountId == acccountId && t.IsActive == true
-                         select new TestInfoDTO(cf.ConfigId, acccountId, t.TestId, cf.Title, null, t.Status, cf.StartDate, cf.EndDate, cf.IsActive);
+                         select new TestInfoDTO(cf.ConfigId, acccountId,
+                         t.TestId, cf.Title, null, t.Status,
+                         cf.StartDate, cf.EndDate, cf.IsActive);
             return result.ToList();
         }
 
@@ -859,7 +877,8 @@ namespace TestManagementServices.Service
                 var result = new List<QuestionInTestDTO>();
                 foreach (QuestionInTest item in questionInTest.ToList())
                 {
-                    result.Add(new QuestionInTestDTO(item.TestId, item.QuestionId, item.AnswerId, item.Question.Answer.ToList(), item.Question.Question1));
+                    result.Add(new QuestionInTestDTO(item.TestId, item.QuestionId,
+                        item.AnswerId, item.Question.Answer.ToList(), item.Question.Question1));
                 }
                 testU.accountId = test.AccountId;
                 testU.code = test.Code;
@@ -872,7 +891,9 @@ namespace TestManagementServices.Service
 
         public static List<TestInfoDTO> GetTestByConfig(DeverateContext db, int id)
         {
-            var results = db.Test.Where(t => t.ConfigId == id).Select(t => new TestInfoDTO(t, t.Config.Title, t.Account.Username, t.Applicant.Fullname)).ToList();
+            var results = db.Test.Where(t => t.ConfigId == id)
+                .Select(t => new TestInfoDTO(t, t.Config.Title, t.Account.Username, t.Applicant.Fullname))
+                .ToList();
             return results;
         }
 
@@ -898,18 +919,21 @@ namespace TestManagementServices.Service
                 List<TestMailDTO> list = new List<TestMailDTO>();
                 if (isEmployee)
                 {
-                    list = context.Test.Include(x => x.Account).Include(x => x.Config).Where(x => listestResendCode.Contains(x.TestId))
-                     .Select(x => new TestMailDTO(
-                         x.Account.Email,
-                         x.Account.Fullname,
-                         x.Config.Title,
-                         x.Config.StartDate,
-                         x.Config.EndDate,
-                         x.Code,
-                         x.TestId.ToString()
+                    list = context.Test
+                        .Include(x => x.Account)
+                        .Include(x => x.Config)
+                        .Where(x => listestResendCode.Contains(x.TestId))
+                         .Select(x => new TestMailDTO(
+                             x.Account.Email,
+                             x.Account.Fullname,
+                             x.Config.Title,
+                             x.Config.StartDate,
+                             x.Config.EndDate,
+                             x.Code,
+                             x.TestId.ToString()
+                             )
                          )
-                     )
-                     .ToList();
+                        .ToList();
                 }
                 else
                 {
