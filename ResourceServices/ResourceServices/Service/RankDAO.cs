@@ -23,31 +23,49 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 var ranks = db.CompanyRank.Where(c => c.IsActive == isActive && c.CompanyId == companyId).Select(c => new CompanyRankDTO(c));
-                return ranks.ToList().OrderByDescending(x => x.companyRankId).ToList();
+                return ranks.ToList().OrderBy(x => x.position).ToList();
             }
         }
-        public static void createCompanyRank(CompanyRankDTO rankDTO)
+        public static void updateOrCreateRankIfNotExist(List<CompanyRankDTO> rankDTO)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                CompanyRank companyRank = new CompanyRank();
-                companyRank.CompanyId = rankDTO.companyId;
-                companyRank.Name = rankDTO.name;
-                companyRank.CreateDate = DateTime.UtcNow;
-                companyRank.IsActive = true;
-                db.CompanyRank.Add(companyRank);
+                var newRanks = rankDTO.Where(x => x.companyId == 0);
+                var upRanks = rankDTO.Where(x => x.companyId != 0);
+                foreach (var item in newRanks)
+                {
+                    CompanyRank companyRank = new CompanyRank
+                    {
+                        CompanyId = item.companyId,
+                        Name = item.name,
+                        CreateDate = DateTime.UtcNow,
+                        IsActive = true,
+                        Position = item.position
+                    };
+                    db.CompanyRank.Add(companyRank);
+                }
+                var ids = upRanks.Select(x => x.companyRankId).ToList();
+                var updateRanks = db.CompanyRank.Where(x => ids.Contains(x.CompanyRankId));
+                foreach (var item in updateRanks)
+                {
+                    var find = upRanks.FirstOrDefault(x => x.companyRankId == item.CompanyRankId);
+                    bool change = false;
+                    if (item.Name != find.name)
+                    {
+                        item.Name = find.name;
+                        change = true;
+                    }
+                    if (item.Position != find.position)
+                    {
+                        item.Position = find.position;
+                        change = true;
+                    }
+                    if (change) { db.CompanyRank.Update(item); }
+                }
                 db.SaveChanges();
             }
         }
-        public static void updateCompanyRank(CompanyRankDTO rankDTO)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                CompanyRank companyRank = db.CompanyRank.SingleOrDefault(co => co.CompanyRankId == rankDTO.companyRankId);
-                companyRank.Name = rankDTO.name;
-                db.SaveChanges();
-            }
-        }
+
         public static void changeStatusCompanyRank(List<int> rankId, bool status)
         {
             using (DeverateContext db = new DeverateContext())

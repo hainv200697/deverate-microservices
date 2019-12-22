@@ -27,9 +27,9 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-        [Route("CreateCompanyRank")]
+        [Route("updateOrCreateRankIfNotExist")]
         [HttpPost]
-        public IActionResult CreateCompanyRank([FromBody] CompanyRankDTO companyRankDTO)
+        public IActionResult updateOrCreateRankIfNotExist([FromBody] List<CompanyRankDTO> companyRankDTO)
         {
             try
             {
@@ -37,7 +37,7 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                RankDAO.createCompanyRank(companyRankDTO);
+                RankDAO.updateOrCreateRankIfNotExist(companyRankDTO);
                 return Ok(Message.createCompanyRankSucceed);
             }
             catch (Exception)
@@ -45,24 +45,7 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-        [Route("UpdateCompanyRank")]
-        [HttpPut]
-        public IActionResult UpdateCompanyRank([FromBody] CompanyRankDTO companyRankDTO)
-        {
-            try
-            {
-                if (companyRankDTO == null)
-                {
-                    return BadRequest();
-                }
-                RankDAO.updateCompanyRank(companyRankDTO);
-                return Ok(Message.updateCompanyRankSucceed);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
+
         [Route("ChangeStatusCompanyRank")]
         [HttpPut]
         public IActionResult ChangeStatusCompanyRank([FromBody] List<int> rankId, bool status)
