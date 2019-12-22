@@ -356,7 +356,7 @@ namespace TestManagementServices.Models
                     .HasConstraintName("FK_Test_Applicant");
 
                 entity.HasOne(d => d.CompanyRank)
-                    .WithMany(p => p.Test)
+                    .WithMany(p => p.TestCompanyRank)
                     .HasForeignKey(d => d.CompanyRankId)
                     .HasConstraintName("FK_Test_CompanyRank");
 
@@ -365,6 +365,11 @@ namespace TestManagementServices.Models
                     .HasForeignKey(d => d.ConfigId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Test_Configuration");
+
+                entity.HasOne(d => d.PotentialRank)
+                    .WithMany(p => p.TestPotentialRank)
+                    .HasForeignKey(d => d.PotentialRankId)
+                    .HasConstraintName("FK_Test_CompanyRank1");
             });
         }
     }

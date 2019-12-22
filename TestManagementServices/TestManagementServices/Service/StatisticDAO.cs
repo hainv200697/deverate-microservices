@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using TestManagementServices.Model;
 using TestManagementServices.Models;
 
@@ -67,10 +66,10 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueInConfig.CompanyCatalogueId == cloneCatalogues[n].companyCatalogueId)
                                     {
-                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleDownNumb);
-                                        if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
+                                        if (cloneCatalogues[n].value > AppConstrain.SCALE_UP_NUMB)
                                         {
-                                            cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
+                                            cloneCatalogues[n].value = AppConstrain.SCALE_UP_NUMB;
                                         }
                                         break;
                                     }
@@ -79,7 +78,7 @@ namespace TestManagementServices.Service
                         }
 
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleDownNumb);
+                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -173,8 +172,8 @@ namespace TestManagementServices.Service
                         }
 
                     }
-                    rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count, AppConstrain.applicantDoTest);
-                    rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalApp, AppConstrain.totalApplicantDoTest);
+                    rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count, AppConstrain.APPLICANT_DO_TEST);
+                    rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalApp, AppConstrain.TOTAL_APPLICANT_DO_TEST);
                     rankStatisticItem.series = cloneRanks;
                     rankStatisticItems.Add(rankStatisticItem);
                     configCount++;
@@ -250,14 +249,14 @@ namespace TestManagementServices.Service
                         {
                             userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username,
                                 t.StartTime, t.CompanyRank.Name,
-                                t.CompanyRankId == null  ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                t.CompanyRankId == null  ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
                                 configuration.Title, t.TestId));
                         }
                         else
                         {
                             userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username,
                                 t.StartTime, AppConstrain.UNKNOWN_RANK,
-                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
                                 configuration.Title, t.TestId));
                         }
 
@@ -268,14 +267,14 @@ namespace TestManagementServices.Service
                         {
                             userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email,
                                 t.StartTime, t.CompanyRank.Name,
-                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
                                 configuration.Title, t.TestId));
                         }
                         else
                         {
                             userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email,
                                 t.StartTime, AppConstrain.UNKNOWN_RANK,
-                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
                                 configuration.Title, t.TestId));
                         }
 
@@ -418,10 +417,10 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueInConfig.CompanyCatalogueId == cloneCatalogues[n].companyCatalogueId)
                                     {
-                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleDownNumb);
-                                        if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
+                                        if (cloneCatalogues[n].value > AppConstrain.SCALE_UP_NUMB)
                                         {
-                                            cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
+                                            cloneCatalogues[n].value = AppConstrain.SCALE_UP_NUMB;
                                         }
                                         break;
                                     }
@@ -430,7 +429,7 @@ namespace TestManagementServices.Service
                         }
 
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleDownNumb);
+                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -481,7 +480,7 @@ namespace TestManagementServices.Service
                 double lowerTestPercent = 0;
                 if(tests.Count > 0)
                 {
-                    lowerTestPercent = AppConstrain.RoundDownNumber(lowerTestPoint / tests.Count, AppConstrain.scaleUpNumb);
+                    lowerTestPercent = AppConstrain.RoundDownNumber(lowerTestPoint / tests.Count, AppConstrain.SCALE_UP_NUMB);
                 }
                 List<ConfigurationRankDTO> configurationRankDTOs = SystemDAO.GetRankPoint(test);
                 List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue)
@@ -517,7 +516,7 @@ namespace TestManagementServices.Service
                         {
                             catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId,
                                 cir.CatalogueInConfig.CompanyCatalogue.Name, null,
-                                AppConstrain.RoundDownNumber(cir.Point, AppConstrain.scaleDownNumb)));
+                                AppConstrain.RoundDownNumber(cir.Point, AppConstrain.SCALE_DOWN_NUMB)));
                         }
                     }
                     catalogueInRank.catalogues = catalogues;
@@ -530,15 +529,26 @@ namespace TestManagementServices.Service
                     {
                         if (test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId == catas[j].companyCatalogueId)
                         {
-                            catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.scaleDownNumb);
+                            
+                            catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
+                            foreach (CatalogueInRank cir in catalogueInRanks)
+                            {
+
+                                if (cir.CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && cir.CompanyRankId == test.PotentialRankId)
+                                {
+                                    catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
+                                    break;
+                                }
+                            }
                             break;
                         }
                     }
                 }
-                double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.scaleDownNumb);
+                string potentialRank = test.PotentialRank == null ? null : test.PotentialRank.Name;
+                double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.SCALE_DOWN_NUMB);
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
                     catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
-                    test.CompanyRankId, test.CompanyRank.Name, null, null, lowerTestPercent);
+                    test.CompanyRankId, test.CompanyRank.Name, test.PotentialRankId, potentialRank, lowerTestPercent);
             }
         }
 
@@ -593,7 +603,7 @@ namespace TestManagementServices.Service
                         {
                             if (cloneCatalogues[j].companyCatalogueId == ds.CatalogueInConfig.CompanyCatalogueId)
                             {
-                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleDownNumb);
+                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.SCALE_DOWN_NUMB);
                             }
                         }
                     }

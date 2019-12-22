@@ -29,7 +29,7 @@ namespace TestManagementServices.Service
                     }
                     List<TestMailDTO> mails = result.ToList();
                     string message = JsonConvert.SerializeObject(mails);
-                    Producer.PublishMessage(message, AppConstrain.test_mail);
+                    Producer.PublishMessage(message, AppConstrain.TEST_MAIL);
                 }
                 return Message.sendMailSucceed;
             }
@@ -40,7 +40,7 @@ namespace TestManagementServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 var test = context.Test.FirstOrDefault(t => t.TestId == testId);
-                test.Status = "Expired";
+                test.Status = AppConstrain.EXPIRED;
                 context.SaveChanges();
             }
         }
@@ -112,7 +112,7 @@ namespace TestManagementServices.Service
                     .ThenInclude(t => t.CompanyCatalogue)
                     .ThenInclude(t => t.Question)
                     .SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
-                if (con.Duration < AppConstrain.minDuration)
+                if (con.Duration < AppConstrain.MIN_DURATION)
                 {
                     return Message.durationExceptopn;
                 }
@@ -170,7 +170,7 @@ namespace TestManagementServices.Service
                     .ThenInclude(t => t.CompanyCatalogue)
                     .ThenInclude(t => t.Question)
                     .SingleOrDefault(o => o.ConfigId == Int32.Parse(configId));
-                if (con.Duration < AppConstrain.minDuration)
+                if (con.Duration < AppConstrain.MIN_DURATION)
                 {
                     return Message.durationExceptopn;
                 }
@@ -276,7 +276,7 @@ namespace TestManagementServices.Service
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
                             Code = GenerateCode(),
-                            Status = "Pending",
+                            Status = AppConstrain.PENDING,
                             IsActive = true
                         };
                         tests.Add(t);
@@ -316,7 +316,7 @@ namespace TestManagementServices.Service
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
                             Code = GenerateCode(),
-                            Status = "Pending",
+                            Status = AppConstrain.PENDING,
                             IsActive = true
                         };
                         tests.Add(t);
@@ -380,7 +380,7 @@ namespace TestManagementServices.Service
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
                             Code = GenerateCode(),
-                            Status = "Pending",
+                            Status = AppConstrain.PENDING,
                             IsActive = true
                         };
                         tests.Add(t);
@@ -427,7 +427,7 @@ namespace TestManagementServices.Service
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
                             Code = GenerateCode(),
-                            Status = "Pending",
+                            Status = AppConstrain.PENDING,
                             IsActive = true
                         };
                         tests.Add(t);
@@ -490,7 +490,7 @@ namespace TestManagementServices.Service
             int currentQuestion = 0;
             for (int i = 0; i < catalogues.Count; i++)
             {
-                double numberOfQuestion = catalogues[i].weightPoint == null || catalogues[i].weightPoint.Value <= 0 ? 0 : catalogues[i].weightPoint.Value * totalQuestion.Value / AppConstrain.scaleUpNumb;
+                double numberOfQuestion = catalogues[i].weightPoint == null || catalogues[i].weightPoint.Value <= 0 ? 0 : catalogues[i].weightPoint.Value * totalQuestion.Value / AppConstrain.SCALE_UP_NUMB;
                 catalogues[i].numberOfQuestion = Convert.ToInt32(numberOfQuestion);
                 if (catalogues[i].numberOfQuestion == 0)
                 {
@@ -539,7 +539,7 @@ namespace TestManagementServices.Service
                     return null;
                 }
 
-                test.Status = "Submitted";
+                test.Status = AppConstrain.SUBMITTED;
                 test.FinishTime = DateTime.UtcNow;
                 db.SaveChanges();
                 List<AnswerDTO> answers = new List<AnswerDTO>();
@@ -549,7 +549,7 @@ namespace TestManagementServices.Service
                     answerIds.Add(userTest.questionInTest[i].answerId);
                 }
                 var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
-                string rank = "Dev0";
+                string rank = AppConstrain.UNKNOWN_RANK;
                 double totalPoint = 0;
 
                 if (anss.Count != 0)
@@ -561,16 +561,18 @@ namespace TestManagementServices.Service
                     List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
                         .Where(c => c.CatalogueInConfig.ConfigId == test.ConfigId)
                         .ToList();
-                    totalPoint = AppConstrain.RoundDownNumber(totalPoint, AppConstrain.scaleDownNumb);
+                    totalPoint = AppConstrain.RoundDownNumber(totalPoint, AppConstrain.SCALE_DOWN_NUMB);
                     List<ConfigurationRankDTO> configurationRanks = GetRankPoint(test);
                     configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                     ConfigurationRankDTO tmp = new ConfigurationRankDTO();
                     tmp.companyRankId = configurationRanks[0].companyRankId;
                     tmp.point = configurationRanks[0].point;
+                    int potentialRankId = configurationRanks[0].companyRankId;
                     foreach (ConfigurationRankDTO cr in configurationRanks)
                     {
                         if (totalPoint > cr.point)
                         {
+                            potentialRankId = cr.companyRankId;
                             bool isPass = true;
                             foreach(CatalogueInRank cir in catalogueInRanks)
                             {
@@ -602,6 +604,7 @@ namespace TestManagementServices.Service
                     {
                         return null;
                     }
+                    test.PotentialRankId = potentialRankId;
                     test.CompanyRankId = tmp.companyRankId;
                     test.Point = totalPoint;
                 }
@@ -741,7 +744,7 @@ namespace TestManagementServices.Service
                     {
                         continue;
                     }
-                    double point = cataloguePoints[i].companyCataloguePoint * catalogueWeightPoints[i].weightPoint / AppConstrain.scaleUpNumb;
+                    double point = cataloguePoints[i].companyCataloguePoint * catalogueWeightPoints[i].weightPoint / AppConstrain.SCALE_UP_NUMB;
                     detail.Point = cataloguePoints[i].companyCataloguePoint;
                     detail.IsActive = true;
                     details.Add(detail);
@@ -797,7 +800,7 @@ namespace TestManagementServices.Service
                     if (quess[i].Question.CompanyCatalogueId == cata.CompanyCatalogueId)
                     {
                         maxPoint += quess[i].Question.Point;
-                        point += quess[i].Percent * quess[i].Question.Point / AppConstrain.scaleUpNumb;
+                        point += quess[i].Percent * quess[i].Question.Point / AppConstrain.SCALE_UP_NUMB;
                         ids.Add(quess[i].QuestionId);
                         quess.RemoveAt(i);
                         i--;
@@ -818,21 +821,23 @@ namespace TestManagementServices.Service
                 }
 
 
-                double cataloguePoint = maxPoint == 0 ? 0 : (point / maxPoint) * AppConstrain.scaleUpNumb;
+                double cataloguePoint = maxPoint == 0 ? 0 : (point / maxPoint) * AppConstrain.SCALE_UP_NUMB;
                 cataloguePoints.Add(new CataloguePointDTO(cata.CompanyCatalogueId, cataloguePoint));
             }
             return cataloguePoints;
         }
 
-        public static List<TestInfoDTO> GetAllTestTodayByUsername(DeverateContext db, int? acccountId)
+        public static List<TestInfoDTO> GetAllTestTodayByUsername(DeverateContext db, int accountId)
         {
-            var result = from cf in db.Configuration
-                         join t in db.Test on cf.ConfigId equals t.ConfigId
-                         where t.AccountId == acccountId && t.IsActive == true
-                         select new TestInfoDTO(cf.ConfigId, acccountId,
-                         t.TestId, cf.Title, null, t.Status,
-                         cf.StartDate, cf.EndDate, cf.IsActive);
-            return result.ToList();
+            List<TestInfoDTO> tests = db.Test
+                .Include(t => t.Config)
+                .Include(t => t.Account)
+                .Where(t => t.AccountId == accountId && t.IsActive == true)
+                .Select(t => new TestInfoDTO(t.ConfigId, t.AccountId,
+                t.TestId, t.Config.Title, null, t.Status, t.Config.StartDate,
+                t.Config.EndDate, t.Config.IsActive))
+                .ToList();
+            return tests;
         }
 
         public static ConfigurationDTO GetConfig(DeverateContext db, int testId)
@@ -858,7 +863,7 @@ namespace TestManagementServices.Service
                     if (test.StartTime == null)
                     {
                         test.StartTime = DateTime.UtcNow;
-                        test.Status = "Doing";
+                        test.Status = AppConstrain.DOING;
                         context.SaveChanges();
                     }
                 }
@@ -951,7 +956,7 @@ namespace TestManagementServices.Service
                     .ToList();
                 }
 
-                Producer.PublishMessage(JsonConvert.SerializeObject(list), AppConstrain.test_mail);
+                Producer.PublishMessage(JsonConvert.SerializeObject(list), AppConstrain.TEST_MAIL);
             }
         }
 

@@ -9,7 +9,10 @@ namespace TestManagementServices.Model
     {
 
         public const string SUBMITTED = "Submitted";
-        public const string UNKNOWN_RANK = "Unknown rank";
+        public const string EXPIRED = "Expired";
+        public const string PENDING = "Pending";
+        public const string DOING = "Doing";
+        public const string UNKNOWN_RANK = "Not ranked";
 
         public const string logFile = "bug.txt";
 
@@ -19,27 +22,27 @@ namespace TestManagementServices.Model
         public const bool includeSpecial = true;
         public const bool includeSpaces = false;
         public const int lengthOfPassword = 8;
-        public const string gen_test_consumer = "GenerateTest";
-        public const string gen_test_applicant = "GenerateApplicantTest";
-        public const string test_mail = "TestEmployeeToEmail";
+        public const string GEN_TEST_CONSUMER = "GenerateTest";
+        public const string GEN_TEST_APPLICANT = "GenerateApplicantTest";
+        public const string TEST_MAIL = "TestEmployeeToEmail";
 
-        public const string applicantDoTest = "Applicants did test";
-        public const string totalApplicantDoTest = "Total applicants";
+        public const string APPLICANT_DO_TEST = "Applicants did test";
+        public const string TOTAL_APPLICANT_DO_TEST = "Total applicants";
 
-        public const int minDuration = 5;
+        public const int MIN_DURATION = 5;
 
-        public const int empRole = 3;
+        public const int EMP_ROLE = 3;
 
-        public const int scaleUpNumb = 100;
-        public const int scaleDownNumb = 1;
+        public const int SCALE_UP_NUMB = 100;
+        public const int SCALE_DOWN_NUMB = 1;
 
-        public const string hostname = "35.198.215.101";
+        public const string HOSTNAME = "35.198.215.101";
 
         public static double RoundDownNumber(double value, int scaleUp)
         {
 
             double rNumb = Math.Round(value * scaleUp, 1);
-            return rNumb > AppConstrain.scaleUpNumb ? AppConstrain.scaleUpNumb : rNumb;
+            return rNumb > AppConstrain.SCALE_UP_NUMB ? AppConstrain.SCALE_UP_NUMB : rNumb;
         }
 
 

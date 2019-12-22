@@ -18,6 +18,7 @@ namespace TestManagementServices.Models
         public DateTime? CreateDate { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
+        public int? PotentialRankId { get; set; }
         public int? CompanyRankId { get; set; }
         public double? Point { get; set; }
         public string Code { get; set; }
@@ -28,6 +29,7 @@ namespace TestManagementServices.Models
         public virtual Applicant Applicant { get; set; }
         public virtual CompanyRank CompanyRank { get; set; }
         public virtual Configuration Config { get; set; }
+        public virtual CompanyRank PotentialRank { get; set; }
         public virtual ICollection<DetailResult> DetailResult { get; set; }
         public virtual ICollection<QuestionInTest> QuestionInTest { get; set; }
     }

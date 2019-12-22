@@ -50,6 +50,7 @@ namespace TestManagementServices.Model
             this.name = name;
             this.overallPoint = overallPoint;
             this.thresholdPoint = thresholdPoint;
+            this.differentPoint = differentPoint;
         }
         public CompanyCatalogueDTO(int companyCatalogueId, string name, double value)
         {
@@ -82,6 +83,7 @@ namespace TestManagementServices.Model
         public double value { get; set; }
         public List<QuestionDTO> questions { get; set; }
         public List<Question> questionList { get; set; }
+        public double differentPoint { get; set; }
         public bool isActive { get; set; }
     }
 }

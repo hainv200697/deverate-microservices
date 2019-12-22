@@ -26,7 +26,7 @@ namespace TestManagementServices.RabbitMQ
         private void InitRabbitMQ(string exch)
         {
             this.exch = exch;
-            var factory = new ConnectionFactory() { HostName = AppConstrain.hostname };
+            var factory = new ConnectionFactory() { HostName = AppConstrain.HOSTNAME };
 
             connection = factory.CreateConnection();
             channel = connection.CreateModel();
@@ -49,11 +49,11 @@ namespace TestManagementServices.RabbitMQ
                 Console.WriteLine(" [x] Receive {0}", message);
                 switch (this.exch)
                 {
-                    case AppConstrain.gen_test_consumer:
+                    case AppConstrain.GEN_TEST_CONSUMER:
                         EmployeeTestDTO employeeTest = JsonConvert.DeserializeObject<EmployeeTestDTO>(message);
                         SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
                         break;
-                    case AppConstrain.gen_test_applicant:
+                    case AppConstrain.GEN_TEST_APPLICANT:
                         ApplicantTestDTO applicantTest = JsonConvert.DeserializeObject<ApplicantTestDTO>(message);
                         SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
                         break;
