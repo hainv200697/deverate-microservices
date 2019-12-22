@@ -39,8 +39,8 @@ namespace Deverate
             services.AddHangfireServer();
             services.AddScoped<IHangfireService, HangfireService>();
 
-            services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_consumer));
-            services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.gen_test_applicant));
+            services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.GEN_TEST_CONSUMER));
+            services.AddSingleton<IHostedService>(provider => new Consumer(AppConstrain.GEN_TEST_APPLICANT));
 
             //swagger
             services.AddOpenApiDocument(config =>
