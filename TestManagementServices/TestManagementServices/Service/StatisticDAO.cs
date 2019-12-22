@@ -455,7 +455,7 @@ namespace TestManagementServices.Service
                     {
                         if (test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId == catas[j].companyCatalogueId)
                         {
-                            catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, 100);
+                            catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, 1);
                             break;
                         }
                     }
