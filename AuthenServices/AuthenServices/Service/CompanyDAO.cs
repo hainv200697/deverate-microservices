@@ -12,7 +12,7 @@ namespace AuthenServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var check = db.Company.Where(x => companyName.Contains(x.Name));
+                var check = db.Company.Where(x => companyName == x.Name);
                 return check.Any();
             }
 
@@ -33,6 +33,7 @@ namespace AuthenServices.Service
                 var defaultCatalogues = db.DefaultCatalogue.Where(x => x.IsActive).ToList();
                 var defaultQuestions = db.DefaultQuestion.Where(x =>  x.IsActive).ToList();
                 var defaultAnswers = db.DefaultAnswer.Where(x => x.IsActive).ToList();
+                var defaultRanks = db.DefaultRank.Where(x => x.IsActive).ToList();
 
                 // Clone Catalogue
                 List<CompanyCatalogue> companyCatalogues = new List<CompanyCatalogue>();
@@ -54,7 +55,10 @@ namespace AuthenServices.Service
                     {
                         var question = new Question
                         {
-                            IsActive = true
+                            Question1 = defaultQuestion.Question,
+                            Point = defaultQuestion.Point,
+                            IsActive = true,
+                            CreateAt = DateTime.UtcNow
                         };
                         var defaultAnswersOfQuestion = defaultAnswers.Where(x => x.DefaultQuestionId == defaultQuestion.DefaultQuestionId).ToList();
                         // Clone Answer
@@ -75,6 +79,19 @@ namespace AuthenServices.Service
                     companyCatalogues.Add(companyCatalogue);
                 }
                 com.CompanyCatalogue = companyCatalogues;
+
+                // Clone Rank
+                var companyRanks = new List<CompanyRank>();
+                foreach(var defaultRank in defaultRanks)
+                {
+                    companyRanks.Add(new CompanyRank
+                    {
+                        Name = defaultRank.Name,
+                        CreateDate = DateTime.UtcNow,
+                        IsActive = true
+                    });
+                }
+                com.CompanyRank = companyRanks;
                 db.SaveChanges();
                 return result.Entity;
             }
