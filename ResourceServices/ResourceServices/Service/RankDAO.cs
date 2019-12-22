@@ -26,7 +26,7 @@ namespace ResourceServices.Service
                 return ranks.ToList().OrderBy(x => x.position).ToList();
             }
         }
-        public static void createCompanyRank(List<CompanyRankDTO> rankDTO)
+        public static void updateOrCreateRankIfNotExist(List<CompanyRankDTO> rankDTO)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -44,21 +44,18 @@ namespace ResourceServices.Service
                     }
                     else
                     {
-                        updateCompanyRank(item);
+                        CompanyRank companyRank = db.CompanyRank.SingleOrDefault(co => co.CompanyRankId == item.companyRankId);
+                        if (companyRank.Name != item.name)
+                        {
+                            companyRank.Name = item.name;
+                        }
+                        if (companyRank.Position != item.position)
+                        {
+                            companyRank.Position = item.position;
+                        }
+                        db.CompanyRank.Update(companyRank);
                     }
                 }
-                db.SaveChanges();
-            }
-        }
-
-        public static void updateCompanyRank(CompanyRankDTO rankDTO)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                CompanyRank companyRank = db.CompanyRank.SingleOrDefault(co => co.CompanyRankId == rankDTO.companyRankId);
-                companyRank.Name = rankDTO.name;
-                companyRank.Position = rankDTO.position;
-                db.CompanyRank.Update(companyRank);
                 db.SaveChanges();
             }
         }
