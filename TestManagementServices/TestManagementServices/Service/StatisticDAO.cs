@@ -404,7 +404,7 @@ namespace TestManagementServices.Service
                 return new GeneralStatisticDTO(generalStatisticItems);
             }
         }
-        public static CandidateResultDTO GetStatisticByTestId(int? testId)
+        public static CandidateResultDTO GetStatisticByTestId(int testId)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -516,7 +516,7 @@ namespace TestManagementServices.Service
                         {
                             if (cloneCatalogues[j].companyCatalogueId == ds.CatalogueInConfig.CompanyCatalogueId)
                             {
-                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleUpNumb);
+                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, 1);
                             }
                         }
                     }
