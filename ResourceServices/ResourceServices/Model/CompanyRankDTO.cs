@@ -16,6 +16,7 @@ namespace ResourceServices.Model
         public int companyId { get; set; }
         public string name { get; set; }
         public DateTime creatAt { get; set; }
+        public int position { get; set; }
         public bool isActive { get; set; }
 
         public CompanyRankDTO()
@@ -30,6 +31,7 @@ namespace ResourceServices.Model
             this.name = rank.Name;
             this.creatAt = rank.CreateDate;
             this.isActive = rank.IsActive;
+            this.position = rank.Position;
         }
     }
 }

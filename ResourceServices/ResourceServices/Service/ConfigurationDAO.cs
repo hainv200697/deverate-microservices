@@ -59,7 +59,7 @@ namespace ResourceServices.Service
                     var catalougeinconfig = new CatalogueInConfiguration
                     {
                         CatalogueInRank = newCatalogueInRank,
-                        CompanyCatalogueId = item.companyCatalogueId,
+                        CompanyCatalogueId = item.catalogueId,
                         WeightPoint = item.weightPoint,
                         NumberQuestion = item.numberQuestion,
                         IsActive = true

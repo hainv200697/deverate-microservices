@@ -29,7 +29,7 @@ namespace ResourceServices.Controllers
         }
         [Route("CreateCompanyRank")]
         [HttpPost]
-        public IActionResult CreateCompanyRank([FromBody] CompanyRankDTO companyRankDTO)
+        public IActionResult CreateCompanyRank([FromBody] List<CompanyRankDTO> companyRankDTO)
         {
             try
             {
