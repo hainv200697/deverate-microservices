@@ -30,31 +30,37 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                foreach (var item in rankDTO)
+                var newRanks = rankDTO.Where(x => x.companyId == 0);
+                var upRanks = rankDTO.Where(x => x.companyId != 0);
+                foreach (var item in newRanks)
                 {
-                    if (item.companyRankId == 0)
+                    CompanyRank companyRank = new CompanyRank
                     {
-                        CompanyRank companyRank = new CompanyRank();
-                        companyRank.CompanyId = item.companyId;
-                        companyRank.Name = item.name;
-                        companyRank.CreateDate = DateTime.UtcNow;
-                        companyRank.IsActive = true;
-                        companyRank.Position = item.position;
-                        db.CompanyRank.Add(companyRank);
-                    }
-                    else
+                        CompanyId = item.companyId,
+                        Name = item.name,
+                        CreateDate = DateTime.UtcNow,
+                        IsActive = true,
+                        Position = item.position
+                    };
+                    db.CompanyRank.Add(companyRank);
+                }
+                var ids = upRanks.Select(x => x.companyRankId).ToList();
+                var updateRanks = db.CompanyRank.Where(x => ids.Contains(x.CompanyRankId));
+                foreach (var item in updateRanks)
+                {
+                    var find = upRanks.FirstOrDefault(x => x.companyRankId == item.CompanyRankId);
+                    bool change = false;
+                    if (item.Name != find.name)
                     {
-                        CompanyRank companyRank = db.CompanyRank.SingleOrDefault(co => co.CompanyRankId == item.companyRankId);
-                        if (companyRank.Name != item.name)
-                        {
-                            companyRank.Name = item.name;
-                        }
-                        if (companyRank.Position != item.position)
-                        {
-                            companyRank.Position = item.position;
-                        }
-                        db.CompanyRank.Update(companyRank);
+                        item.Name = find.name;
+                        change = true;
                     }
+                    if (item.Position != find.position)
+                    {
+                        item.Position = find.position;
+                        change = true;
+                    }
+                    if (change) { db.CompanyRank.Update(item); }
                 }
                 db.SaveChanges();
             }
