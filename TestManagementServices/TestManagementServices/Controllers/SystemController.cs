@@ -28,41 +28,68 @@ namespace TestManagementServices.Controllers
             string message = SystemDAO.SendTestMail(configId, false);
             if (message == null)
             {
-                return new JsonResult(rm.Error(Message.noEmployeeException));
+                return StatusCode(500);
             }
-            return new JsonResult(rm.Success(message));
+            return Ok(message);
         }
 
 
         [HttpGet("Statistic/{testId}")]
-        public ActionResult<IEnumerable<string>> GetStatistic(int? testId)
+        public ActionResult GetStatistic(int testId)
         {
-
-
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetStatisticByTestId(testId)));
+            try
+            {
+                return Ok(StatisticDAO.GetStatisticByTestId(testId));
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
+            
         }
 
         [HttpGet("History/{accountId}")]
-        public ActionResult<IEnumerable<string>> GetHistory(int? accountId)
+        public ActionResult GetHistory(int? accountId)
         {
-
-
-            return new JsonResult(rm.Success(Message.createSucceed, StatisticDAO.GetHistory(accountId)));
+            try
+            {
+                return Ok(StatisticDAO.GetHistory(accountId));
+            }
+            catch(Exception e)
+            {
+                return StatusCode(500);
+            }
+            
         }
         [HttpPost("Gen/")]
         public ActionResult<IEnumerable<string>> GenTest([FromBody]EmployeeTestDTO employeeTest)
         {
-            SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
+            try
+            {
+                SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
 
-            return new JsonResult(rm.Success(Message.createSucceed));
+                return Ok();
+            }
+            catch (Exception e)
+            {
+                return StatusCode(500);
+            }
         }
 
         [HttpPost("GenApplicantTest/")]
         public ActionResult<IEnumerable<string>> GenApplicantTest([FromBody] ApplicantTestDTO applicantTest)
         {
-            SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
+            try
+            {
+                SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
 
-            return new JsonResult(rm.Success(Message.createSucceed));
+                return Ok();
+            }
+            catch(Exception e)
+            {
+                return StatusCode(500);
+            }
+
         }
     }
 }
