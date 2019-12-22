@@ -16,13 +16,17 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Configuration> configurations = db.Configuration.Include(c => c.Account).Include(c => c.Test).Include(c => c.CatalogueInConfiguration)
-                                                     .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == false).ToList();
+                List<Configuration> configurations = db.Configuration
+                    .Include(c => c.Account).Include(c => c.Test)
+                    .Include(c => c.CatalogueInConfiguration)
+                    .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == false)
+                    .ToList();
                 List<int?> configIds = new List<int?>();
                 configurations.ForEach(c => configIds.Add(c.ConfigId));
                 List<CompanyCatalogue> catalogueInCompanies = db.CompanyCatalogue
                                         .Include(c => c.CatalogueInConfiguration)
-                                        .Where(c => c.CompanyId == account.CompanyId).ToList();
+                                        .Where(c => c.CompanyId == account.CompanyId)
+                                        .ToList();
                 catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.CompanyCatalogueId).Select(c => c.First()).ToList();
 
 
@@ -35,7 +39,7 @@ namespace TestManagementServices.Service
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
                 for (int j = 0; j < configurations.Count; j++)
                 {
-                    int numberOfTest = configurations[j].Test.Where(t => t.Status == "Submitted").ToList().Count();
+                    int numberOfTest = configurations[j].Test.Where(t => t.Status == AppConstrain.SUBMITTED).ToList().Count();
                     int totalTest = configurations[j].Test.ToList().Count;
                     int numberOfFinishedTest = 0;
                     List<CompanyCatalogueDTO> cloneCatalogues = new List<CompanyCatalogueDTO>();
@@ -63,7 +67,7 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueInConfig.CompanyCatalogueId == cloneCatalogues[n].companyCatalogueId)
                                     {
-                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, 1);
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleDownNumb);
                                         if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
                                         {
                                             cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
@@ -75,7 +79,7 @@ namespace TestManagementServices.Service
                         }
 
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, 1);
+                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleDownNumb);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -94,8 +98,15 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Account> accounts = db.Account.Include(a => a.Configuration).ThenInclude(Configuration => Configuration.CatalogueInConfiguration).Where(a => a.CompanyId == account.CompanyId).ToList();
-                List<Configuration> applicantConfigs = db.Configuration.Include(c => c.Test).Where(c => c.Account.AccountId == testOwnerId && c.Type == false).ToList();
+                List<Account> accounts = db.Account
+                    .Include(a => a.Configuration)
+                    .ThenInclude(Configuration => Configuration.CatalogueInConfiguration)
+                    .Where(a => a.CompanyId == account.CompanyId)
+                    .ToList();
+                List<Configuration> applicantConfigs = db.Configuration
+                    .Include(c => c.Test)
+                    .Where(c => c.Account.AccountId == testOwnerId && c.Type == false)
+                    .ToList();
                 if (applicantConfigs.Count == 0) return null;
                 List<int?> testIds = new List<int?>();
 
@@ -109,7 +120,10 @@ namespace TestManagementServices.Service
                 }
                 if (testIds.Count == 0) return null;
                 List<Test> tests = db.Test.Where(t => testIds.Contains(t.TestId)).ToList();
-                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
+                List<CompanyRankDTO> ranks = db.CompanyRank
+                    .Where(r => r.IsActive == true)
+                    .Select(r => new CompanyRankDTO(r))
+                    .ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
 
@@ -183,7 +197,9 @@ namespace TestManagementServices.Service
                 Configuration configuration = null;
                 if (configId != null)
                 {
-                    configuration = db.Configuration.Where(c => c.ConfigId == configId).FirstOrDefault();
+                    configuration = db.Configuration
+                        .Where(c => c.ConfigId == configId)
+                        .FirstOrDefault();
                     if (configuration == null)
                     {
                         return null;
@@ -193,11 +209,15 @@ namespace TestManagementServices.Service
                 {
                     if (isEmployee == null)
                     {
-                        configuration = db.Configuration.Where(c => c.Account.CompanyId == companyId && c.Type == true).LastOrDefault();
+                        configuration = db.Configuration
+                            .Where(c => c.Account.CompanyId == companyId && c.Type == true)
+                            .LastOrDefault();
                     }
                     else
                     {
-                        configuration = db.Configuration.Where(c => c.Account.CompanyId == companyId && c.Type == isEmployee).LastOrDefault();
+                        configuration = db.Configuration
+                            .Where(c => c.Account.CompanyId == companyId && c.Type == isEmployee)
+                            .LastOrDefault();
                     }
 
                 }
@@ -209,7 +229,7 @@ namespace TestManagementServices.Service
                     .Include(t => t.Account)
                     .Include(t => t.Applicant)
                     .Include(t => t.CompanyRank)
-                    .Where(t => t.ConfigId == configuration.ConfigId && t.Status == "Submitted").ToList();
+                    .Where(t => t.ConfigId == configuration.ConfigId && t.Status == AppConstrain.SUBMITTED).ToList();
                 List<UserStatisticDTO> userStatistics = new List<UserStatisticDTO>();
                 if (tests.Count == 0 || tests == null)
                 {
@@ -228,11 +248,17 @@ namespace TestManagementServices.Service
                     {
                         if (r != null)
                         {
-                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, t.CompanyRank.Name, t.CompanyRankId == null  ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, 1), configuration.Title, t.TestId));
+                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username,
+                                t.StartTime, t.CompanyRank.Name,
+                                t.CompanyRankId == null  ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                configuration.Title, t.TestId));
                         }
                         else
                         {
-                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username, t.StartTime, "DEV0", t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, 1), configuration.Title, t.TestId));
+                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username,
+                                t.StartTime, AppConstrain.UNKNOWN_RANK,
+                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                configuration.Title, t.TestId));
                         }
 
                     }
@@ -240,11 +266,17 @@ namespace TestManagementServices.Service
                     {
                         if (r != null)
                         {
-                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, t.CompanyRank.Name, t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, 1), configuration.Title, t.TestId));
+                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email,
+                                t.StartTime, t.CompanyRank.Name,
+                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                configuration.Title, t.TestId));
                         }
                         else
                         {
-                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email, t.StartTime, "DEV0", t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, 1), configuration.Title, t.TestId));
+                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email,
+                                t.StartTime, AppConstrain.UNKNOWN_RANK,
+                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.scaleDownNumb),
+                                configuration.Title, t.TestId));
                         }
 
                     }
@@ -260,7 +292,11 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Account> accounts = db.Account.Include(a => a.Configuration).ThenInclude(Configuration => Configuration.CatalogueInConfiguration).Where(a => a.CompanyId == account.CompanyId).ToList();
+                List<Account> accounts = db.Account
+                    .Include(a => a.Configuration)
+                    .ThenInclude(Configuration => Configuration.CatalogueInConfiguration)
+                    .Where(a => a.CompanyId == account.CompanyId)
+                    .ToList();
                 var result = from t in db.Test
                              join con in db.Configuration on t.ConfigId equals con.ConfigId
                              join acc in db.Account on con.AccountId equals acc.AccountId
@@ -331,12 +367,16 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Configuration> configurations = db.Configuration.Include(c => c.Account).Include(c => c.CatalogueInConfiguration)
-                                                     .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == true).ToList();
+                List<Configuration> configurations = db.Configuration
+                    .Include(c => c.Account)
+                    .Include(c => c.CatalogueInConfiguration)
+                    .Where(c => c.Account.CompanyId == account.CompanyId && c.Type == true)
+                    .ToList();
 
                 List<CompanyCatalogue> catalogueInCompanies = db.CompanyCatalogue
                                         .Include(c => c.CatalogueInConfiguration)
-                                        .Where(c => c.CompanyId == account.CompanyId).ToList();
+                                        .Where(c => c.CompanyId == account.CompanyId)
+                                        .ToList();
                 catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.CompanyCatalogueId).Select(c => c.First()).ToList();
 
 
@@ -350,7 +390,7 @@ namespace TestManagementServices.Service
                 for (int j = 0; j < configurations.Count; j++)
                 {
                     int totalTest = configurations[j].Test.Count;
-                    int numberOfTest = configurations[j].Test.Where(t => t.Status == "Submitted").ToList().Count();
+                    int numberOfTest = configurations[j].Test.Where(t => t.Status == AppConstrain.SUBMITTED).ToList().Count();
                     int numberOfFinishedTest = 0;
                     List<CompanyCatalogueDTO> cloneCatalogues = new List<CompanyCatalogueDTO>();
                     foreach (CompanyCatalogue c in catalogueInCompanies)
@@ -378,7 +418,7 @@ namespace TestManagementServices.Service
                                 {
                                     if (details[m].CatalogueInConfig.CompanyCatalogueId == cloneCatalogues[n].companyCatalogueId)
                                     {
-                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, 1);
+                                        cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.scaleDownNumb);
                                         if (cloneCatalogues[n].value > AppConstrain.scaleUpNumb)
                                         {
                                             cloneCatalogues[n].value = AppConstrain.scaleUpNumb;
@@ -390,7 +430,7 @@ namespace TestManagementServices.Service
                         }
 
                     }
-                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, 1);
+                    gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.scaleDownNumb);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
                     gsi.endDate = configurations[j].EndDate;
@@ -420,8 +460,34 @@ namespace TestManagementServices.Service
                 {
                     return null;
                 }
+                List<Test> tests = db.Test
+                    .Where(t => t.ConfigId == test.ConfigId && t.IsActive == true)
+                    .ToList();
+                double lowerTestPoint = 0;
+                foreach(Test t in tests)
+                {
+                    if(t.Point != null)
+                    {
+                        if(t.Point < test.Point)
+                        {
+                            lowerTestPoint += 1;
+                        }
+                    }
+                    else
+                    {
+                        lowerTestPoint += 1;
+                    }
+                }
+                double lowerTestPercent = 0;
+                if(tests.Count > 0)
+                {
+                    lowerTestPercent = AppConstrain.RoundDownNumber(lowerTestPoint / tests.Count, AppConstrain.scaleUpNumb);
+                }
                 List<ConfigurationRankDTO> configurationRankDTOs = SystemDAO.GetRankPoint(test);
-                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue).Where(c => c.ConfigId == test.ConfigId).Select(c => new CatalogueInConfigDTO(c)).ToList();
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue)
+                    .Where(c => c.ConfigId == test.ConfigId)
+                    .Select(c => new CatalogueInConfigDTO(c))
+                    .ToList();
                 List<int?> catalogueIds = new List<int?>();
                 List<int> catalogeInConfigIds = new List<int>();
                 foreach(CatalogueInConfigDTO cic in catalogueInConfigs)
@@ -430,19 +496,28 @@ namespace TestManagementServices.Service
                     catalogeInConfigIds.Add(cic.catalogueInConfigId);
                 }
                 List<CatalogueInRankDTO> catalogueInRankDTOs = new List<CatalogueInRankDTO>();
-                List<CompanyCatalogueDTO> catas = db.CompanyCatalogue.Where(c => catalogueIds.Contains(c.CompanyCatalogueId)).Select(o => new CompanyCatalogueDTO(o)).ToList();
-                List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank.Where(cic => catalogeInConfigIds.Contains(cic.CatalogueInConfigId)).ToList();
+                List<CompanyCatalogueDTO> catas = db.CompanyCatalogue
+                    .Where(c => catalogueIds.Contains(c.CompanyCatalogueId))
+                    .Select(o => new CompanyCatalogueDTO(o))
+                    .ToList();
+                List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
+                    .Where(cic => catalogeInConfigIds
+                    .Contains(cic.CatalogueInConfigId))
+                    .ToList();
                 for (int i = 0; i < configurationRankDTOs.Count; i++)
                 {
 
-                    CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurationRankDTOs[i].companyRankId, configurationRankDTOs[i].rank, null);
+                    CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurationRankDTOs[i].companyRankId,
+                        configurationRankDTOs[i].rank, null);
                     List<CompanyCatalogueDTO> catalogues = new List<CompanyCatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
 
                         if (cir.CompanyRankId == configurationRankDTOs[i].companyRankId)
                         {
-                            catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId, cir.CatalogueInConfig.CompanyCatalogue.Name, null, AppConstrain.RoundDownNumber(cir.Point.Value, 1)));
+                            catalogues.Add(new CompanyCatalogueDTO(cir.CatalogueInConfig.CompanyCatalogue.CompanyCatalogueId,
+                                cir.CatalogueInConfig.CompanyCatalogue.Name, null,
+                                AppConstrain.RoundDownNumber(cir.Point, AppConstrain.scaleDownNumb)));
                         }
                     }
                     catalogueInRank.catalogues = catalogues;
@@ -455,13 +530,15 @@ namespace TestManagementServices.Service
                     {
                         if (test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId == catas[j].companyCatalogueId)
                         {
-                            catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, 1);
+                            catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.scaleDownNumb);
                             break;
                         }
                     }
                 }
-                double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, 1);
-                return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas, catalogueInRankDTOs, catalogueInConfigs, statisticPoint, test.CompanyRankId, test.CompanyRank.Name, null, null);
+                double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.scaleDownNumb);
+                return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
+                    catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
+                    test.CompanyRankId, test.CompanyRank.Name, null, null, lowerTestPercent);
             }
         }
 
@@ -516,7 +593,7 @@ namespace TestManagementServices.Service
                         {
                             if (cloneCatalogues[j].companyCatalogueId == ds.CatalogueInConfig.CompanyCatalogueId)
                             {
-                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, 1);
+                                cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.scaleDownNumb);
                             }
                         }
                     }
@@ -534,7 +611,9 @@ namespace TestManagementServices.Service
                 var info = db.Test.Include(x => x.Account).Include(x => x.Applicant).Where(x => x.TestId == testId).FirstOrDefault();
                 if (info.AccountId != null)
                 {
-                    return new AccountDTO(info.AccountId.Value, info.Account.Username, info.Account.Fullname, info.Account.Phone, info.Account.Email, info.Account.Address, info.Account.Gender);
+                    return new AccountDTO(info.AccountId.Value, info.Account.Username,
+                        info.Account.Fullname, info.Account.Phone, info.Account.Email,
+                        info.Account.Address, info.Account.Gender);
 
                 }
                 else
