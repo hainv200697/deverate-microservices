@@ -28,24 +28,6 @@ namespace ResourceServices.Controllers
             this.context = context;
         }
 
-        [HttpGet("GetEmployee")]
-        public ActionResult EmployeeByCompany(int? companyId, bool? status)
-        {
-            try
-            {
-                if (companyId == null)
-                {
-                    return BadRequest();
-                }
-                List<AccountDTO> listEmployee = AccountDAO.GetEmployee(companyId, status);
-
-                return Ok(listEmployee);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500);
-            }
-        }
 
         [HttpPost("CreateEmployee")]
         public ActionResult CreateEmployee([FromBody] List<MessageAccount> ListAccountGenerate)

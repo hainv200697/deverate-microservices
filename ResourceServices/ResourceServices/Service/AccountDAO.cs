@@ -85,17 +85,6 @@ namespace AuthenServices.Service
 
         }
 
-        public static List<AccountDTO> GetEmployee(int? companyId, bool? status)
-        {
-            using (DeverateContext context = new DeverateContext())
-
-            {
-
-                var employee = context.Account.Where(acc => acc.CompanyId == companyId && acc.RoleId != 2 && acc.IsActive == status).Select(acc => new AccountDTO(acc, true));
-                return employee.ToList();
-            }
-
-        }
 
         public static void UpdateEmployeeStatus(List<int> listEmpId, bool? status)
         {
@@ -147,7 +136,10 @@ namespace AuthenServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var account = context.Account.Include(x => x.CompanyRank).Where(acc => acc.CompanyId == companyId && acc.RoleId == role && acc.IsActive == status).Select(acc => new AccountDTO(acc, true));
+                var account = context.Account
+                    .Include(x => x.CompanyRank)
+                    .Where(acc => acc.CompanyId == companyId && acc.RoleId == role && acc.IsActive == status)
+                    .Select(acc => new AccountDTO(acc, true,acc.CompanyRank));
                 return account.ToList();
             }
 
