@@ -537,6 +537,14 @@ namespace TestManagementServices.Service
                                 if (cir.CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && cir.CompanyRankId == test.PotentialRankId)
                                 {
                                     catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
+                                    if(catas[i].differentPoint >= 0)
+                                    {
+                                        catas[i].differentPoint = 0;
+                                    }
+                                    else
+                                    {
+                                        catas[i].differentPoint *= -1;
+                                    }
                                     break;
                                 }
                             }
