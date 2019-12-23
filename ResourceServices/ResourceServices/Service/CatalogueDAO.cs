@@ -71,7 +71,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                CompanyCatalogue cata = context.CompanyCatalogue.SingleOrDefault(c => c.CompanyCatalogueId == catalogue.catalogueId);
+                CompanyCatalogue cata = context.CompanyCatalogue.SingleOrDefault(c => c.CompanyCatalogueId == catalogue.companyCatalogueId);
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
                 cata.IsActive = catalogue.isActive;
@@ -112,7 +112,7 @@ namespace ResourceServices.Service
             {
                 foreach (var cata in catalogue)
                 {
-                    CompanyCatalogue cataDb = context.CompanyCatalogue.SingleOrDefault(c => c.CompanyCatalogueId == cata.catalogueId && c.CompanyId == cata.companyId);
+                    CompanyCatalogue cataDb = context.CompanyCatalogue.SingleOrDefault(c => c.CompanyCatalogueId == cata.companyCatalogueId && c.CompanyId == cata.companyId);
                     cataDb.IsActive = cata.isActive;
                 }
                 context.SaveChanges();

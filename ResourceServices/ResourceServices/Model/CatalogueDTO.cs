@@ -17,7 +17,7 @@ namespace ResourceServices.Model
         public CatalogueDTO(CompanyCatalogue catalogue)
         {
             this.name = catalogue.Name;
-            this.catalogueId = catalogue.CompanyCatalogueId;
+            this.companyCatalogueId = catalogue.CompanyCatalogueId;
             this.isActive = catalogue.IsActive;
             this.description = catalogue.Description;
         }
@@ -25,7 +25,7 @@ namespace ResourceServices.Model
         {
             this.name = catalogue.Name;
             this.quescount = count;
-            this.catalogueId = catalogue.CompanyCatalogueId;
+            this.companyCatalogueId = catalogue.CompanyCatalogueId;
             this.isActive = status;
             this.description = catalogue.Description;
         }
@@ -33,14 +33,14 @@ namespace ResourceServices.Model
         public CatalogueDTO(CompanyCatalogue catalogue, double? weightPoint)
         {
             this.name = catalogue.Name;
-            this.catalogueId = catalogue.CompanyCatalogueId;
+            this.companyCatalogueId = catalogue.CompanyCatalogueId;
             this.description = catalogue.Description;
             this.weightPoint = weightPoint;
         }
 
 
 
-        public int catalogueId { get; set; }
+        public int companyCatalogueId { get; set; }
         public string name { get; set; }
         public int companyId { get; set; }
         public bool isActive { get; set; }
