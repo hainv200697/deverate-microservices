@@ -188,6 +188,7 @@ namespace TestManagementServices.Service
                     return Message.noEmployeeException;
                 }
                 CreateTestForEmployee(accounts, con, oneForAll);
+                SendMailQuizCode(accountIds, true);
                 return null;
             }
         }
