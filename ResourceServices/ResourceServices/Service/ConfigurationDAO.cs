@@ -86,7 +86,14 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var config = db.Configuration.Include(c => c.CatalogueInConfiguration).ThenInclude(x => x.CatalogueInRank).Where(c => c.ConfigId == configId).Select(c => new ConfigurationDTO(c));
+                var config = db.Configuration
+                    .Include(c => c.CatalogueInConfiguration)
+                    .ThenInclude(x => x.CatalogueInRank)
+                    .ThenInclude(x => x.CompanyRank)
+                    .Include(x => x.CatalogueInConfiguration)
+                    .ThenInclude(x => x.CompanyCatalogue)
+                    .Where(c => c.ConfigId == configId)
+                    .Select(c => new ConfigurationDTO(c));
                 return config.FirstOrDefault();
             }
         }

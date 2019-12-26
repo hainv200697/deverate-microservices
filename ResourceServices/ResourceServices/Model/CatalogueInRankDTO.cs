@@ -13,6 +13,7 @@ namespace ResourceServices.Model
         public int companyRankId { get; set; }
         public double point { get; set; }
         public bool isActive { get; set; }
+        public string name { get; set; }
         public CatalogueInRankDTO() { }
 
         public CatalogueInRankDTO(CatalogueInRank catalogueInRank)
@@ -20,6 +21,7 @@ namespace ResourceServices.Model
             this.catalogueInConfigId = catalogueInRank.CatalogueInConfigId;
             this.companyRankId = catalogueInRank.CompanyRankId;
             this.point = catalogueInRank.Point;
+            this.name = catalogueInRank.CompanyRank.Name;
             this.isActive = catalogueInRank.IsActive;
         }
     }
