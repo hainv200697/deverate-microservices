@@ -187,8 +187,8 @@ namespace TestManagementServices.Service
                 {
                     return Message.noEmployeeException;
                 }
-                CreateTestForEmployee(accounts, con, oneForAll);
-                SendMailQuizCode(accountIds, true);
+                List<int> testIds = CreateTestForEmployee(accounts, con, oneForAll);
+                SendMailQuizCode(testIds, true);
                 return null;
             }
         }
@@ -329,7 +329,7 @@ namespace TestManagementServices.Service
             }
         }
 
-        public static void CreateTestForEmployee(List<AccountDTO> accounts, Configuration config, bool oneForAll = false)
+        public static List<int> CreateTestForEmployee(List<AccountDTO> accounts, Configuration config, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -437,6 +437,12 @@ namespace TestManagementServices.Service
                 }
                 db.Test.AddRange(tests);
                 db.SaveChanges();
+                List<int> testIds = new List<int>();
+                foreach(Test t in tests)
+                {
+                    testIds.Add(t.TestId);
+                }
+                return testIds;
             }
         }
 
@@ -591,13 +597,11 @@ namespace TestManagementServices.Service
                                         }
                                     } 
                                 }
-
                             }
                             if(isPass == true)
                             {
                                 tmp = cr;
                             }
-                            
                         }
                     }
                     rank = db.CompanyRank.SingleOrDefault(r => r.CompanyRankId == tmp.companyRankId).Name;
@@ -605,8 +609,23 @@ namespace TestManagementServices.Service
                     {
                         return null;
                     }
+                    foreach (CatalogueInRank cir in catalogueInRanks)
+                    {
+                        if (cir.CompanyRankId == tmp.companyRankId)
+                        {
+                            if(tmp.point < cir.Point)
+                            {
+                                test.CompanyRankId = null;
+                            }
+                            else
+                            {
+                                test.CompanyRankId = tmp.companyRankId;
+                            }
+                            break;
+                        }
+
+                    }
                     test.PotentialRankId = potentialRankId;
-                    test.CompanyRankId = tmp.companyRankId;
                     test.Point = totalPoint;
                 }
                 db.SaveChanges();
