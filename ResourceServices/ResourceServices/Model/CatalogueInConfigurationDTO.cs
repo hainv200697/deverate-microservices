@@ -15,7 +15,7 @@ namespace ResourceServices.Model
         public double weightPoint { get; set; }
         public int numberQuestion { get; set; }
         public bool isActive { get; set; }
-        public string name { get; set; }
+        public string catalogueName { get; set; }
         public List<CatalogueInRankDTO> catalogueInRankDTO;
 
         public CatalogueInConfigurationDTO()
@@ -31,7 +31,7 @@ namespace ResourceServices.Model
             this.weightPoint = catalogueInConfiguration.WeightPoint;
             this.numberQuestion = catalogueInConfiguration.NumberQuestion;
             this.isActive = catalogueInConfiguration.IsActive;
-            this.name = catalogueInConfiguration.CompanyCatalogue.Name;
+            this.catalogueName = catalogueInConfiguration.CompanyCatalogue.Name;
             catalogueInRankDTO = catalogueInConfiguration.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).ToList();
         }
     }
