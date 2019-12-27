@@ -449,6 +449,7 @@ namespace TestManagementServices.Service
             {
                 Test test = db.Test
                     .Include(t => t.CompanyRank)
+                    .Include(t => t.PotentialRank)
                     .Include(o => o.Config)
                     .ThenInclude(c => c.CatalogueInConfiguration)
                     .Include(o => o.DetailResult)
@@ -552,11 +553,12 @@ namespace TestManagementServices.Service
                         }
                     }
                 }
-                string potentialRank = test.PotentialRank == null ? null : test.PotentialRank.Name;
+                string potentialRank = test.PotentialRank == null ? AppConstrain.UNKNOWN_RANK : test.PotentialRank.Name;
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.SCALE_DOWN_NUMB);
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
                     catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
-                    test.CompanyRankId, test.CompanyRank.Name, test.PotentialRankId, potentialRank, lowerTestPercent);
+                    test.CompanyRankId, (test.CompanyRank == null ? AppConstrain.UNKNOWN_RANK : test.CompanyRank.Name),
+                    test.PotentialRankId, potentialRank, lowerTestPercent);
             }
         }
 
