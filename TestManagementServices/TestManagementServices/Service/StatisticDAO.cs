@@ -486,8 +486,10 @@ namespace TestManagementServices.Service
                     lowerTestPercent = AppConstrain.RoundDownNumber(lowerTestPoint / tests.Count, AppConstrain.SCALE_UP_NUMB);
                 }
                 List<ConfigurationRankDTO> configurationRankDTOs = SystemDAO.GetRankPoint(test);
-                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue)
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration
+                    .Include(c => c.CompanyCatalogue)
                     .Where(c => c.ConfigId == test.ConfigId)
+                    .OrderBy(c => c.WeightPoint)
                     .Select(c => new CatalogueInConfigDTO(c))
                     .ToList();
                 List<int?> catalogueIds = new List<int?>();
@@ -510,7 +512,7 @@ namespace TestManagementServices.Service
                 {
 
                     CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurationRankDTOs[i].companyRankId,
-                        configurationRankDTOs[i].rank, null);
+                        configurationRankDTOs[i].rank, null, configurationRankDTOs[i].position);
                     List<CompanyCatalogueDTO> catalogues = new List<CompanyCatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
@@ -534,6 +536,10 @@ namespace TestManagementServices.Service
                         {
                             
                             catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
+                            if(test.CompanyRank == null)
+                            {
+                                continue;
+                            }
                             foreach (CatalogueInRank cir in catalogueInRanks)
                             {
 
@@ -557,6 +563,8 @@ namespace TestManagementServices.Service
                 }
                 string potentialRank = test.PotentialRank == null ? AppConstrain.UNKNOWN_RANK : test.PotentialRank.Name;
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.SCALE_DOWN_NUMB);
+                configurationRankDTOs = configurationRankDTOs.OrderBy(c => c.position).ToList();
+                catalogueInRankDTOs = catalogueInRankDTOs.OrderBy(t => t.position).ToList();
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
                     catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
                     test.CompanyRankId, (test.CompanyRank == null ? AppConstrain.UNKNOWN_RANK : test.CompanyRank.Name),
