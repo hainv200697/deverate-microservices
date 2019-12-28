@@ -11,6 +11,7 @@ namespace ResourceServices.Model
         public int defaultRankId { get; set; }
         public string name { get; set; }
         public DateTime createDate { get; set; }
+        public int position { get; set; }
         public bool isActive { get; set; }
 
         public DefaultRankDTO()
@@ -22,6 +23,7 @@ namespace ResourceServices.Model
             this.defaultRankId = defaultRank.DefaultRankId;
             this.name = defaultRank.Name;
             this.createDate = defaultRank.CreateDate;
+            this.position = defaultRank.Position;
             this.isActive = defaultRank.IsActive;
         }
     }

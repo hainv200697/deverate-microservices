@@ -30,8 +30,8 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var newRanks = rankDTO.Where(x => x.companyId == 0);
-                var upRanks = rankDTO.Where(x => x.companyId != 0);
+                var newRanks = rankDTO.Where(x => x.companyRankId == 0);
+                var upRanks = rankDTO.Where(x => x.companyRankId != 0);
                 foreach (var item in newRanks)
                 {
                     CompanyRank companyRank = new CompanyRank
