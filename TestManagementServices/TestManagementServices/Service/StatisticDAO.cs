@@ -228,6 +228,7 @@ namespace TestManagementServices.Service
                     .Include(t => t.Account)
                     .Include(t => t.Applicant)
                     .Include(t => t.CompanyRank)
+                    .Include(t => t.PotentialRank)
                     .Where(t => t.ConfigId == configuration.ConfigId && t.Status == AppConstrain.SUBMITTED).ToList();
                 List<UserStatisticDTO> userStatistics = new List<UserStatisticDTO>();
                 if (tests.Count == 0 || tests == null)
@@ -237,47 +238,25 @@ namespace TestManagementServices.Service
                 List<int?> userIds = new List<int?>();
                 foreach (Test t in tests)
                 {
-                    if ((t.AccountId == null && t.ApplicantId == null) || t.CompanyRankId == null)
+                    if ((t.AccountId == null && t.ApplicantId == null))
                     {
                         continue;
                     }
-
-                    CompanyRank r = t.CompanyRank;
                     if (t.AccountId != null)
                     {
-                        if (r != null)
-                        {
-                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username,
-                                t.StartTime, t.CompanyRank.Name,
-                                t.CompanyRankId == null  ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
-                                configuration.Title, t.TestId));
-                        }
-                        else
-                        {
-                            userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username,
-                                t.StartTime, AppConstrain.UNKNOWN_RANK,
-                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
-                                configuration.Title, t.TestId));
-                        }
-
+                        userStatistics.Add(new UserStatisticDTO(t.AccountId, t.Account.Username,
+                            t.StartTime, t.CompanyRank == null ? AppConstrain.UNKNOWN_RANK: t.CompanyRank.Name,
+                            t.PotentialRank == null ? AppConstrain.UNKNOWN_RANK : t.PotentialRank.Name,
+                            t.Point == null  ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
+                            configuration.Title, t.TestId));
                     }
                     else
                     {
-                        if (r != null)
-                        {
-                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email,
-                                t.StartTime, t.CompanyRank.Name,
-                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
-                                configuration.Title, t.TestId));
-                        }
-                        else
-                        {
-                            userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email,
-                                t.StartTime, AppConstrain.UNKNOWN_RANK,
-                                t.CompanyRankId == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
-                                configuration.Title, t.TestId));
-                        }
-
+                        userStatistics.Add(new UserStatisticDTO(t.ApplicantId, t.Applicant.Email,
+                            t.StartTime, t.CompanyRank == null ? AppConstrain.UNKNOWN_RANK: t.CompanyRank.Name,
+                            t.PotentialRank == null? AppConstrain.UNKNOWN_RANK: t.PotentialRank.Name,
+                            t.Point == null ? 0 : AppConstrain.RoundDownNumber(t.Point.Value, AppConstrain.SCALE_DOWN_NUMB),
+                            configuration.Title, t.TestId));
                     }
 
                 }
