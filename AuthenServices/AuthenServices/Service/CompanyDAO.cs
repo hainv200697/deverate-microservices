@@ -88,7 +88,8 @@ namespace AuthenServices.Service
                     {
                         Name = defaultRank.Name,
                         CreateDate = DateTime.UtcNow,
-                        IsActive = true
+                        IsActive = true,
+                        Position = defaultRank.Position
                     });
                 }
                 com.CompanyRank = companyRanks;

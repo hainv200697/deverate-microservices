@@ -11,33 +11,36 @@ namespace AuthenServices.Service
 {
     public class AccountDAO
     {
-        public static string CheckLogin(DeverateContext context, string username, string password)
+        public static string CheckLogin(string username, string password)
         {
-            username = username.ToUpper();
-            Account account = context.Account.Include(a => a.Role).Include(a => a.Company).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
-            if (account == null)
+            using(DeverateContext context = new DeverateContext())
             {
-                return null;
-            }
-            if(account.RoleId != 1 && account.Company.IsActive == false)
-            {
-                return null;
-            }
-            bool result = false;
-            try
-            {
-                result = BCrypt.Net.BCrypt.Verify(password, account.Password);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+                username = username.ToUpper();
+                Account account = context.Account.Include(a => a.Role).Include(a => a.Company).Where(a => a.Username == username && a.IsActive == true).SingleOrDefault();
+                if (account == null)
+                {
+                    return null;
+                }
+                if (account.RoleId != 1 && account.Company.IsActive == false)
+                {
+                    return null;
+                }
+                bool result = false;
+                try
+                {
+                    result = BCrypt.Net.BCrypt.Verify(password, account.Password);
+                }
+                catch (Exception)
+                {
+                    return null;
+                }
 
-            if (!result)
-            {
-                return null;
+                if (!result)
+                {
+                    return null;
+                }
+                return TokenManager.GenerateToken(account);
             }
-            return TokenManager.GenerateToken(account);
         }
 
         public static MessageAccountDTO GenerateCompanyAccount(MessageAccount ms)

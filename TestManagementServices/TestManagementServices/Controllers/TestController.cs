@@ -65,7 +65,7 @@ namespace TestManagementServices.Controllers
                 int applicantId = SystemDAO.GetApplicantId(userTest.testId);
                 return Ok(applicantId);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -120,7 +120,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetGeneralStatisticByTestOwnerId(accountId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }

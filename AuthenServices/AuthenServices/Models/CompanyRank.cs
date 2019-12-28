@@ -7,7 +7,8 @@ namespace AuthenServices.Models
     {
         public CompanyRank()
         {
-            RankInConfiguration = new HashSet<RankInConfiguration>();
+            Account = new HashSet<Account>();
+            CatalogueInRank = new HashSet<CatalogueInRank>();
             Test = new HashSet<Test>();
         }
 
@@ -16,9 +17,11 @@ namespace AuthenServices.Models
         public string Name { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
+        public int Position { get; set; }
 
         public virtual Company Company { get; set; }
-        public virtual ICollection<RankInConfiguration> RankInConfiguration { get; set; }
+        public virtual ICollection<Account> Account { get; set; }
+        public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
         public virtual ICollection<Test> Test { get; set; }
     }
 }

@@ -12,11 +12,6 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class EmployeeController : Controller
     {
-
-        public EmployeeController()
-        {
-        }
-
         [HttpPost("CreateEmployee")]
         public ActionResult CreateEmployee([FromBody] List<MessageAccount> ListAccountGenerate)
         {

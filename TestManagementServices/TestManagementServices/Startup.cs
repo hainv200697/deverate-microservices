@@ -115,8 +115,8 @@ namespace Deverate
 {
                 Authorization = new[] { new MyAuthorizationFilter() }
             });
-            //RecurringJob.AddOrUpdate<IHangfireService>("EvaluateRankAllTestNotSubmit", context => context.EvaluateRankAllTestNotSubmit(), Cron.Hourly);
-            //RecurringJob.AddOrUpdate<IHangfireService>("ExpireTest", context => context.ExpireTest(), Cron.Hourly);
+            RecurringJob.AddOrUpdate<IHangfireService>("EvaluateRankAllTestNotSubmit", context => context.EvaluateRankAllTestNotSubmit(), Cron.Hourly);
+            RecurringJob.AddOrUpdate<IHangfireService>("ExpireTest", context => context.ExpireTest(), Cron.Hourly);
 
             app.UseCors(options => options.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseDiscoveryClient();

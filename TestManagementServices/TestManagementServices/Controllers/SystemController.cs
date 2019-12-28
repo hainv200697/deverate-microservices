@@ -41,7 +41,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetStatisticByTestId(testId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -55,7 +55,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetHistory(accountId));
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return StatusCode(500);
             }
@@ -70,7 +70,7 @@ namespace TestManagementServices.Controllers
 
                 return Ok();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -85,7 +85,7 @@ namespace TestManagementServices.Controllers
 
                 return Ok();
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return StatusCode(500);
             }

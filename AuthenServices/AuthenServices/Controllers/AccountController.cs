@@ -13,18 +13,12 @@ namespace AuthenServices.Controllers
     [Route("[controller]")]
     public class AccountController : Controller
     {
-        DeverateContext context;
-        public AccountController(DeverateContext context)
-        {
-            this.context = context;
-        }
-
         [HttpPost("Login")]
         public ActionResult<IEnumerable<string>> PostAuthenUser([FromBody]AccountLoginDTO account)
         {
             try
             {
-                string token = AccountDAO.CheckLogin(context, account.username, account.password);
+                string token = AccountDAO.CheckLogin(account.username, account.password);
                 if (token == null)
                 {
                     return BadRequest("Invalid username or password");
