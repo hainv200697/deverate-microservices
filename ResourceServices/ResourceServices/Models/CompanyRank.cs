@@ -9,7 +9,8 @@ namespace ResourceServices.Models
         {
             Account = new HashSet<Account>();
             CatalogueInRank = new HashSet<CatalogueInRank>();
-            Test = new HashSet<Test>();
+            TestCompanyRank = new HashSet<Test>();
+            TestPotentialRank = new HashSet<Test>();
         }
 
         public int CompanyRankId { get; set; }
@@ -22,6 +23,7 @@ namespace ResourceServices.Models
         public virtual Company Company { get; set; }
         public virtual ICollection<Account> Account { get; set; }
         public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
-        public virtual ICollection<Test> Test { get; set; }
+        public virtual ICollection<Test> TestCompanyRank { get; set; }
+        public virtual ICollection<Test> TestPotentialRank { get; set; }
     }
 }
