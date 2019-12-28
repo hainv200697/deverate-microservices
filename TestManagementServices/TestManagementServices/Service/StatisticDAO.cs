@@ -120,7 +120,7 @@ namespace TestManagementServices.Service
                 if (testIds.Count == 0) return null;
                 List<Test> tests = db.Test.Where(t => testIds.Contains(t.TestId)).ToList();
                 List<CompanyRankDTO> ranks = db.CompanyRank
-                    .Where(r => r.IsActive == true)
+                    .Where(r => r.IsActive == true && r.CompanyId == account.CompanyId)
                     .Select(r => new CompanyRankDTO(r))
                     .ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
@@ -147,25 +147,31 @@ namespace TestManagementServices.Service
                     List<CompanyRankDTO> cloneRanks = new List<CompanyRankDTO>();
                     foreach (CompanyRankDTO r in ranks)
                     {
-                        cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, 0));
+                        cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, r.position, 0));
                     }
+                    CompanyRankDTO notRanked = new CompanyRankDTO(-1, AppConstrain.UNKNOWN_RANK, -1, 0);
                     for (int k = 0; k < tests.Count; k++)
                     {
                         if (tests[k].ConfigId == applicantConfigs[j].ConfigId)
                         {
-                            if (!totalOfDidTests.Contains(tests[k].ApplicantId))
+
+                            if (tests[k].CompanyRankId == null && tests[k].Point != null)
                             {
-                                totalOfDidTests.Add(tests[k].ApplicantId);
-                            }
-                            else
-                            {
+                                if (!totalOfDidTests.Contains(tests[k].ApplicantId))
+                                {
+                                    totalOfDidTests.Add(tests[k].ApplicantId);
+                                }
+                                notRanked.count += 1;
                                 continue;
                             }
-
                             for (int m = 0; m < cloneRanks.Count; m++)
                             {
                                 if (tests[k].CompanyRankId == cloneRanks[m].companyRankId)
                                 {
+                                    if (!totalOfDidTests.Contains(tests[k].ApplicantId))
+                                    {
+                                        totalOfDidTests.Add(tests[k].ApplicantId);
+                                    }
                                     cloneRanks[m].count += 1;
                                 }
                             }
@@ -174,6 +180,8 @@ namespace TestManagementServices.Service
                     }
                     rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count, AppConstrain.APPLICANT_DO_TEST);
                     rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalApp, AppConstrain.TOTAL_APPLICANT_DO_TEST);
+                    cloneRanks.Add(notRanked);
+                    cloneRanks = cloneRanks.OrderBy(r => r.position).ToList();
                     rankStatisticItem.series = cloneRanks;
                     rankStatisticItems.Add(rankStatisticItem);
                     configCount++;
@@ -281,7 +289,10 @@ namespace TestManagementServices.Service
                              where acc.CompanyId == account.CompanyId
                              select t;
                 List<Test> tests = result.ToList();
-                List<CompanyRankDTO> ranks = db.CompanyRank.Where(r => r.IsActive == true).Select(r => new CompanyRankDTO(r)).ToList();
+                List<CompanyRankDTO> ranks = db.CompanyRank
+                    .Where(r => r.IsActive == true && r.CompanyId == account.CompanyId)
+                    .Select(r => new CompanyRankDTO(r))
+                    .ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
                 for (int i = 0; i < accounts.Count; i++)
@@ -307,21 +318,31 @@ namespace TestManagementServices.Service
                         List<CompanyRankDTO> cloneRanks = new List<CompanyRankDTO>();
                         foreach (CompanyRankDTO r in ranks)
                         {
-                            cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, 0));
+                            cloneRanks.Add(new CompanyRankDTO(r.companyRankId, r.name, r.position, 0));
                         }
+                        CompanyRankDTO notRanked = new CompanyRankDTO(-1, AppConstrain.UNKNOWN_RANK, -1, 0);
                         for (int k = 0; k < tests.Count; k++)
                         {
                             if (tests[k].ConfigId == configurations[j].ConfigId)
                             {
-                                if (!totalOfDidTests.Contains(tests[k].AccountId))
-                                {
-                                    totalOfDidTests.Add(tests[k].AccountId);
-                                }
 
+                                if(tests[k].CompanyRankId == null && tests[k].Point != null)
+                                {
+                                    if (!totalOfDidTests.Contains(tests[k].AccountId))
+                                    {
+                                        totalOfDidTests.Add(tests[k].AccountId);
+                                    }
+                                    notRanked.count += 1;
+                                    continue;
+                                }
                                 for (int m = 0; m < cloneRanks.Count; m++)
                                 {
                                     if (tests[k].CompanyRankId == cloneRanks[m].companyRankId)
                                     {
+                                        if (!totalOfDidTests.Contains(tests[k].AccountId))
+                                        {
+                                            totalOfDidTests.Add(tests[k].AccountId);
+                                        }
                                         cloneRanks[m].count += 1;
                                     }
                                 }
@@ -330,6 +351,8 @@ namespace TestManagementServices.Service
                         }
                         rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count);
                         rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalEmp);
+                        cloneRanks.Add(notRanked);
+                        cloneRanks = cloneRanks.OrderBy(r => r.position).ToList();
                         rankStatisticItem.series = cloneRanks;
                         rankStatisticItems.Add(rankStatisticItem);
                         configCount++;
