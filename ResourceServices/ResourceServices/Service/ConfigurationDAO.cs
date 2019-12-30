@@ -34,6 +34,14 @@ namespace ResourceServices.Service
             }
         }
 
+        public static List<ConfigurationDTO> GetConfigurationForEmployee(int companyId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                return db.Configuration.Include(x => x.Account).Where(x => x.EndDate >= DateTime.UtcNow && x.Account.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
+            }
+        }
+
         public static void CreateConfiguration(ConfigurationDTO configurationDTO)
         {
             using (DeverateContext db = new DeverateContext())
