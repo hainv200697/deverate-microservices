@@ -505,6 +505,7 @@ namespace TestManagementServices.Service
                     .Select(o => new CompanyCatalogueDTO(o))
                     .ToList();
                 List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
+                    .Include(c => c.CompanyRank)
                     .Where(cic => catalogeInConfigIds
                     .Contains(cic.CatalogueInConfigId))
                     .ToList();
@@ -527,7 +528,7 @@ namespace TestManagementServices.Service
                     catalogueInRank.catalogues = catalogues;
                     catalogueInRankDTOs.Add(catalogueInRank);
                 }
-
+                string nextRank = null;
                 for (int i = 0; i < test.DetailResult.Count; i++)
                 {
                     for (int j = 0; j < catas.Count; j++)
@@ -549,6 +550,7 @@ namespace TestManagementServices.Service
                                     if (pos > catalogueInRanks.Count - 1) continue;
                                     if (catalogueInRanks[k].CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && catalogueInRanks[k].CompanyRankId == test.PotentialRankId)
                                     {
+                                        nextRank = catalogueInRanks[pos].CompanyRank.Name;
                                         catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
                                         if (catas[i].differentPoint >= 0)
                                         {
@@ -595,7 +597,7 @@ namespace TestManagementServices.Service
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
                     catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
                     test.CompanyRankId, (test.CompanyRank == null ? AppConstrain.UNKNOWN_RANK : test.CompanyRank.Name),
-                    test.PotentialRankId, potentialRank, lowerTestPercent);
+                    test.PotentialRankId, potentialRank, lowerTestPercent, nextRank);
             }
         }
 

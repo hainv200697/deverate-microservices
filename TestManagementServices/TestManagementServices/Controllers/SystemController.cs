@@ -41,7 +41,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetStatisticByTestId(testId));
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return StatusCode(500);
             }
