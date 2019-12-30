@@ -540,24 +540,50 @@ namespace TestManagementServices.Service
                             {
                                 continue;
                             }
-                            foreach (CatalogueInRank cir in catalogueInRanks)
+                            else if(test.CompanyRankId == test.PotentialRankId)
                             {
 
-                                if (cir.CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && cir.CompanyRankId == test.PotentialRankId)
+                                for(int k = 0; k < catalogueInRanks.Count; k++)
                                 {
-                                    catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
-                                    if(catas[i].differentPoint >= 0)
+                                    int pos = k + 1;
+                                    if (pos > catalogueInRanks.Count - 1) continue;
+                                    if (catalogueInRanks[k].CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && catalogueInRanks[k].CompanyRankId == test.PotentialRankId)
                                     {
-                                        catas[i].differentPoint = 0;
+                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
+                                        if (catas[i].differentPoint >= 0)
+                                        {
+                                            catas[i].differentPoint = 0;
+                                        }
+                                        else
+                                        {
+                                            catas[i].differentPoint *= -1;
+                                        }
+                                        break;
                                     }
-                                    else
-                                    {
-                                        catas[i].differentPoint *= -1;
-                                    }
-                                    break;
                                 }
                             }
-                            break;
+                            else
+                            {
+                                foreach (CatalogueInRank cir in catalogueInRanks)
+                                {
+
+                                    if (cir.CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && cir.CompanyRankId == test.PotentialRankId)
+                                    {
+                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
+                                        if (catas[i].differentPoint >= 0)
+                                        {
+                                            catas[i].differentPoint = 0;
+                                        }
+                                        else
+                                        {
+                                            catas[i].differentPoint *= -1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+
                         }
                     }
                 }
@@ -565,6 +591,7 @@ namespace TestManagementServices.Service
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.SCALE_DOWN_NUMB);
                 configurationRankDTOs = configurationRankDTOs.OrderBy(c => c.position).ToList();
                 catalogueInRankDTOs = catalogueInRankDTOs.OrderBy(t => t.position).ToList();
+                catas = catas.OrderByDescending(c => c.differentPoint).ToList();
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
                     catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
                     test.CompanyRankId, (test.CompanyRank == null ? AppConstrain.UNKNOWN_RANK : test.CompanyRank.Name),
