@@ -537,9 +537,23 @@ namespace TestManagementServices.Service
                         {
                             
                             catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
-                            if(test.CompanyRank == null)
+                            if (test.CompanyRank == null && test.Point != null)
                             {
-                                continue;
+                                int pos = 0;
+                                if (catalogueInRanks[pos].CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && catalogueInRanks[pos].CompanyRankId == test.PotentialRankId)
+                                {
+                                    nextRank = catalogueInRanks[pos].CompanyRank.Name;
+                                    catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
+                                    if (catas[i].differentPoint >= 0)
+                                    {
+                                        catas[i].differentPoint = 0;
+                                    }
+                                    else
+                                    {
+                                        catas[i].differentPoint *= -1;
+                                    }
+                                    break;
+                                }
                             }
                             else if(test.CompanyRankId == test.PotentialRankId)
                             {
