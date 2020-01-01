@@ -38,7 +38,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(x => x.Account).Where(x => x.EndDate >= DateTime.UtcNow && x.Account.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
+                return db.Configuration.Where(x => x.EndDate.Value >= DateTime.UtcNow && x.Account.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
             }
         }
 
