@@ -486,8 +486,10 @@ namespace TestManagementServices.Service
                     lowerTestPercent = AppConstrain.RoundDownNumber(lowerTestPoint / tests.Count, AppConstrain.SCALE_UP_NUMB);
                 }
                 List<ConfigurationRankDTO> configurationRankDTOs = SystemDAO.GetRankPoint(test);
-                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration.Include(c => c.CompanyCatalogue)
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration
+                    .Include(c => c.CompanyCatalogue)
                     .Where(c => c.ConfigId == test.ConfigId)
+                    .OrderBy(c => c.WeightPoint)
                     .Select(c => new CatalogueInConfigDTO(c))
                     .ToList();
                 List<int?> catalogueIds = new List<int?>();
@@ -503,6 +505,7 @@ namespace TestManagementServices.Service
                     .Select(o => new CompanyCatalogueDTO(o))
                     .ToList();
                 List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
+                    .Include(c => c.CompanyRank)
                     .Where(cic => catalogeInConfigIds
                     .Contains(cic.CatalogueInConfigId))
                     .ToList();
@@ -510,7 +513,7 @@ namespace TestManagementServices.Service
                 {
 
                     CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurationRankDTOs[i].companyRankId,
-                        configurationRankDTOs[i].rank, null);
+                        configurationRankDTOs[i].rank, null, configurationRankDTOs[i].position);
                     List<CompanyCatalogueDTO> catalogues = new List<CompanyCatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
@@ -525,7 +528,7 @@ namespace TestManagementServices.Service
                     catalogueInRank.catalogues = catalogues;
                     catalogueInRankDTOs.Add(catalogueInRank);
                 }
-
+                string nextRank = null;
                 for (int i = 0; i < test.DetailResult.Count; i++)
                 {
                     for (int j = 0; j < catas.Count; j++)
@@ -534,13 +537,14 @@ namespace TestManagementServices.Service
                         {
                             
                             catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
-                            foreach (CatalogueInRank cir in catalogueInRanks)
+                            if (test.CompanyRank == null && test.Point != null)
                             {
-
-                                if (cir.CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && cir.CompanyRankId == test.PotentialRankId)
+                                int pos = 0;
+                                if (catalogueInRanks[pos].CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && catalogueInRanks[pos].CompanyRankId == test.PotentialRankId)
                                 {
-                                    catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
-                                    if(catas[i].differentPoint >= 0)
+                                    nextRank = catalogueInRanks[pos].CompanyRank.Name;
+                                    catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
+                                    if (catas[i].differentPoint >= 0)
                                     {
                                         catas[i].differentPoint = 0;
                                     }
@@ -551,16 +555,63 @@ namespace TestManagementServices.Service
                                     break;
                                 }
                             }
-                            break;
+                            else if(test.CompanyRankId == test.PotentialRankId)
+                            {
+
+                                for(int k = 0; k < catalogueInRanks.Count; k++)
+                                {
+                                    int pos = k + 1;
+                                    if (pos > catalogueInRanks.Count - 1) continue;
+                                    if (catalogueInRanks[k].CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && catalogueInRanks[k].CompanyRankId == test.PotentialRankId)
+                                    {
+                                        nextRank = catalogueInRanks[pos].CompanyRank.Name;
+                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
+                                        if (catas[i].differentPoint >= 0)
+                                        {
+                                            catas[i].differentPoint = 0;
+                                        }
+                                        else
+                                        {
+                                            catas[i].differentPoint *= -1;
+                                        }
+                                        break;
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                foreach (CatalogueInRank cir in catalogueInRanks)
+                                {
+
+                                    if (cir.CatalogueInConfig.CompanyCatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CompanyCatalogueId && cir.CompanyRankId == test.PotentialRankId)
+                                    {
+                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
+                                        if (catas[i].differentPoint >= 0)
+                                        {
+                                            catas[i].differentPoint = 0;
+                                        }
+                                        else
+                                        {
+                                            catas[i].differentPoint *= -1;
+                                        }
+                                        break;
+                                    }
+                                }
+                                break;
+                            }
+
                         }
                     }
                 }
                 string potentialRank = test.PotentialRank == null ? AppConstrain.UNKNOWN_RANK : test.PotentialRank.Name;
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.SCALE_DOWN_NUMB);
+                configurationRankDTOs = configurationRankDTOs.OrderBy(c => c.position).ToList();
+                catalogueInRankDTOs = catalogueInRankDTOs.OrderBy(t => t.position).ToList();
+                catas = catas.OrderByDescending(c => c.differentPoint).ToList();
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
                     catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
                     test.CompanyRankId, (test.CompanyRank == null ? AppConstrain.UNKNOWN_RANK : test.CompanyRank.Name),
-                    test.PotentialRankId, potentialRank, lowerTestPercent);
+                    test.PotentialRankId, potentialRank, lowerTestPercent, nextRank);
             }
         }
 

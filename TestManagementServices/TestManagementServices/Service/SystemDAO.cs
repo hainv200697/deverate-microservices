@@ -707,13 +707,13 @@ namespace TestManagementServices.Service
                         if (isContain == false)
                         {
                             rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name,
-                                (cir.Point / numbOfCatalogue)));
+                                (cir.Point / numbOfCatalogue), cir.CompanyRank.Position));
                         }
                     }
                     else
                     {
                         rankDTOs.Add(new ConfigurationRankDTO(cir.CompanyRankId, cir.CompanyRank.Name,
-                            (cir.Point / numbOfCatalogue)));
+                            (cir.Point / numbOfCatalogue), cir.CompanyRank.Position));
                     }
                 }
                 return rankDTOs;
