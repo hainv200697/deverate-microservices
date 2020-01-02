@@ -143,7 +143,6 @@ namespace ResourceServices.Service
         public static List<QuestionDefaultDTO> GetQuestionByDefaultCatalogue(int catalogueId, bool status)
         {
             using (DeverateContext context = new DeverateContext())
-
             {
                 var defaultCata = context.DefaultQuestion.Include(x => x.DefaultCatalogue)
                     .Where(x =>  x.DefaultCatalogueId == catalogueId && x.IsActive == status)
