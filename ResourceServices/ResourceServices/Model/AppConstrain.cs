@@ -18,6 +18,8 @@ namespace ResourceServices.Model
         public const bool includeSpaces = false;
         public const int lengthOfPassword = 16;
 
+        public const int ROLE_EMP = 3;
+
         public const string hostname = "35.198.215.101";
         internal static int scaleUpNumb = 100;
 

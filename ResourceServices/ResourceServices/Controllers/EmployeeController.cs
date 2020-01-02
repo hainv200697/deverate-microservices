@@ -142,5 +142,19 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpGet("GetEmployee")]
+        public ActionResult Gêtmployee(int configId, int companyId)
+        {
+            try
+            {
+                List<AccountDTO> accounts = AccountDAO.GetEmployees(configId, companyId);
+                return Ok(accounts);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }
