@@ -101,16 +101,22 @@ namespace ResourceServices.Controllers
         }
 
         [HttpGet("GetAccountByRole")]
-        public ActionResult GetAccountByRole(int? companyId, bool? status, int? role)
+        public ActionResult GetAccountByRole(int companyId, int role)
         {
             try
             {
-                if (companyId == null || status == null || role == null)
+                if (companyId == 0)
                 {
                     return BadRequest();
                 }
-                List<AccountDTO> listAccount = AccountDAO.GetAccountByRole(companyId, status, role);
-
+                List<AccountDTO> listAccount = new List<AccountDTO>();
+                if (role != 0) {
+                    listAccount = AccountDAO.GetAccountByRole(companyId, role);
+                }
+                else
+                {
+                    listAccount = AccountDAO.GetAllCompanyAccount(companyId);
+                }
                 return Ok(listAccount);
             }
             catch (Exception ex)

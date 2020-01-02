@@ -13,18 +13,30 @@ namespace ResourceServices.Service
     {
 
 
-        public static QuestionDTO GetQuestionByCatalogue(int catalogueId, int companyId, bool status)
+        public static List<QuestionDTO> GetQuestionByCatalogue(int catalogueId, int companyId, bool status)
         {
             using (DeverateContext context = new DeverateContext())
 
             {
-                var companyCata = context.CompanyCatalogue.Include(x => x.Question)
-                    .Where(x => x.CompanyId == companyId && x.CompanyCatalogueId == catalogueId)
-                    .Select(x => new QuestionDTO(x.Question.Where(q => q.IsActive == status).ToList(), x.Name, x.CompanyCatalogueId))
-                    .SingleOrDefault();
+                var companyCata = context.Question.Include(x => x.CompanyCatalogue)
+                    .Where(x => x.CompanyCatalogue.CompanyId == companyId && x.CompanyCatalogue.CompanyCatalogueId == catalogueId && x.IsActive == status)
+                    .Select(x => new QuestionDTO(x, x.CompanyCatalogue.Name, x.CompanyCatalogueId))
+                    .ToList();
                 return companyCata;
             }
+        }
 
+        public static List<QuestionDTO> GetAllQuestion(int companyId, bool status)
+        {
+            using (DeverateContext context = new DeverateContext())
+
+            {
+                var companyCata = context.Question.Include(x => x.CompanyCatalogue)
+                    .Where(x => x.CompanyCatalogue.CompanyId == companyId  && x.IsActive == status)
+                    .Select(x => new QuestionDTO(x, x.CompanyCatalogue.Name, x.CompanyCatalogueId))
+                    .ToList();
+                return companyCata;
+            }
         }
 
         public static void CreateQuestion(List<QuestionDTO> quest)
