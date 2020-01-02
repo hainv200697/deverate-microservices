@@ -17,7 +17,6 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class QuestionController : Controller
     {
-
         [HttpGet("GetQuestionByCatalogue")]
         public ActionResult GetQuestionByCatalogueId(int catalogueId, int companyId,bool status)
         {
@@ -73,8 +72,6 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
-
 
         [HttpPut("UpdateQuestion")]
         public ActionResult UpdateQuestion([FromBody]QuestionDTO ques)
@@ -193,6 +190,5 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
     }
 }

@@ -28,7 +28,6 @@ namespace ResourceServices.Controllers
             this.context = context;
         }
 
-
         [HttpPost("CreateEmployee")]
         public ActionResult CreateEmployee([FromBody] List<MessageAccount> ListAccountGenerate)
         {
@@ -37,7 +36,6 @@ namespace ResourceServices.Controllers
                 List<string> listemail = new List<string>();
                 foreach (var emp in ListAccountGenerate)
                 {
-
                     listemail.Add(emp.Email);
                 }
                 var existedMail = listemail.GroupBy(email => email).Where(g => g.Count() > 1).Select(g => g.Key);
@@ -91,7 +89,6 @@ namespace ResourceServices.Controllers
                     return BadRequest();
                 }
                 AccountDAO.UpdateEmployeeStatus(listEmpId,status);
-
                 return Ok();
             }
             catch (Exception ex)

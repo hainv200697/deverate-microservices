@@ -40,7 +40,6 @@ namespace AuthenServices.Service
                 var check = context.Account.Where(x => listUsername.Contains(x.Username) && x.CompanyId == companyId).Select(x => x.Username).ToList();
                 return check;
             }
-
         }
 
         public static List<AccountDTO> GetAccountByRole(int companyId, int role)
