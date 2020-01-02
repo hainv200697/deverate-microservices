@@ -15,11 +15,11 @@ namespace AuthenServices.Service
 {
     public class AccountDAO
     {
-        public static void UpdateEmployeeStatus(List<int> listEmpId, bool? status)
+        public static void UpdateEmployeeStatus(List<string> listEmpUsername, bool? status)
         {
             using (DeverateContext context = new DeverateContext())
             {
-                context.Account.Where(acc => listEmpId.Contains(acc.AccountId)).ToList().ForEach(x => x.IsActive = status.Value);
+                context.Account.Where(acc => listEmpUsername.Contains(acc.Username)).ToList().ForEach(x => x.IsActive = status.Value);
                 context.SaveChanges();
             }
         }

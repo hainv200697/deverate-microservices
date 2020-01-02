@@ -80,15 +80,15 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPut("UpdateEmployeeStatus")]
-        public ActionResult UpdateEmployeeStatus([FromBody] List<int> listEmpId,bool? status)
+        public ActionResult UpdateEmployeeStatus([FromBody] List<string> listEmpUsername,bool? status)
         {
             try
             {
-                if (listEmpId == null)
+                if (listEmpUsername == null)
                 {
                     return BadRequest();
                 }
-                AccountDAO.UpdateEmployeeStatus(listEmpId,status);
+                AccountDAO.UpdateEmployeeStatus(listEmpUsername, status);
                 return Ok();
             }
             catch (Exception ex)
