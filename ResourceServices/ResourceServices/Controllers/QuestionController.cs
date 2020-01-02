@@ -17,14 +17,13 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class QuestionController : Controller
     {
-
         [HttpGet("GetQuestionByCatalogue")]
         public ActionResult GetQuestionByCatalogueId(int catalogueId, int companyId,bool status)
         {
             try
             {
-             QuestionDTO ques = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
-                if(ques == null)
+                List<QuestionDTO> ques = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
+                if (ques == null)
                 {
                     return BadRequest();
                 }
@@ -74,8 +73,6 @@ namespace ResourceServices.Controllers
             }
         }
 
-
-
         [HttpPut("UpdateQuestion")]
         public ActionResult UpdateQuestion([FromBody]QuestionDTO ques)
         {
@@ -107,7 +104,6 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
 
         [HttpPost("CreateDefaultQuestion")]
         public ActionResult CreateDefaultQuestion([FromBody] List<QuestionDefaultDTO> question)
@@ -194,6 +190,5 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
     }
 }

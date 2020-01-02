@@ -11,20 +11,18 @@ namespace ResourceServices.Service
 {
     public class QuestionDAO
     {
-
-
-        public static QuestionDTO GetQuestionByCatalogue(int catalogueId, int companyId, bool status)
+        public static List<QuestionDTO> GetQuestionByCatalogue(int catalogueId, int companyId, bool status)
         {
             using (DeverateContext context = new DeverateContext())
-
             {
-                var companyCata = context.CompanyCatalogue.Include(x => x.Question)
-                    .Where(x => x.CompanyId == companyId && x.CompanyCatalogueId == catalogueId)
-                    .Select(x => new QuestionDTO(x.Question.Where(q => q.IsActive == status).ToList(), x.Name, x.CompanyCatalogueId))
-                    .SingleOrDefault();
+                var companyCata = context.Question.Include(x => x.CompanyCatalogue)
+                    .Where(x => x.CompanyCatalogue.CompanyId == companyId &&
+                    (catalogueId != 0 ? x.CompanyCatalogue.CompanyCatalogueId == catalogueId : true) 
+                    && x.IsActive == status)
+                    .Select(x => new QuestionDTO(x, x.CompanyCatalogue.Name, x.CompanyCatalogueId))
+                    .ToList();
                 return companyCata;
             }
-
         }
 
         public static void CreateQuestion(List<QuestionDTO> quest)
@@ -44,9 +42,7 @@ namespace ResourceServices.Service
                 }
                 context.SaveChanges();
             }
-
         }
-
 
         public static void UpdateQuestion(QuestionDTO ques)
         {
@@ -77,7 +73,6 @@ namespace ResourceServices.Service
                         }
                     }
                 }
-
                 context.SaveChanges();
             }
         }
@@ -85,23 +80,19 @@ namespace ResourceServices.Service
         public static List<string> checkExistedQuestion(List<string> ques, int companyCatalogueId)
         {
             using (DeverateContext context = new DeverateContext())
-
             {
                 var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CompanyCatalogueId == companyCatalogueId).Select(x => x.Question1).ToList();
                 return check;
             }
-
         }
 
         public static List<string> checkExistedDefaultQuestion(List<string> ques, int defaultCatalogueId)
         {
             using (DeverateContext context = new DeverateContext())
-
             {
                 var check = context.DefaultQuestion.Where(x => ques.Contains(x.Question) && x.DefaultCatalogueId == defaultCatalogueId).Select(x => x.Question).ToList();
                 return check;
             }
-
         }
 
         public static void CreateDefaultQuestion(List<QuestionDefaultDTO> quest)
@@ -124,7 +115,6 @@ namespace ResourceServices.Service
                 context.DefaultQuestion.AddRange(defaultQuestions);
                 context.SaveChanges();
             }
-
         }
 
         public static void UpdateDefaultQuestion(QuestionDefaultDTO ques)
@@ -141,14 +131,12 @@ namespace ResourceServices.Service
         public static List<QuestionDefaultDTO> GetQuestionByDefaultCatalogue(int catalogueId, bool status)
         {
             using (DeverateContext context = new DeverateContext())
-
             {
                 var defaultCata = context.DefaultQuestion.Include(x => x.DefaultCatalogue)
                     .Where(x =>  x.DefaultCatalogueId == catalogueId && x.IsActive == status)
                     .Select(x => new QuestionDefaultDTO(x, x.DefaultCatalogue.Name)).ToList();
                 return defaultCata;
             }
-
         }
 
         public static void removeQuestionDefault(List<QuestionDefaultDTO> Question)
@@ -169,7 +157,6 @@ namespace ResourceServices.Service
                         }
                     }
                 }
-
                 context.SaveChanges();
             }
         }

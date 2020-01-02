@@ -16,33 +16,18 @@ namespace ResourceServices.Model
         {
         }
 
-        public QuestionDTO(Question ques, ICollection<Answer> ans)
-        {
-            this.questionId = ques.QuestionId;
-            this.companyCatalogueId = ques.CompanyCatalogueId;
-            this.question1 = ques.Question1;
-            this.point = ques.Point;
-            this.creatAt = ques.CreateAt;
-            this.isActive = ques.IsActive;
-            this.answer = ans;
-        }
 
-        public QuestionDTO(Question ques)
+        public QuestionDTO(Question ques, string cataName,int catalogueCompanyId)
         {
-            this.questionId = ques.QuestionId;
-            this.companyCatalogueId = ques.CompanyCatalogueId;
-            this.question1 = ques.Question1;
-            this.point = ques.Point;
-            this.creatAt = ques.CreateAt;
-            this.isActive = ques.IsActive;
-        }
-
-        public QuestionDTO(List<Question> question, string cataName,int catalogueCompanyId)
-        {
-
-            this.Questions = question;
-            this.catalogueName = cataName;
-            this.companyCatalogueId = catalogueCompanyId;
+                this.questionId = ques.QuestionId;
+                this.companyCatalogueId = ques.CompanyCatalogueId;
+                this.question1 = ques.Question1;
+                this.point = ques.Point;
+                this.creatAt = ques.CreateAt;
+                this.isActive = ques.IsActive;
+                this.catalogueName = cataName;
+                this.companyCatalogueId = catalogueCompanyId;
+            
         }
 
         [JsonProperty("QuestionId")]
