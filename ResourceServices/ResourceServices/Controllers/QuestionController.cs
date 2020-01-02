@@ -23,8 +23,7 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                List<QuestionDTO> ques = new List<QuestionDTO>();
-                ques = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
+                List<QuestionDTO> ques = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
                 if (ques == null)
                 {
                     return BadRequest();
@@ -108,7 +107,6 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
 
         [HttpPost("CreateDefaultQuestion")]
         public ActionResult CreateDefaultQuestion([FromBody] List<QuestionDefaultDTO> question)

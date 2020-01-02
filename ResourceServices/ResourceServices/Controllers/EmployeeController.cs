@@ -109,8 +109,7 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                List<AccountDTO> listAccount = new List<AccountDTO>();
-                listAccount = AccountDAO.GetAccountByRole(companyId, role);
+                List<AccountDTO> listAccount = AccountDAO.GetAccountByRole(companyId, role);
                 return Ok(listAccount);
             }
             catch (Exception ex)
