@@ -24,13 +24,7 @@ namespace ResourceServices.Controllers
             try
             {
                 List<QuestionDTO> ques = new List<QuestionDTO>();
-                if (catalogueId == 0) {
-                    ques = QuestionDAO.GetAllQuestion(companyId, status);
-                }
-                else
-                {
-                    ques = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
-                }
+                ques = QuestionDAO.GetQuestionByCatalogue(catalogueId, companyId, status);
                 if (ques == null)
                 {
                     return BadRequest();

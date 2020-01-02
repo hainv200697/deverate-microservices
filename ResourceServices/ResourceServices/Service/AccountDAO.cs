@@ -138,25 +138,15 @@ namespace AuthenServices.Service
             {
                 var account = context.Account
                     .Include(x => x.CompanyRank)
-                    .Where(acc => acc.CompanyId == companyId && acc.RoleId == role)
+                    .Where(acc => acc.CompanyId == companyId &&
+                    (role != 0 ? acc.RoleId == role : acc.RoleId != 1))
+
                     .Select(acc => new AccountDTO(acc, true,acc.CompanyRank));
                 return account.ToList();
             }
 
         }
 
-        public static List<AccountDTO> GetAllCompanyAccount(int companyId)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                var account = context.Account
-                    .Include(x => x.CompanyRank)
-                    .Where(acc => acc.CompanyId == companyId && acc.RoleId != 1 )
-                    .Select(acc => new AccountDTO(acc, true, acc.CompanyRank));
-                return account.ToList();
-            }
-
-        }
 
         public static ProfileDTO GetProfile(int accountId)
         {

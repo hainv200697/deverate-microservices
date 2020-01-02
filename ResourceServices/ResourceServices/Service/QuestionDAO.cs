@@ -19,25 +19,15 @@ namespace ResourceServices.Service
 
             {
                 var companyCata = context.Question.Include(x => x.CompanyCatalogue)
-                    .Where(x => x.CompanyCatalogue.CompanyId == companyId && x.CompanyCatalogue.CompanyCatalogueId == catalogueId && x.IsActive == status)
+                    .Where(x => x.CompanyCatalogue.CompanyId == companyId &&
+                    (catalogueId != 0 ? x.CompanyCatalogue.CompanyCatalogueId == catalogueId : true) 
+                    && x.IsActive == status)
                     .Select(x => new QuestionDTO(x, x.CompanyCatalogue.Name, x.CompanyCatalogueId))
                     .ToList();
                 return companyCata;
             }
         }
 
-        public static List<QuestionDTO> GetAllQuestion(int companyId, bool status)
-        {
-            using (DeverateContext context = new DeverateContext())
-
-            {
-                var companyCata = context.Question.Include(x => x.CompanyCatalogue)
-                    .Where(x => x.CompanyCatalogue.CompanyId == companyId  && x.IsActive == status)
-                    .Select(x => new QuestionDTO(x, x.CompanyCatalogue.Name, x.CompanyCatalogueId))
-                    .ToList();
-                return companyCata;
-            }
-        }
 
         public static void CreateQuestion(List<QuestionDTO> quest)
         {
