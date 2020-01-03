@@ -17,21 +17,21 @@ namespace ResourceServices.Model
         }
 
 
-        public QuestionDefaultDTO(DefaultQuestion ques)
+        public QuestionDefaultDTO(Question ques)
         {
-            this.questionDefaultId = ques.DefaultQuestionId;
-            this.catalogueDefaultId = ques.DefaultCatalogueId;
-            this.question = ques.Question;
+            this.questionDefaultId = ques.QuestionId;
+            this.catalogueDefaultId = ques.CompanyCatalogueId;
+            this.question = ques.Question1;
             this.point = ques.Point;
             this.creatAt = DateTime.UtcNow;
             this.isActive = ques.IsActive;
         }
 
-        public QuestionDefaultDTO(DefaultQuestion ques, string cataName)
+        public QuestionDefaultDTO(Question ques, string cataName)
         {
-            this.questionDefaultId = ques.DefaultQuestionId;
+            this.questionDefaultId = ques.QuestionId;
             this.catalogueName = cataName;
-            this.question = ques.Question;
+            this.question = ques.Question1;
             this.point = ques.Point;
             this.creatAt = DateTime.UtcNow;
             this.isActive = ques.IsActive;
@@ -46,7 +46,7 @@ namespace ResourceServices.Model
         public DateTime creatAt { get; set; }
         public string catalogueName { get; set; }
 
-        public virtual ICollection<DefaultAnswer> answer { get; set; }
+        public virtual ICollection<Answer> answer { get; set; }
 
     }
 }

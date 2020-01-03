@@ -12,8 +12,6 @@ namespace ResourceServices.Service
     public class AnswerDAO
     {
 
-        
-
         public static List<AnswerDTO> GetAnswerByQuestion(int? id, bool status)
         {
             using (DeverateContext context = new DeverateContext())
@@ -23,9 +21,7 @@ namespace ResourceServices.Service
 
                 return answer.ToList();
             }
-
         }
-
         
         public static void CreateAnswer(AnswerDTO ans)
         {
@@ -39,9 +35,7 @@ namespace ResourceServices.Service
                 context.Answer.Add(answer);
                 context.SaveChanges();
             }
-
         }
-
 
         public static void UpdateAnswer(AnswerDTO ans)
         {
@@ -56,8 +50,6 @@ namespace ResourceServices.Service
                     context.Answer.Update(answer);
                     context.SaveChanges();
                 }
-            
-
         }
 
         public static void removeAnswer(List<AnswerDTO> answer)
@@ -72,65 +64,5 @@ namespace ResourceServices.Service
                 context.SaveChanges();
             }
         }
-
-        public static List<AnswerDefaultDTO> GetDefaultAnswerByQuestion(int? id, bool status)
-        {
-            using (DeverateContext context = new DeverateContext())
-
-            {
-                var answer = context.DefaultAnswer.Where(ans => ans.DefaultQuestionId == id && ans.IsActive == status).Select(ans => new AnswerDefaultDTO(ans));
-
-                return answer.ToList();
-            }
-
-        }
-
-
-        public static void CreateDefaultAnswer(AnswerDefaultDTO ans)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                DefaultAnswer answer = new DefaultAnswer();
-                answer.Answer = ans.answer;
-                answer.Percent = ans.percent;
-                answer.IsActive = true;
-                answer.DefaultQuestionId = ans.questionId;
-                context.DefaultAnswer.Add(answer);
-                context.SaveChanges();
-            }
-
-        }
-
-
-        public static void UpdateDefaultAnswer(AnswerDefaultDTO ans)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                DefaultAnswer answer = new DefaultAnswer();
-                answer.DefaultAnswerId = ans.answerId;
-                answer.Answer = ans.answer;
-                answer.Percent = ans.percent;
-                answer.IsActive = true;
-                answer.DefaultQuestionId = ans.questionId;
-                context.DefaultAnswer.Update(answer);
-                context.SaveChanges();
-            }
-
-
-        }
-
-        public static void removeDefaultAnswer(List<AnswerDefaultDTO> answer)
-        {
-            using (DeverateContext context = new DeverateContext())
-            {
-                foreach (var ans in answer)
-                {
-                    DefaultAnswer AnswerDb = context.DefaultAnswer.SingleOrDefault(c => c.DefaultAnswerId == ans.answerId);
-                    AnswerDb.IsActive = ans.isActive;
-                }
-                context.SaveChanges();
-            }
-        }
-
     }
 }

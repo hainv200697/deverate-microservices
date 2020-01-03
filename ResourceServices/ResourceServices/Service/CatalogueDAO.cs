@@ -26,10 +26,10 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var cata = context.DefaultCatalogue
-                    .Include(x=> x.DefaultQuestion)
-                    .Where(x => x.IsActive == status)
-                    .Select(x=> new CatalogueDefaultDTO(x, x.DefaultQuestion.Count(ques => ques.IsActive == true))).ToList();
+                var cata = context.CompanyCatalogue
+                    .Include(x=> x.Question)
+                    .Where(x => x.IsActive == status && x.Type == true)
+                    .Select(x=> new CatalogueDefaultDTO(x, x.Question.Count(ques => ques.IsActive == true))).ToList();
                 return cata;
             }
         }
@@ -43,6 +43,7 @@ namespace ResourceServices.Service
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
                 cata.IsActive =true;
+                cata.Type = false;
                 cata.CreateDate = DateTime.UtcNow;
                 context.CompanyCatalogue.Add(cata);
                 context.SaveChanges();
@@ -54,14 +55,15 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                DefaultCatalogue cata = new DefaultCatalogue
+                CompanyCatalogue cata = new CompanyCatalogue
                 {
                     Description = catalogue.description,
                     Name = catalogue.name,
                     IsActive = true,
-                    CreateDate = DateTime.UtcNow
+                    CreateDate = DateTime.UtcNow,
+                    Type = true
                 };
-                context.DefaultCatalogue.Add(cata);
+                context.CompanyCatalogue.Add(cata);
                 context.SaveChanges();
             }
 
@@ -84,7 +86,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                DefaultCatalogue cata = context.DefaultCatalogue.SingleOrDefault(c => c.DefaultCatalogueId == catalogue.catalogueId);
+                CompanyCatalogue cata = context.CompanyCatalogue.SingleOrDefault(c => c.CompanyCatalogueId == catalogue.catalogueId);
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
                 cata.IsActive = catalogue.isActive;
@@ -99,7 +101,7 @@ namespace ResourceServices.Service
             {
                 foreach (var cata in catalogue)
                 {
-                    DefaultCatalogue cataDb = context.DefaultCatalogue.SingleOrDefault(c => c.DefaultCatalogueId == cata.catalogueId);
+                    CompanyCatalogue cataDb = context.CompanyCatalogue.SingleOrDefault(c => c.CompanyCatalogueId == cata.catalogueId);
                     cataDb.IsActive = cata.isActive;
                 }
                 context.SaveChanges();

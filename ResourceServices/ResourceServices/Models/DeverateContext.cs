@@ -24,9 +24,6 @@ namespace ResourceServices.Models
         public virtual DbSet<CompanyCatalogue> CompanyCatalogue { get; set; }
         public virtual DbSet<CompanyRank> CompanyRank { get; set; }
         public virtual DbSet<Configuration> Configuration { get; set; }
-        public virtual DbSet<DefaultAnswer> DefaultAnswer { get; set; }
-        public virtual DbSet<DefaultCatalogue> DefaultCatalogue { get; set; }
-        public virtual DbSet<DefaultQuestion> DefaultQuestion { get; set; }
         public virtual DbSet<DefaultRank> DefaultRank { get; set; }
         public virtual DbSet<DetailResult> DetailResult { get; set; }
         public virtual DbSet<Question> Question { get; set; }
@@ -176,7 +173,6 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.CompanyCatalogue)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CompanyCatalogue_Company");
             });
 
@@ -214,45 +210,6 @@ namespace ResourceServices.Models
                     .HasForeignKey(d => d.AccountId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Configuration_Account");
-            });
-
-            modelBuilder.Entity<DefaultAnswer>(entity =>
-            {
-                entity.Property(e => e.Answer)
-                    .IsRequired()
-                    .HasMaxLength(250);
-
-                entity.HasOne(d => d.DefaultQuestion)
-                    .WithMany(p => p.DefaultAnswer)
-                    .HasForeignKey(d => d.DefaultQuestionId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_DefaultAnswer_DefaultQuestion");
-            });
-
-            modelBuilder.Entity<DefaultCatalogue>(entity =>
-            {
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Description).HasMaxLength(250);
-
-                entity.Property(e => e.Name)
-                    .IsRequired()
-                    .HasMaxLength(250);
-            });
-
-            modelBuilder.Entity<DefaultQuestion>(entity =>
-            {
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Question)
-                    .IsRequired()
-                    .HasMaxLength(250);
-
-                entity.HasOne(d => d.DefaultCatalogue)
-                    .WithMany(p => p.DefaultQuestion)
-                    .HasForeignKey(d => d.DefaultCatalogueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_DefaultQuestion_DefaultCatalogue");
             });
 
             modelBuilder.Entity<DefaultRank>(entity =>
