@@ -11,10 +11,10 @@ namespace TestManagementServices.Model
     {
         public int rankId { get; set; }
         public string rank { get; set; }
-        public List<CompanyCatalogueDTO> catalogues { get; set; }
+        public List<CatalogueDTO> catalogues { get; set; }
         public int position { get; set; }
         public CatalogueInRankDTO() { }
-        public CatalogueInRankDTO(int rankId, string rank, List<CompanyCatalogueDTO> catalogues, int position)
+        public CatalogueInRankDTO(int rankId, string rank, List<CatalogueDTO> catalogues, int position)
         {
             this.rankId = rankId;
             this.rank = rank;

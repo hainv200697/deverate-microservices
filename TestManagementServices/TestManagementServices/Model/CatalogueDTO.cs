@@ -8,25 +8,25 @@ using TestManagementServices.Models;
 
 namespace TestManagementServices.Model
 {
-    [JsonObject("CompanyCatalogueDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
-    public class CompanyCatalogueDTO
+    [JsonObject("CatalogueDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
+    public class CatalogueDTO
     {
-        public CompanyCatalogueDTO()
+        public CatalogueDTO()
         {
 
         }
 
-        public CompanyCatalogueDTO(CompanyCatalogue catalogue)
+        public CatalogueDTO(Catalogue catalogue)
         {
-            this.companyCatalogueId = catalogue.CompanyCatalogueId;
+            this.catalogueId = catalogue.CatalogueId;
             this.name = catalogue.Name;
             this.isActive = catalogue.IsActive;
         }
 
-        public CompanyCatalogueDTO(int companyCatalogueId, string name, int numberOfQuestion, double weightPoint,
+        public CatalogueDTO(int catalogueId, string name, int numberOfQuestion, double weightPoint,
             List<QuestionDTO> questions, bool isActive)
         {
-            this.companyCatalogueId = companyCatalogueId;
+            this.catalogueId = catalogueId;
             this.name = name;
             this.numberOfQuestion = numberOfQuestion;
             this.weightPoint = weightPoint;
@@ -34,42 +34,42 @@ namespace TestManagementServices.Model
             this.isActive = isActive;
         }
 
-        public CompanyCatalogueDTO(int companyCatalogueId, string name, int numberOfQuestion, double weightPoint,
+        public CatalogueDTO(int catalogueId, string name, int numberOfQuestion, double weightPoint,
             List<Question> questionList)
         {
-            this.companyCatalogueId = companyCatalogueId;
+            this.catalogueId = catalogueId;
             this.name = name;
             this.numberOfQuestion = numberOfQuestion;
             this.weightPoint = weightPoint;
             this.questionList = questionList;
         }
 
-        public CompanyCatalogueDTO(int companyCatalogueId, string name, double? overallPoint, double? thresholdPoint)
+        public CatalogueDTO(int catalogueId, string name, double? overallPoint, double? thresholdPoint)
         {
-            this.companyCatalogueId = companyCatalogueId;
+            this.catalogueId = catalogueId;
             this.name = name;
             this.overallPoint = overallPoint;
             this.thresholdPoint = thresholdPoint;
             this.differentPoint = differentPoint;
         }
-        public CompanyCatalogueDTO(int companyCatalogueId, string name, double value)
+        public CatalogueDTO(int catalogueId, string name, double value)
         {
-            this.companyCatalogueId = companyCatalogueId;
+            this.catalogueId = catalogueId;
             this.name = name;
             this.value = value;
         }
 
-        public CompanyCatalogueDTO(int companyCatalogueId, string name, double? overallPoint, int identify = 1)
+        public CatalogueDTO(int catalogueId, string name, double? overallPoint, int identify = 1)
         {
-            this.companyCatalogueId = companyCatalogueId;
+            this.catalogueId = catalogueId;
             this.name = name;
             this.overallPoint = overallPoint;
         }
-        public CompanyCatalogueDTO(int configId)
+        public CatalogueDTO(int configId)
         {
             this.configId = configId;
         }
-        public int companyCatalogueId { get; set; }
+        public int catalogueId { get; set; }
         public int companyId { get; set; }
         public int configId { get; set; }
         public string name { get; set; }

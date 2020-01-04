@@ -9,7 +9,7 @@ namespace TestManagementServices.Model
     public class ConfigurationDTO
     {
         public int configId { get; set; }
-        public int testOwnerId { get; set; }
+        public int companyId { get; set; }
         public string title { get; set; }
         public int? accountId { get; set; }
         public int? applicantId { get; set; }
@@ -26,7 +26,7 @@ namespace TestManagementServices.Model
         {
             this.title = config.Title;
             this.configId = config.ConfigId;
-            this.testOwnerId = config.AccountId;
+            this.companyId = config.CompanyId;
             this.createDate = config.CreateDate;
             this.startDate = config.StartDate;
             this.endDate = config.EndDate;
