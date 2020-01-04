@@ -58,7 +58,7 @@ namespace ResourceServices.Service
                     {
                         var clstatalougeinrank = new CatalogueInRank
                         {
-                            CompanyRankId = item2.companyRankId,
+                            RankId = item2.companyRankId,
                             IsActive = true,
                             Point = item2.point,
                         };
@@ -66,8 +66,8 @@ namespace ResourceServices.Service
                     }
                     var catalougeinconfig = new CatalogueInConfiguration
                     {
-                        CatalogueInRank = newCatalogueInRank,
-                        CompanyCatalogueId = item.companyCatalogueId,
+                        //CatalogueInRank = newCatalogueInRank,
+                        CatalogueId = item.companyCatalogueId,
                         WeightPoint = item.weightPoint,
                         NumberQuestion = item.numberQuestion,
                         IsActive = true
@@ -96,10 +96,10 @@ namespace ResourceServices.Service
             {
                 var config = db.Configuration
                     .Include(c => c.CatalogueInConfiguration)
-                    .ThenInclude(x => x.CatalogueInRank)
-                    .ThenInclude(x => x.CompanyRank)
+                    //.ThenInclude(x => x.CatalogueInRank)
+                    //.ThenInclude(x => x.CompanyRank)
                     .Include(x => x.CatalogueInConfiguration)
-                    .ThenInclude(x => x.CompanyCatalogue)
+                    .ThenInclude(x => x.Catalogue)
                     .Where(c => c.ConfigId == configId)
                     .Select(c => new ConfigurationDTO(c));
                 return config.FirstOrDefault();

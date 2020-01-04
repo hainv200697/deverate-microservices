@@ -26,7 +26,7 @@ namespace ResourceServices.Models
         public int? CompanyRankId { get; set; }
 
         public virtual Company Company { get; set; }
-        public virtual CompanyRank CompanyRank { get; set; }
+        public virtual Rank CompanyRank { get; set; }
         public virtual Role Role { get; set; }
         public virtual ICollection<Configuration> Configuration { get; set; }
         public virtual ICollection<Test> Test { get; set; }

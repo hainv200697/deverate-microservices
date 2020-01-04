@@ -20,7 +20,7 @@ namespace ResourceServices.Model
         public QuestionDTO(Question ques, string cataName,int catalogueCompanyId)
         {
                 this.questionId = ques.QuestionId;
-                this.companyCatalogueId = ques.CompanyCatalogueId;
+                this.companyCatalogueId = ques.CatalogueId;
                 this.question1 = ques.Question1;
                 this.point = ques.Point;
                 this.creatAt = ques.CreateAt;

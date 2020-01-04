@@ -14,18 +14,18 @@ namespace ResourceServices.Model
         public CatalogueDTO()
         {
         }
-        public CatalogueDTO(CompanyCatalogue catalogue)
+        public CatalogueDTO(Catalogue catalogue)
         {
             this.name = catalogue.Name;
-            this.companyCatalogueId = catalogue.CompanyCatalogueId;
+            this.companyCatalogueId = catalogue.CatalogueId;
             this.isActive = catalogue.IsActive;
             this.description = catalogue.Description;
         }
-        public CatalogueDTO(CompanyCatalogue catalogue,bool status , int count)
+        public CatalogueDTO(Catalogue catalogue,bool status , int count)
         {
             this.name = catalogue.Name;
             this.quescount = count;
-            this.companyCatalogueId = catalogue.CompanyCatalogueId;
+            this.companyCatalogueId = catalogue.CatalogueId;
             this.isActive = status;
             this.description = catalogue.Description;
         }

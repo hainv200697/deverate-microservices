@@ -50,7 +50,7 @@ namespace AuthenServices.Service
                     .Include(x => x.CompanyRank)
                     .Where(acc => acc.CompanyId == companyId &&
                     (role != 0 ? acc.RoleId == role : acc.RoleId != 1))
-                    .Select(acc => new AccountDTO(acc, true,acc.CompanyRank));
+                    .Select(acc => new AccountDTO(acc, true));
                 return account.ToList();
             }
 

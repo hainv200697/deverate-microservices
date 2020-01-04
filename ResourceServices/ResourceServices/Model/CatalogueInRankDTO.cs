@@ -18,11 +18,11 @@ namespace ResourceServices.Model
 
         public CatalogueInRankDTO(CatalogueInRank catalogueInRank)
         {
-            this.catalogueInConfigId = catalogueInRank.CatalogueInConfigId;
-            this.companyRankId = catalogueInRank.CompanyRankId;
-            this.point = catalogueInRank.Point;
-            this.rankName = catalogueInRank.CompanyRank.Name;
-            this.isActive = catalogueInRank.IsActive;
+            //this.catalogueInConfigId = catalogueInRank.CatalogueInConfigId;
+            //this.companyRankId = catalogueInRank.CompanyRankId;
+            //this.point = catalogueInRank.Point;
+            //this.rankName = catalogueInRank.CompanyRank.Name;
+            //this.isActive = catalogueInRank.IsActive;
         }
     }
 }

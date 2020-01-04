@@ -27,9 +27,9 @@ namespace ResourceServices.Models
 
         public virtual Account Account { get; set; }
         public virtual Applicant Applicant { get; set; }
-        public virtual CompanyRank CompanyRank { get; set; }
+        public virtual Rank CompanyRank { get; set; }
         public virtual Configuration Config { get; set; }
-        public virtual CompanyRank PotentialRank { get; set; }
+        public virtual Rank PotentialRank { get; set; }
         public virtual ICollection<DetailResult> DetailResult { get; set; }
         public virtual ICollection<QuestionInTest> QuestionInTest { get; set; }
     }

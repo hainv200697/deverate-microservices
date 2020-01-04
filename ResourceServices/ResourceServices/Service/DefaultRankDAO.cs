@@ -19,7 +19,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var ranks = db.DefaultRank.Where(c => c.IsActive == isActive).Select(c => new DefaultRankDTO(c));
+                var ranks = db.Rank.Where(c => c.IsActive == isActive).Select(c => new DefaultRankDTO(c));
                 return ranks.ToList().OrderBy(x => x.position).ToList();
             }
         }
@@ -27,11 +27,11 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                DefaultRank defaultRank = new DefaultRank();
+                Rank defaultRank = new Rank();
                 defaultRank.Name = defaultRankDTO.name;
                 defaultRank.IsActive = true;
                 defaultRank.CreateDate = DateTime.UtcNow;
-                db.DefaultRank.Add(defaultRank);
+                db.Rank.Add(defaultRank);
                 db.SaveChanges();
             }
         }
@@ -39,7 +39,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                DefaultRank defaultRank = db.DefaultRank.SingleOrDefault(c => c.DefaultRankId == defaultRankDTO.defaultRankId);
+                Rank defaultRank = db.Rank.SingleOrDefault(c => c.RankId == defaultRankDTO.defaultRankId);
                 defaultRank.Name = defaultRankDTO.name;
                 db.SaveChanges();
             }
@@ -48,7 +48,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                db.DefaultRank.Where(x => defaultRankId.Contains(x.DefaultRankId)).ToList().ForEach(x => x.IsActive = status);
+                db.Rank.Where(x => defaultRankId.Contains(x.RankId)).ToList().ForEach(x => x.IsActive = status);
                 db.SaveChanges();
             }
         }
@@ -56,7 +56,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var check = db.DefaultRank.Where(x => x.Name == name);
+                var check = db.Rank.Where(x => x.Name == name);
                 return check.Any();
             }
         }

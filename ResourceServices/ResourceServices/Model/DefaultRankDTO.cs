@@ -18,9 +18,9 @@ namespace ResourceServices.Model
         {
 
         }
-        public DefaultRankDTO(DefaultRank defaultRank)
+        public DefaultRankDTO(Rank defaultRank)
         {
-            this.defaultRankId = defaultRank.DefaultRankId;
+            this.defaultRankId = defaultRank.RankId;
             this.name = defaultRank.Name;
             this.createDate = defaultRank.CreateDate;
             this.position = defaultRank.Position;

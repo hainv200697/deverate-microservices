@@ -15,11 +15,11 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var companyCata = context.Question.Include(x => x.CompanyCatalogue)
-                    .Where(x => x.CompanyCatalogue.CompanyId == companyId &&
-                    (catalogueId != 0 ? x.CompanyCatalogue.CompanyCatalogueId == catalogueId : true) 
+                var companyCata = context.Question.Include(x => x.Catalogue)
+                    .Where(x => x.Catalogue.CompanyId == companyId &&
+                    (catalogueId != 0 ? x.Catalogue.CatalogueId == catalogueId : true) 
                     && x.IsActive == status)
-                    .Select(x => new QuestionDTO(x, x.CompanyCatalogue.Name, x.CompanyCatalogueId))
+                    .Select(x => new QuestionDTO(x, x.Catalogue.Name, x.CatalogueId))
                     .ToList();
                 return companyCata;
             }
@@ -32,7 +32,7 @@ namespace ResourceServices.Service
                 foreach (var ques in quest)
                 {
                     Question question = new Question();
-                    question.CompanyCatalogueId = ques.companyCatalogueId;
+                    question.CatalogueId = ques.companyCatalogueId;
                     question.Question1 = ques.question1;
                     question.IsActive = true;
                     question.CreateAt = DateTime.UtcNow;
@@ -81,7 +81,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CompanyCatalogueId == companyCatalogueId).Select(x => x.Question1).ToList();
+                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CatalogueId == companyCatalogueId).Select(x => x.Question1).ToList();
                 return check;
             }
         }
@@ -90,7 +90,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CompanyCatalogueId == defaultCatalogueId).Select(x => x.Question1).ToList();
+                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CatalogueId == defaultCatalogueId).Select(x => x.Question1).ToList();
                 return check;
             }
         }
@@ -104,7 +104,7 @@ namespace ResourceServices.Service
                 {
                     defaultQuestions.Add(new Question
                     {
-                        CompanyCatalogueId = ques.catalogueDefaultId,
+                        CatalogueId = ques.catalogueDefaultId,
                         Question1 = ques.question,
                         IsActive = true,
                         Point = ques.point,
@@ -132,11 +132,11 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var defaultCata = context.Question.Include(x => x.CompanyCatalogue)
-                    .Where(x => x.CompanyCatalogue.Type == true &&
-                    (catalogueId != 0 ? x.CompanyCatalogue.CompanyCatalogueId == catalogueId : true)
+                var defaultCata = context.Question.Include(x => x.Catalogue)
+                    .Where(x => x.Catalogue.IsDefault == true &&
+                    (catalogueId != 0 ? x.Catalogue.CatalogueId == catalogueId : true)
                     && x.IsActive == status)
-                    .Select(x => new QuestionDefaultDTO(x, x.CompanyCatalogue.Name)).ToList();
+                    .Select(x => new QuestionDefaultDTO(x, x.Catalogue.Name)).ToList();
                 return defaultCata;
             }
         }
