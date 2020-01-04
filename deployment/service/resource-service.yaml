@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: 	resource-684f79499d-plcpm
+  name: 	resource-7b758657b-pdbcn
 spec:
   type: ClusterIP
   selector:

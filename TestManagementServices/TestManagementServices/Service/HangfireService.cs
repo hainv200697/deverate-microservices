@@ -23,7 +23,7 @@ namespace TestManagementServices.Service
                     var now = DateTime.UtcNow;
                     var testIds = context.Test
                         .Include(c => c.Config)
-                        .Where(t => t.IsActive && t.StartTime != null && t.Status == "Doing" && DateTime.Compare(now, t.StartTime.Value.AddMinutes(t.Config.Duration)) > 0 && t.IsActive)
+                        .Where(t => t.IsActive && t.StartTime != null && t.Status == "Doing" && DateTime.Compare(now, t.StartTime.Value.AddMinutes(t.Config.Duration)) > 0)
                         .Select(t => t.TestId)
                         .ToList();
                     foreach (int testId in testIds)
@@ -47,7 +47,9 @@ namespace TestManagementServices.Service
                     var now = DateTime.UtcNow;
                     var tests = context.Test
                         .Include(c => c.Config)
-                        .Where(t => t.Status == "Pending" && t.Config.Type && DateTime.Compare(now, t.Config.EndDate.Value) > 0)
+                        .Where(t => t.Status == "Pending"
+                        && ((t.Config.Type && DateTime.Compare(now, t.Config.EndDate.Value) > 0) ||
+                            (!t.Config.Type && (now - t.CreateDate.Value).TotalDays > 3)))
                         .ToList();
                     tests.ForEach(t => t.Status = "Expired");
                     context.SaveChanges();
