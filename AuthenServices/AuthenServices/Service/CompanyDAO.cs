@@ -30,16 +30,16 @@ namespace AuthenServices.Service
                     IsActive = companyData.CompanyDTO.isActive,
                   };
                 var result = db.Company.Add(com);
-                var defaultCatalogues = db.DefaultCatalogue.Where(x => x.IsActive).ToList();
-                var defaultQuestions = db.DefaultQuestion.Where(x =>  x.IsActive).ToList();
-                var defaultAnswers = db.DefaultAnswer.Where(x => x.IsActive).ToList();
-                var defaultRanks = db.DefaultRank.Where(x => x.IsActive).ToList();
+                var defaultCatalogues = db.Catalogue.Where(x => x.IsActive && x.IsDefault == true).ToList();
+                var defaultQuestions = db.Question.Where(x =>  x.IsActive).ToList();
+                var defaultAnswers = db.Answer.Where(x => x.IsActive).ToList();
+                var defaultRanks = db.Rank.Where(x => x.IsActive).ToList();
 
                 // Clone Catalogue
-                List<CompanyCatalogue> companyCatalogues = new List<CompanyCatalogue>();
-                foreach (DefaultCatalogue defaultCatalogue in defaultCatalogues)
+                List<Catalogue> companyCatalogues = new List<Catalogue>();
+                foreach (Catalogue defaultCatalogue in defaultCatalogues)
                 {
-                    var companyCatalogue = new CompanyCatalogue
+                    var companyCatalogue = new Catalogue
                     {
                         Company = com,
                         Name = defaultCatalogue.Name,
@@ -50,24 +50,24 @@ namespace AuthenServices.Service
 
                     // Clone Question
                     List<Question> questions = new List<Question>();
-                    var defaultQuestionsOfCatalogue = defaultQuestions.Where(x => x.DefaultCatalogueId == defaultCatalogue.DefaultCatalogueId).ToList();
-                    foreach (DefaultQuestion defaultQuestion in defaultQuestionsOfCatalogue)
+                    var defaultQuestionsOfCatalogue = defaultQuestions.Where(x => x.CatalogueId == defaultCatalogue.CatalogueId).ToList();
+                    foreach (Question defaultQuestion in defaultQuestionsOfCatalogue)
                     {
                         var question = new Question
                         {
-                            Question1 = defaultQuestion.Question,
+                            Question1 = defaultQuestion.Question1,
                             Point = defaultQuestion.Point,
                             IsActive = true,
                             CreateAt = DateTime.UtcNow
                         };
-                        var defaultAnswersOfQuestion = defaultAnswers.Where(x => x.DefaultQuestionId == defaultQuestion.DefaultQuestionId).ToList();
+                        var defaultAnswersOfQuestion = defaultAnswers.Where(x => x.QuestionId == defaultQuestion.QuestionId).ToList();
                         // Clone Answer
                         List<Answer> answers = new List<Answer>();
-                        foreach(DefaultAnswer defaultAnswer in defaultAnswersOfQuestion)
+                        foreach(Answer defaultAnswer in defaultAnswersOfQuestion)
                         {
                             answers.Add(new Answer
                             {
-                                Answer1 = defaultAnswer.Answer,
+                                Answer1 = defaultAnswer.Answer1,
                                 Percent = defaultAnswer.Percent,
                                 IsActive = true
                             });
@@ -78,13 +78,13 @@ namespace AuthenServices.Service
                     companyCatalogue.Question = questions;
                     companyCatalogues.Add(companyCatalogue);
                 }
-                com.CompanyCatalogue = companyCatalogues;
+                com.Catalogue = companyCatalogues;
 
                 // Clone Rank
-                var companyRanks = new List<CompanyRank>();
+                var companyRanks = new List<Rank>();
                 foreach(var defaultRank in defaultRanks)
                 {
-                    companyRanks.Add(new CompanyRank
+                    companyRanks.Add(new Rank
                     {
                         Name = defaultRank.Name,
                         CreateDate = DateTime.UtcNow,
@@ -92,7 +92,7 @@ namespace AuthenServices.Service
                         Position = defaultRank.Position
                     });
                 }
-                com.CompanyRank = companyRanks;
+                com.Rank = companyRanks;
                 db.SaveChanges();
                 return result.Entity;
             }

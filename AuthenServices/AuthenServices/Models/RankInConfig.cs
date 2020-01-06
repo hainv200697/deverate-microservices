@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace AuthenServices.Models
 {
-    public partial class CatalogueInRank
+    public partial class RankInConfig
     {
-        public int CatalogueId { get; set; }
+        public int RicId { get; set; }
         public int RankId { get; set; }
-        public double Point { get; set; }
+        public int ConfigId { get; set; }
         public bool IsActive { get; set; }
 
-        public virtual Catalogue Catalogue { get; set; }
+        public virtual Configuration Config { get; set; }
         public virtual Rank Rank { get; set; }
     }
 }
