@@ -7,7 +7,6 @@ namespace ResourceServices.Models
     {
         public Account()
         {
-            Configuration = new HashSet<Configuration>();
             Test = new HashSet<Test>();
         }
 
@@ -23,12 +22,11 @@ namespace ResourceServices.Models
         public DateTime? JoinDate { get; set; }
         public int RoleId { get; set; }
         public bool IsActive { get; set; }
-        public int? CompanyRankId { get; set; }
+        public int? RankId { get; set; }
 
         public virtual Company Company { get; set; }
-        public virtual Rank CompanyRank { get; set; }
+        public virtual Rank Rank { get; set; }
         public virtual Role Role { get; set; }
-        public virtual ICollection<Configuration> Configuration { get; set; }
         public virtual ICollection<Test> Test { get; set; }
     }
 }

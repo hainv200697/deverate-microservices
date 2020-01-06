@@ -9,8 +9,9 @@ namespace ResourceServices.Models
         {
             Account = new HashSet<Account>();
             CatalogueInRank = new HashSet<CatalogueInRank>();
-            TestCompanyRank = new HashSet<Test>();
+            RankInConfig = new HashSet<RankInConfig>();
             TestPotentialRank = new HashSet<Test>();
+            TestRank = new HashSet<Test>();
         }
 
         public int RankId { get; set; }
@@ -24,7 +25,8 @@ namespace ResourceServices.Models
         public virtual Company Company { get; set; }
         public virtual ICollection<Account> Account { get; set; }
         public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
-        public virtual ICollection<Test> TestCompanyRank { get; set; }
+        public virtual ICollection<RankInConfig> RankInConfig { get; set; }
         public virtual ICollection<Test> TestPotentialRank { get; set; }
+        public virtual ICollection<Test> TestRank { get; set; }
     }
 }

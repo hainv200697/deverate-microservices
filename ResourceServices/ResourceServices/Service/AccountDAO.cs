@@ -47,7 +47,7 @@ namespace AuthenServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 var account = context.Account
-                    .Include(x => x.CompanyRank)
+                    .Include(x => x.Rank)
                     .Where(acc => acc.CompanyId == companyId &&
                     (role != 0 ? acc.RoleId == role : acc.RoleId != 1))
                     .Select(acc => new AccountDTO(acc, true));

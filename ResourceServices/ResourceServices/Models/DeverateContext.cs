@@ -27,6 +27,7 @@ namespace ResourceServices.Models
         public virtual DbSet<Question> Question { get; set; }
         public virtual DbSet<QuestionInTest> QuestionInTest { get; set; }
         public virtual DbSet<Rank> Rank { get; set; }
+        public virtual DbSet<RankInConfig> RankInConfig { get; set; }
         public virtual DbSet<Role> Role { get; set; }
         public virtual DbSet<Test> Test { get; set; }
 
@@ -72,9 +73,9 @@ namespace ResourceServices.Models
                     .HasForeignKey(d => d.CompanyId)
                     .HasConstraintName("FK_Account_Company");
 
-                entity.HasOne(d => d.CompanyRank)
+                entity.HasOne(d => d.Rank)
                     .WithMany(p => p.Account)
-                    .HasForeignKey(d => d.CompanyRankId)
+                    .HasForeignKey(d => d.RankId)
                     .HasConstraintName("FK_Account_CompanyRank");
 
                 entity.HasOne(d => d.Role)
@@ -189,11 +190,11 @@ namespace ResourceServices.Models
                     .IsRequired()
                     .HasMaxLength(250);
 
-                entity.HasOne(d => d.Account)
+                entity.HasOne(d => d.Company)
                     .WithMany(p => p.Configuration)
-                    .HasForeignKey(d => d.AccountId)
+                    .HasForeignKey(d => d.CompanyId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Configuration_Account");
+                    .HasConstraintName("FK_Configuration_Company");
             });
 
             modelBuilder.Entity<DetailResult>(entity =>
@@ -269,6 +270,25 @@ namespace ResourceServices.Models
                     .HasConstraintName("FK_CompanyRank_Company");
             });
 
+            modelBuilder.Entity<RankInConfig>(entity =>
+            {
+                entity.HasKey(e => e.RicId);
+
+                entity.Property(e => e.RicId).ValueGeneratedNever();
+
+                entity.HasOne(d => d.Config)
+                    .WithMany(p => p.RankInConfig)
+                    .HasForeignKey(d => d.ConfigId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RankInConfig_Configuration");
+
+                entity.HasOne(d => d.Rank)
+                    .WithMany(p => p.RankInConfig)
+                    .HasForeignKey(d => d.RankId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RankInConfig_Rank");
+            });
+
             modelBuilder.Entity<Role>(entity =>
             {
                 entity.Property(e => e.RoleName)
@@ -302,11 +322,6 @@ namespace ResourceServices.Models
                     .HasForeignKey(d => d.ApplicantId)
                     .HasConstraintName("FK_Test_Applicant");
 
-                entity.HasOne(d => d.CompanyRank)
-                    .WithMany(p => p.TestCompanyRank)
-                    .HasForeignKey(d => d.CompanyRankId)
-                    .HasConstraintName("FK_Test_CompanyRank");
-
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.Test)
                     .HasForeignKey(d => d.ConfigId)
@@ -317,6 +332,11 @@ namespace ResourceServices.Models
                     .WithMany(p => p.TestPotentialRank)
                     .HasForeignKey(d => d.PotentialRankId)
                     .HasConstraintName("FK_Test_CompanyRank1");
+
+                entity.HasOne(d => d.Rank)
+                    .WithMany(p => p.TestRank)
+                    .HasForeignKey(d => d.RankId)
+                    .HasConstraintName("FK_Test_CompanyRank");
             });
         }
     }

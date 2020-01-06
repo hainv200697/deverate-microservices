@@ -9,6 +9,7 @@ namespace ResourceServices.Models
         {
             Account = new HashSet<Account>();
             Catalogue = new HashSet<Catalogue>();
+            Configuration = new HashSet<Configuration>();
             Rank = new HashSet<Rank>();
         }
 
@@ -21,6 +22,7 @@ namespace ResourceServices.Models
 
         public virtual ICollection<Account> Account { get; set; }
         public virtual ICollection<Catalogue> Catalogue { get; set; }
+        public virtual ICollection<Configuration> Configuration { get; set; }
         public virtual ICollection<Rank> Rank { get; set; }
     }
 }

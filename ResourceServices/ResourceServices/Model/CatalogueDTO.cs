@@ -30,10 +30,10 @@ namespace ResourceServices.Model
             this.description = catalogue.Description;
         }
 
-        public CatalogueDTO(CompanyCatalogue catalogue, double? weightPoint)
+        public CatalogueDTO(Catalogue catalogue, double? weightPoint)
         {
             this.name = catalogue.Name;
-            this.companyCatalogueId = catalogue.CompanyCatalogueId;
+            this.companyCatalogueId = catalogue.CatalogueId;
             this.description = catalogue.Description;
             this.weightPoint = weightPoint;
         }

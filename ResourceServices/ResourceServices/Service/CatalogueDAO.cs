@@ -45,7 +45,7 @@ namespace ResourceServices.Service
                 cata.IsActive =true;
                 cata.IsDefault = false;
                 cata.CreateDate = DateTime.UtcNow;
-                context.Catalogue.Add(cata);
+                context.Catalogue.Add(cata);    
                 context.SaveChanges();
             }
 

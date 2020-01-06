@@ -22,7 +22,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(a => a.Account).Where(c => c.Account.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
+                return db.Configuration.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -30,7 +30,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(a => a.Account).Where(c => c.Account.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
+                return db.Configuration.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -38,7 +38,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Where(x => x.EndDate.Value >= DateTime.UtcNow.AddHours(1).AddMinutes(x.Duration)  && x.Account.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
+                return db.Configuration.Where(x => x.EndDate.Value >= DateTime.UtcNow.AddHours(1).AddMinutes(x.Duration)  && x.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
             }
         }
 
@@ -75,7 +75,7 @@ namespace ResourceServices.Service
                     newlstcatalougeinconfig.Add(catalougeinconfig);
                 }
 
-                configuration.AccountId = configurationDTO.accountId;
+                configuration.CompanyId = configurationDTO.companyId;
                 configuration.Title = configurationDTO.title;
                 configuration.CreateDate = DateTime.UtcNow;
                 configuration.StartDate = configurationDTO.startDate;
