@@ -15,7 +15,7 @@ namespace AuthenServices.Models
         public double Point { get; set; }
         public bool IsActive { get; set; }
 
-        public virtual CompanyRank CompanyRank { get; set; }
+        public virtual Rank Rank { get; set; }
         public virtual Configuration Config { get; set; }
         public virtual ICollection<CatalogueInConfigRank> CatalogueInConfigRank { get; set; }
     }
