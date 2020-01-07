@@ -34,39 +34,6 @@ namespace ResourceServices.Service
                 return ranks.ToList();
             }
         }
-        public static void updateOrCreateRankIfNotExist(List<CompanyRankDTO> rankDTO)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                var newRanks = rankDTO.Where(x => x.companyRankId == 0);
-                var upRanks = rankDTO.Where(x => x.companyRankId != 0);
-                foreach (var item in newRanks)
-                {
-                    Rank companyRank = new Rank
-                    {
-                        CompanyId = item.companyId,
-                        Name = item.name,
-                        CreateDate = DateTime.UtcNow,
-                        IsActive = true
-                    };
-                    db.Rank.Add(companyRank);
-                }
-                var ids = upRanks.Select(x => x.companyRankId).ToList();
-                var updateRanks = db.Rank.Where(x => ids.Contains(x.RankId));
-                foreach (var item in updateRanks)
-                {
-                    var find = upRanks.FirstOrDefault(x => x.companyRankId == item.RankId);
-                    bool change = false;
-                    if (item.Name != find.name)
-                    {
-                        item.Name = find.name;
-                        change = true;
-                    }
-                    if (change) { db.Rank.Update(item); }
-                }
-                db.SaveChanges();
-            }
-        }
 
         public static void changeStatusCompanyRank(List<int> rankId, bool status)
         {
