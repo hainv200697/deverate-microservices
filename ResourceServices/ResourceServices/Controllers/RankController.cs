@@ -27,24 +27,6 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-        [Route("updateOrCreateRankIfNotExist")]
-        [HttpPost]
-        public IActionResult updateOrCreateRankIfNotExist([FromBody] List<CompanyRankDTO> companyRankDTO)
-        {
-            try
-            {
-                if (companyRankDTO == null)
-                {
-                    return BadRequest();
-                }
-                RankDAO.updateOrCreateRankIfNotExist(companyRankDTO);
-                return Ok(Message.createCompanyRankSucceed);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
 
         [Route("ChangeStatusCompanyRank")]
         [HttpPut]
