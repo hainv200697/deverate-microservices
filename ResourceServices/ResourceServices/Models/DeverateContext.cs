@@ -264,7 +264,6 @@ namespace ResourceServices.Models
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.Rank)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CompanyRank_Company");
             });
 

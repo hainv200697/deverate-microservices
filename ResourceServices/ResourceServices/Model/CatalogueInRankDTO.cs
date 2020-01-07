@@ -9,20 +9,18 @@ namespace ResourceServices.Model
 {
     public class CatalogueInRankDTO
     {
-        public int catalogueInConfigId { get; set; }
-        public int companyRankId { get; set; }
+        public int rankId { get; set; }
+        public int catalogueId { get; set; }
         public double point { get; set; }
         public bool isActive { get; set; }
-        public string rankName { get; set; }
         public CatalogueInRankDTO() { }
 
         public CatalogueInRankDTO(CatalogueInRank catalogueInRank)
         {
-            //this.catalogueInConfigId = catalogueInRank.CatalogueInConfigId;
-            //this.companyRankId = catalogueInRank.CompanyRankId;
-            //this.point = catalogueInRank.Point;
-            //this.rankName = catalogueInRank.CompanyRank.Name;
-            //this.isActive = catalogueInRank.IsActive;
+            this.rankId = catalogueInRank.RankId;
+            this.catalogueId = catalogueInRank.CatalogueId;
+            this.point = catalogueInRank.Point;
+            this.isActive = catalogueInRank.IsActive;
         }
     }
 }

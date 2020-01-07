@@ -51,29 +51,29 @@ namespace ResourceServices.Service
 
                 var newlstcatalougeinconfig = new List<CatalogueInConfiguration>();
 
-                foreach (var item in configurationDTO.catalogueInConfigurationDTO)
-                {
-                    var newCatalogueInRank = new List<CatalogueInRank>();
-                    foreach (var item2 in item.catalogueInRankDTO)
-                    {
-                        var clstatalougeinrank = new CatalogueInRank
-                        {
-                            RankId = item2.companyRankId,
-                            IsActive = true,
-                            Point = item2.point,
-                        };
-                        newCatalogueInRank.Add(clstatalougeinrank);
-                    }
-                    var catalougeinconfig = new CatalogueInConfiguration
-                    {
-                        //CatalogueInRank = newCatalogueInRank,
-                        CatalogueId = item.companyCatalogueId,
-                        WeightPoint = item.weightPoint,
-                        NumberQuestion = item.numberQuestion,
-                        IsActive = true
-                    };
-                    newlstcatalougeinconfig.Add(catalougeinconfig);
-                }
+                //foreach (var item in configurationDTO.catalogueInConfigurationDTO)
+                //{
+                //    var newCatalogueInRank = new List<CatalogueInRank>();
+                //    foreach (var item2 in item.catalogueInRankDTO)
+                //    {
+                //        var clstatalougeinrank = new CatalogueInRank
+                //        {
+                //            RankId = item2.companyRankId,
+                //            IsActive = true,
+                //            Point = item2.point,
+                //        };
+                //        newCatalogueInRank.Add(clstatalougeinrank);
+                //    }
+                //    var catalougeinconfig = new CatalogueInConfiguration
+                //    {
+                //        //CatalogueInRank = newCatalogueInRank,
+                //        CatalogueId = item.companyCatalogueId,
+                //        WeightPoint = item.weightPoint,
+                //        NumberQuestion = item.numberQuestion,
+                //        IsActive = true
+                //    };
+                //    newlstcatalougeinconfig.Add(catalougeinconfig);
+                //}
 
                 configuration.CompanyId = configurationDTO.companyId;
                 configuration.Title = configurationDTO.title;

@@ -15,7 +15,7 @@ namespace ResourceServices.Models
         }
 
         public int RankId { get; set; }
-        public int CompanyId { get; set; }
+        public int? CompanyId { get; set; }
         public string Name { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }

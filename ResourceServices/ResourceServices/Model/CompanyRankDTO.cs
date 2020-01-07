@@ -27,7 +27,7 @@ namespace ResourceServices.Model
         public CompanyRankDTO(Rank rank)
         {
             this.companyRankId = rank.RankId;
-            this.companyId = rank.CompanyId;    
+            this.companyId = rank.CompanyId.Value;    
             this.name = rank.Name;
             this.creatAt = rank.CreateDate;
             this.isActive = rank.IsActive;
