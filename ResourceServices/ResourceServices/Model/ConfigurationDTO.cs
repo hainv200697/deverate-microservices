@@ -11,7 +11,7 @@ namespace ResourceServices.Model
     public class ConfigurationDTO
     {
         public int configId { get; set; }
-        public int accountId { get; set; }
+        public int companyId { get; set; }
         public string title { get; set; }
         public DateTime createDate { get; set; }
         public DateTime startDate { get; set; }
@@ -28,7 +28,7 @@ namespace ResourceServices.Model
         public ConfigurationDTO(Configuration configuration)
         {
             this.configId = configuration.ConfigId;
-            this.accountId = configuration.AccountId;
+            this.companyId = configuration.CompanyId;
             this.title = configuration.Title;
             this.createDate = configuration.CreateDate;
             this.startDate = configuration.StartDate;

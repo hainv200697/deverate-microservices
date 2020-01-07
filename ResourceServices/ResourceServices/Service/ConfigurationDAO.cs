@@ -22,7 +22,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(a => a.Account).Where(c => c.Account.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
+                return db.Configuration.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -30,7 +30,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(a => a.Account).Where(c => c.Account.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
+                return db.Configuration.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -38,7 +38,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Where(x => x.EndDate.Value >= DateTime.UtcNow.AddHours(1).AddMinutes(x.Duration)  && x.Account.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
+                return db.Configuration.Where(x => x.EndDate.Value >= DateTime.UtcNow.AddHours(1).AddMinutes(x.Duration)  && x.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
             }
         }
 
@@ -51,31 +51,31 @@ namespace ResourceServices.Service
 
                 var newlstcatalougeinconfig = new List<CatalogueInConfiguration>();
 
-                foreach (var item in configurationDTO.catalogueInConfigurationDTO)
-                {
-                    var newCatalogueInRank = new List<CatalogueInRank>();
-                    foreach (var item2 in item.catalogueInRankDTO)
-                    {
-                        var clstatalougeinrank = new CatalogueInRank
-                        {
-                            CompanyRankId = item2.companyRankId,
-                            IsActive = true,
-                            Point = item2.point,
-                        };
-                        newCatalogueInRank.Add(clstatalougeinrank);
-                    }
-                    var catalougeinconfig = new CatalogueInConfiguration
-                    {
-                        CatalogueInRank = newCatalogueInRank,
-                        CompanyCatalogueId = item.companyCatalogueId,
-                        WeightPoint = item.weightPoint,
-                        NumberQuestion = item.numberQuestion,
-                        IsActive = true
-                    };
-                    newlstcatalougeinconfig.Add(catalougeinconfig);
-                }
+                //foreach (var item in configurationDTO.catalogueInConfigurationDTO)
+                //{
+                //    var newCatalogueInRank = new List<CatalogueInRank>();
+                //    foreach (var item2 in item.catalogueInRankDTO)
+                //    {
+                //        var clstatalougeinrank = new CatalogueInRank
+                //        {
+                //            RankId = item2.companyRankId,
+                //            IsActive = true,
+                //            Point = item2.point,
+                //        };
+                //        newCatalogueInRank.Add(clstatalougeinrank);
+                //    }
+                //    var catalougeinconfig = new CatalogueInConfiguration
+                //    {
+                //        //CatalogueInRank = newCatalogueInRank,
+                //        CatalogueId = item.companyCatalogueId,
+                //        WeightPoint = item.weightPoint,
+                //        NumberQuestion = item.numberQuestion,
+                //        IsActive = true
+                //    };
+                //    newlstcatalougeinconfig.Add(catalougeinconfig);
+                //}
 
-                configuration.AccountId = configurationDTO.accountId;
+                configuration.CompanyId = configurationDTO.companyId;
                 configuration.Title = configurationDTO.title;
                 configuration.CreateDate = DateTime.UtcNow;
                 configuration.StartDate = configurationDTO.startDate;
@@ -96,10 +96,10 @@ namespace ResourceServices.Service
             {
                 var config = db.Configuration
                     .Include(c => c.CatalogueInConfiguration)
-                    .ThenInclude(x => x.CatalogueInRank)
-                    .ThenInclude(x => x.CompanyRank)
+                    //.ThenInclude(x => x.CatalogueInRank)
+                    //.ThenInclude(x => x.CompanyRank)
                     .Include(x => x.CatalogueInConfiguration)
-                    .ThenInclude(x => x.CompanyCatalogue)
+                    .ThenInclude(x => x.Catalogue)
                     .Where(c => c.ConfigId == configId)
                     .Select(c => new ConfigurationDTO(c));
                 return config.FirstOrDefault();
