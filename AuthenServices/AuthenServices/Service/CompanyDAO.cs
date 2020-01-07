@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using AuthenServices.Model;
 using AuthenServices.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace AuthenServices.Service
 {
     public class CompanyDAO
     {
-        public static bool checkExistedCompany(string companyName)
+        public static bool IsExistedCompany(string companyName)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -30,10 +31,11 @@ namespace AuthenServices.Service
                     IsActive = companyData.CompanyDTO.isActive,
                   };
                 var result = db.Company.Add(com);
-                var defaultCatalogues = db.Catalogue.Where(x => x.IsActive && x.IsDefault == true).ToList();
-                var defaultQuestions = db.Question.Where(x =>  x.IsActive).ToList();
-                var defaultAnswers = db.Answer.Where(x => x.IsActive).ToList();
-                var defaultRanks = db.Rank.Where(x => x.IsActive).ToList();
+                var defaultCatalogues = db.Catalogue
+                                           .Include(x => x.Question)
+                                           .ThenInclude(x => x.Answer)
+                                           .Where(x => x.IsActive && x.IsDefault).ToList();
+                var defaultRanks = db.Rank.Where(x => x.IsActive && x.IsDefault).ToList();
 
                 // Clone Catalogue
                 List<Catalogue> companyCatalogues = new List<Catalogue>();
@@ -50,26 +52,28 @@ namespace AuthenServices.Service
 
                     // Clone Question
                     List<Question> questions = new List<Question>();
-                    var defaultQuestionsOfCatalogue = defaultQuestions.Where(x => x.CatalogueId == defaultCatalogue.CatalogueId).ToList();
+                    //var defaultQuestionsOfCatalogue = defaultQuestions.Where(x => x.CatalogueId == defaultCatalogue.CatalogueId).ToList();
+                    var defaultQuestionsOfCatalogue = defaultCatalogue.Question.ToList();
                     foreach (Question defaultQuestion in defaultQuestionsOfCatalogue)
                     {
                         var question = new Question
                         {
-                            Question1 = defaultQuestion.Question1,
+                            QuestionText = defaultQuestion.QuestionText,
                             Point = defaultQuestion.Point,
                             IsActive = true,
-                            CreateAt = DateTime.UtcNow
+                            CreateDate = DateTime.UtcNow
                         };
-                        var defaultAnswersOfQuestion = defaultAnswers.Where(x => x.QuestionId == defaultQuestion.QuestionId).ToList();
+                        var defaultAnswersOfQuestion = defaultQuestion.Answer.ToList();
                         // Clone Answer
                         List<Answer> answers = new List<Answer>();
                         foreach(Answer defaultAnswer in defaultAnswersOfQuestion)
                         {
                             answers.Add(new Answer
                             {
-                                Answer1 = defaultAnswer.Answer1,
+                                AnswerText = defaultAnswer.AnswerText,
                                 Percent = defaultAnswer.Percent,
-                                IsActive = true
+                                IsActive = true,
+                                CreateDate = DateTime.UtcNow
                             });
                         }
                         question.Answer = answers;
@@ -88,8 +92,7 @@ namespace AuthenServices.Service
                     {
                         Name = defaultRank.Name,
                         CreateDate = DateTime.UtcNow,
-                        IsActive = true,
-                        Position = defaultRank.Position
+                        IsActive = true
                     });
                 }
                 com.Rank = companyRanks;

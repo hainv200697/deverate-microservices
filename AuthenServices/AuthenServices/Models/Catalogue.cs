@@ -18,7 +18,7 @@ namespace AuthenServices.Models
         public string Description { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
-        public bool? IsDefault { get; set; }
+        public bool IsDefault { get; set; }
 
         public virtual Company Company { get; set; }
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
