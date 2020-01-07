@@ -13,7 +13,7 @@ namespace ResourceServices.Model
     {
         [JsonProperty("companyRankId")]
         public int companyRankId { get; set; }
-        public int? companyId { get; set; }
+        public int companyId { get; set; }
         public string name { get; set; }
         public DateTime creatAt { get; set; }
         public int position { get; set; }
@@ -27,7 +27,7 @@ namespace ResourceServices.Model
         public CompanyRankDTO(Rank rank)
         {
             this.companyRankId = rank.RankId;
-            this.companyId = rank.CompanyId;    
+            this.companyId = rank.CompanyId.Value;    
             this.name = rank.Name;
             this.creatAt = rank.CreateDate;
             this.isActive = rank.IsActive;

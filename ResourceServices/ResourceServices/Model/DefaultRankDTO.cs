@@ -9,7 +9,6 @@ namespace ResourceServices.Model
     public class DefaultRankDTO
     {
         public int rankId { get; set; }
-        public int? companyId { get; set; }
         public string name { get; set; }
         public DateTime createDate { get; set; }
         public bool isActive { get; set; }
@@ -23,7 +22,6 @@ namespace ResourceServices.Model
         public DefaultRankDTO(Rank defaultRank)
         {
             this.rankId = defaultRank.RankId;
-            this.companyId = defaultRank.CompanyId;
             this.name = defaultRank.Name;
             this.createDate = defaultRank.CreateDate;
             this.isActive = defaultRank.IsActive;
