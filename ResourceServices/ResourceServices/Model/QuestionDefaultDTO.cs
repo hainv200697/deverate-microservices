@@ -21,7 +21,7 @@ namespace ResourceServices.Model
         {
             this.questionDefaultId = ques.QuestionId;
             this.catalogueDefaultId = ques.CatalogueId;
-            this.question = ques.Question1;
+            this.question = ques.QuestionText;
             this.point = ques.Point;
             this.creatAt = DateTime.UtcNow;
             this.isActive = ques.IsActive;
@@ -31,7 +31,7 @@ namespace ResourceServices.Model
         {
             this.questionDefaultId = ques.QuestionId;
             this.catalogueName = cataName;
-            this.question = ques.Question1;
+            this.question = ques.QuestionText;
             this.point = ques.Point;
             this.creatAt = DateTime.UtcNow;
             this.isActive = ques.IsActive;

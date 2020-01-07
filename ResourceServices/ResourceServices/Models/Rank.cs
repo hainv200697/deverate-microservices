@@ -19,7 +19,6 @@ namespace ResourceServices.Models
         public string Name { get; set; }
         public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
-        public int Position { get; set; }
         public bool IsDefault { get; set; }
 
         public virtual Company Company { get; set; }

@@ -23,7 +23,6 @@ namespace ResourceServices.Model
             this.defaultRankId = defaultRank.RankId;
             this.name = defaultRank.Name;
             this.createDate = defaultRank.CreateDate;
-            this.position = defaultRank.Position;
             this.isActive = defaultRank.IsActive;
         }
     }

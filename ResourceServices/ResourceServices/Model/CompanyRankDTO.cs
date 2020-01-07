@@ -31,7 +31,6 @@ namespace ResourceServices.Model
             this.name = rank.Name;
             this.creatAt = rank.CreateDate;
             this.isActive = rank.IsActive;
-            this.position = rank.Position;
         }
     }
 }

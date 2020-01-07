@@ -5,7 +5,6 @@ namespace ResourceServices.Models
 {
     public partial class RankInConfig
     {
-        public int RicId { get; set; }
         public int RankId { get; set; }
         public int ConfigId { get; set; }
         public bool IsActive { get; set; }

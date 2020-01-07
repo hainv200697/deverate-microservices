@@ -39,8 +39,7 @@ namespace ResourceServices.Service
                         CompanyId = item.companyId,
                         Name = item.name,
                         CreateDate = DateTime.UtcNow,
-                        IsActive = true,
-                        Position = item.position
+                        IsActive = true
                     };
                     db.Rank.Add(companyRank);
                 }
@@ -53,11 +52,6 @@ namespace ResourceServices.Service
                     if (item.Name != find.name)
                     {
                         item.Name = find.name;
-                        change = true;
-                    }
-                    if (item.Position != find.position)
-                    {
-                        item.Position = find.position;
                         change = true;
                     }
                     if (change) { db.Rank.Update(item); }

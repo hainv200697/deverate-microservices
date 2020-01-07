@@ -28,7 +28,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Answer answer = new Answer();
-                answer.Answer1 = ans.answer;
+                answer.AnswerText = ans.answer;
                 answer.Percent = ans.percent;
                 answer.IsActive = true;
                 answer.QuestionId = ans.questionId.Value;
@@ -43,7 +43,7 @@ namespace ResourceServices.Service
                 {
                     Answer answer = new Answer();
                     answer.AnswerId = ans.answerId; 
-                    answer.Answer1 = ans.answer;
+                    answer.AnswerText = ans.answer;
                     answer.Percent = ans.percent;
                     answer.IsActive = true;
                     answer.QuestionId = ans.questionId.Value;

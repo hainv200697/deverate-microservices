@@ -33,9 +33,9 @@ namespace ResourceServices.Service
                 {
                     Question question = new Question();
                     question.CatalogueId = ques.companyCatalogueId;
-                    question.Question1 = ques.question1;
+                    question.QuestionText = ques.question1;
                     question.IsActive = true;
-                    question.CreateAt = DateTime.UtcNow;
+                    question.CreateDate = DateTime.UtcNow;
                     question.Point = ques.point;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
@@ -49,7 +49,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Question question = context.Question.SingleOrDefault(x => x.QuestionId == ques.questionId);
-                question.Question1 = ques.question1;
+                question.QuestionText = ques.question1;
                 context.Question.Update(question);
                 context.SaveChanges();
             }
@@ -81,7 +81,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CatalogueId == companyCatalogueId).Select(x => x.Question1).ToList();
+                var check = context.Question.Where(x => ques.Contains(x.QuestionText) && x.CatalogueId == companyCatalogueId).Select(x => x.QuestionText).ToList();
                 return check;
             }
         }
@@ -90,7 +90,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CatalogueId == defaultCatalogueId).Select(x => x.Question1).ToList();
+                var check = context.Question.Where(x => ques.Contains(x.QuestionText) && x.CatalogueId == defaultCatalogueId).Select(x => x.QuestionText).ToList();
                 return check;
             }
         }
@@ -105,10 +105,10 @@ namespace ResourceServices.Service
                     defaultQuestions.Add(new Question
                     {
                         CatalogueId = ques.catalogueDefaultId,
-                        Question1 = ques.question,
+                        QuestionText = ques.question,
                         IsActive = true,
                         Point = ques.point,
-                        CreateAt = DateTime.UtcNow,
+                        CreateDate = DateTime.UtcNow,
                         Answer = ques.answer
                     });
                 }
@@ -122,7 +122,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Question question = context.Question.SingleOrDefault(x => x.QuestionId == ques.questionDefaultId);
-                question.Question1 = ques.question;
+                question.QuestionText = ques.question;
                 context.Question.Update(question);
                 context.SaveChanges();
             }
