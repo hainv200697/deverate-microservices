@@ -26,6 +26,14 @@ namespace ResourceServices.Service
                 return ranks.ToList().OrderBy(x => x.position).ToList();
             }
         }
+        public static List<DefaultRankDTO> getAllDefaultRank()
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                var ranks = db.Rank.Where(c => c.IsActive == true && c.IsDefault == true).Select(c => new DefaultRankDTO(c));
+                return ranks.ToList();
+            }
+        }
         public static void updateOrCreateRankIfNotExist(List<CompanyRankDTO> rankDTO)
         {
             using (DeverateContext db = new DeverateContext())

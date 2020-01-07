@@ -60,5 +60,21 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [Route("GetAllDefaultRank")]
+        [HttpGet]
+        public IActionResult GetAllDefaultRank()
+        {
+            try
+            {
+                List<DefaultRankDTO> rank = RankDAO.getAllDefaultRank();
+                return Ok(rank);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+     
     }
 }

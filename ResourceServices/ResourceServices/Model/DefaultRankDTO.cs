@@ -8,11 +8,13 @@ namespace ResourceServices.Model
 {
     public class DefaultRankDTO
     {
-        public int defaultRankId { get; set; }
+        public int rankId { get; set; }
+        public int? companyId { get; set; }
         public string name { get; set; }
         public DateTime createDate { get; set; }
-        public int position { get; set; }
         public bool isActive { get; set; }
+        public bool isDefault { get; set; }
+        public List<CatalogueInRankDTO> catalogueInRankDTOs;
 
         public DefaultRankDTO()
         {
@@ -20,10 +22,12 @@ namespace ResourceServices.Model
         }
         public DefaultRankDTO(Rank defaultRank)
         {
-            this.defaultRankId = defaultRank.RankId;
+            this.rankId = defaultRank.RankId;
+            this.companyId = defaultRank.CompanyId;
             this.name = defaultRank.Name;
             this.createDate = defaultRank.CreateDate;
             this.isActive = defaultRank.IsActive;
-        }
+            this.isDefault = defaultRank.IsDefault;
+            this.catalogueInRankDTOs = defaultRank.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).ToList();        }
     }
 }

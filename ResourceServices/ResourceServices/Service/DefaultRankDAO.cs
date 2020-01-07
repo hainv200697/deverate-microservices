@@ -20,7 +20,7 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 var ranks = db.Rank.Where(c => c.IsActive == isActive).Select(c => new DefaultRankDTO(c));
-                return ranks.ToList().OrderBy(x => x.position).ToList();
+                return ranks.ToList();
             }
         }
         public static void createDefaultRank(DefaultRankDTO defaultRankDTO)
@@ -39,7 +39,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                Rank defaultRank = db.Rank.SingleOrDefault(c => c.RankId == defaultRankDTO.defaultRankId);
+                Rank defaultRank = db.Rank.SingleOrDefault(c => c.RankId == defaultRankDTO.rankId);
                 defaultRank.Name = defaultRankDTO.name;
                 db.SaveChanges();
             }

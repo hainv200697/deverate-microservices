@@ -13,7 +13,7 @@ namespace ResourceServices.Model
     {
         [JsonProperty("companyRankId")]
         public int companyRankId { get; set; }
-        public int companyId { get; set; }
+        public int? companyId { get; set; }
         public string name { get; set; }
         public DateTime creatAt { get; set; }
         public int position { get; set; }
