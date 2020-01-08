@@ -13,7 +13,7 @@ namespace ResourceServices.Model
         public DateTime createDate { get; set; }
         public bool isActive { get; set; }
         public bool isDefault { get; set; }
-        public List<CatalogueInRankDTO> catalogueInRankDTOs;
+        public List<CatalogueInRankDTO> catalogueInRanks { get; set; }
 
         public DefaultRankDTO()
         {
@@ -26,6 +26,7 @@ namespace ResourceServices.Model
             this.createDate = defaultRank.CreateDate;
             this.isActive = defaultRank.IsActive;
             this.isDefault = defaultRank.IsDefault;
-            this.catalogueInRankDTOs = defaultRank.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).ToList();        }
+            this.catalogueInRanks = defaultRank.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).OrderBy(x => x.catalogueId).ToList();
+        }
     }
 }

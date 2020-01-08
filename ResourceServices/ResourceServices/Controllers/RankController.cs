@@ -49,7 +49,8 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                List<DefaultRankDTO> rank = RankDAO.getAllDefaultRank();
+                RankDAO.UpdateRalationIfNot();
+                ListRankAndListCatalogueDTO rank = RankDAO.getAllDefaultRank();
                 return Ok(rank);
             }
             catch (Exception)

@@ -21,6 +21,14 @@ namespace ResourceServices.Model
             this.description = catalogue.Description;
         }
 
+        public CatalogueDefaultDTO(Catalogue catalogue)
+        {
+            this.name = catalogue.Name;
+            this.catalogueId = catalogue.CatalogueId;
+            this.isActive = catalogue.IsActive;
+            this.description = catalogue.Description;
+        }
+
         public int catalogueId { get; set; }
         public int count { get; set; }
         public string name { get; set; }
