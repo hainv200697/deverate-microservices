@@ -41,7 +41,8 @@ namespace ResourceServices.Service
                 var rank = context.Rank.Where(r => r.IsActive == true && r.CompanyId == catalogue.companyId)
                             .Select(r => new CatalogueInRank { 
                                 RankId = r.RankId,
-                                Point = 0
+                                Point = 0,
+                                IsActive = true
                             }).ToList();
 
                 Catalogue cata = new Catalogue();
@@ -69,7 +70,8 @@ namespace ResourceServices.Service
                             .Select(r => new CatalogueInRank
                             {
                                 RankId = r.RankId,
-                                Point = 0
+                                Point = 0,
+                                IsActive = true
                             }).ToList();
 
                 Catalogue cata = new Catalogue();
