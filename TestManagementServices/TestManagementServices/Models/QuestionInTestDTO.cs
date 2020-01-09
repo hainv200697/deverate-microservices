@@ -23,7 +23,7 @@ namespace TestManagementServices.Models
             {
                 foreach (Answer item in answers)
                 {
-                    this.answers.Add(new AnwserTestDTO(item.AnswerId, item.Answer1));
+                    this.answers.Add(new AnwserTestDTO(item.AnswerId, item.AnswerText));
                 }
             }
             

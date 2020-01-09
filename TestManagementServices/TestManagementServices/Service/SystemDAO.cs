@@ -220,7 +220,7 @@ namespace TestManagementServices.Service
                             List<Question> tempQuestions = companyCatalogues[i].questionList.Take(companyCatalogues[i].numberOfQuestion).ToList();
                             foreach (Question q in tempQuestions)
                             {
-                                questions.Add(new QuestionDTO(q.QuestionId, q.Question1, q.Answer.ToList()));
+                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                             }
                             companyCatalogues[i].questionList = null;
                         }
@@ -252,7 +252,7 @@ namespace TestManagementServices.Service
                         List<Question> tempQuestions = catalogues[i].Catalogue.Question.Take(catalogues[i].NumberQuestion).ToList();
                         foreach (Question q in tempQuestions)
                         {
-                            questions.Add(new QuestionDTO(q.QuestionId, q.Question1, q.Answer.ToList()));
+                            questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                         }
 
                     }
@@ -294,7 +294,7 @@ namespace TestManagementServices.Service
                             List<Question> tempQuestions = catalogues[i].Catalogue.Question.Take(catalogues[i].NumberQuestion).ToList();
                             foreach (Question q in tempQuestions)
                             {
-                                questions.Add(new QuestionDTO(q.QuestionId, q.Question1, q.Answer.ToList()));
+                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                             }
 
                         }
@@ -350,7 +350,7 @@ namespace TestManagementServices.Service
                             .Question.Take(catalogues[i].NumberQuestion).ToList();
                         foreach (Question q in tempQuestions)
                         {
-                            questions.Add(new QuestionDTO(q.QuestionId, q.Question1, q.Answer.ToList()));
+                            questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                         }
 
                     }
@@ -405,7 +405,7 @@ namespace TestManagementServices.Service
                             List<Question> tempQuestions = catalogues[i].Catalogue.Question.Take(catalogues[i].NumberQuestion).ToList();
                             foreach (Question q in tempQuestions)
                             {
-                                questions.Add(new QuestionDTO(q.QuestionId, q.Question1, q.Answer.ToList()));
+                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                             }
 
                         }
@@ -468,7 +468,7 @@ namespace TestManagementServices.Service
             List<QuestionDTO> questions = db.Question
                                .Include(c => c.Catalogue)
                                .Where(c => c.CatalogueId == catalogueId && c.IsActive == true)
-                               .Select(c => new QuestionDTO(c.QuestionId, c.Question1, null)).ToList();
+                               .Select(c => new QuestionDTO(c.QuestionId, c.QuestionText, null)).ToList();
             for (int i = 0; i < questions.Count; i++)
             {
                 questions[i].answers = GetAnswerOfQuestion(questions[i].questionId);
@@ -713,13 +713,13 @@ namespace TestManagementServices.Service
                         if (isContain == false)
                         {
                             rankDTOs.Add(new ConfigurationRankDTO(cir.RankId, cir.Rank.Name,
-                                (cir.Point / numbOfCatalogue), cir.Rank.Position));
+                                (cir.Point / numbOfCatalogue)));
                         }
                     }
                     else
                     {
                         rankDTOs.Add(new ConfigurationRankDTO(cir.RankId, cir.Rank.Name,
-                            (cir.Point / numbOfCatalogue), cir.Rank.Position));
+                            (cir.Point / numbOfCatalogue)));
                     }
                 }
                 return rankDTOs;
@@ -909,7 +909,7 @@ namespace TestManagementServices.Service
                 foreach (QuestionInTest item in questionInTest.ToList())
                 {
                     result.Add(new QuestionInTestDTO(item.TestId, item.QuestionId,
-                        item.AnswerId, item.Question.Answer.ToList(), item.Question.Question1));
+                        item.AnswerId, item.Question.Answer.ToList(), item.Question.QuestionText));
                 }
                 testU.accountId = test.AccountId;
                 testU.code = test.Code;

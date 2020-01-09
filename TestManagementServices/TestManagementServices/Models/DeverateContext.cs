@@ -87,10 +87,11 @@ namespace TestManagementServices.Models
 
             modelBuilder.Entity<Answer>(entity =>
             {
-                entity.Property(e => e.Answer1)
+                entity.Property(e => e.AnswerText)
                     .IsRequired()
-                    .HasColumnName("Answer")
                     .HasMaxLength(250);
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.Answer)
@@ -216,13 +217,10 @@ namespace TestManagementServices.Models
 
             modelBuilder.Entity<Question>(entity =>
             {
-                entity.Property(e => e.CreateAt)
-                    .HasColumnName("Create_at")
-                    .HasColumnType("date");
+                entity.Property(e => e.CreateDate).HasColumnType("date");
 
-                entity.Property(e => e.Question1)
+                entity.Property(e => e.QuestionText)
                     .IsRequired()
-                    .HasColumnName("Question")
                     .HasMaxLength(250);
 
                 entity.HasOne(d => d.Catalogue)
@@ -266,15 +264,13 @@ namespace TestManagementServices.Models
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.Rank)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CompanyRank_Company");
             });
 
             modelBuilder.Entity<RankInConfig>(entity =>
             {
-                entity.HasKey(e => e.RicId);
-
-                entity.Property(e => e.RicId).ValueGeneratedNever();
+                entity.HasKey(e => new { e.RankId, e.ConfigId })
+                    .HasName("PK_RankInConfig_1");
 
                 entity.HasOne(d => d.Config)
                     .WithMany(p => p.RankInConfig)

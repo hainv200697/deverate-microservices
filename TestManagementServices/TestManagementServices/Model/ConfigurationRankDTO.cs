@@ -10,16 +10,14 @@ namespace TestManagementServices.Model
     {
         public int rankId { get; set; }
         public string rank { get; set; }
-        public int position { get; set; }
         public double point { get; set; }
 
         public ConfigurationRankDTO() { }
-        public ConfigurationRankDTO(int rankId, string rank,  double weightPoint, int position)
+        public ConfigurationRankDTO(int rankId, string rank,  double point)
         {
             this.rankId = rankId;
             this.rank = rank;
-            this.point = weightPoint;
-            this.position = position;
+            this.point = point;
 
         }
     }

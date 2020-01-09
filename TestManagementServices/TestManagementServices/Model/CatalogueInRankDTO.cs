@@ -14,12 +14,11 @@ namespace TestManagementServices.Model
         public List<CatalogueDTO> catalogues { get; set; }
         public int position { get; set; }
         public CatalogueInRankDTO() { }
-        public CatalogueInRankDTO(int rankId, string rank, List<CatalogueDTO> catalogues, int position)
+        public CatalogueInRankDTO(int rankId, string rank, List<CatalogueDTO> catalogues)
         {
             this.rankId = rankId;
             this.rank = rank;
             this.catalogues = catalogues;
-            this.position = position;
         }
 
     }

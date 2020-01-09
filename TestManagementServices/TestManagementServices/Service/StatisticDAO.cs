@@ -130,9 +130,9 @@ namespace TestManagementServices.Service
                     List<RankDTO> cloneRanks = new List<RankDTO>();
                     foreach (RankDTO r in ranks)
                     {
-                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, r.position, 0));
+                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
                     }
-                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, -1, 0);
+                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, 0);
                     List<Test> tests = applicantConfigs[j].Test.ToList();
                     for (int k = 0; k < tests.Count; k++)
                     {
@@ -162,7 +162,6 @@ namespace TestManagementServices.Service
                     rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count, AppConstrain.APPLICANT_DO_TEST);
                     rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalApp, AppConstrain.TOTAL_APPLICANT_DO_TEST);
                     cloneRanks.Add(notRanked);
-                    cloneRanks = cloneRanks.OrderBy(r => r.position).ToList();
                     rankStatisticItem.series = cloneRanks;
                     rankStatisticItems.Add(rankStatisticItem);
                     configCount++;
@@ -292,9 +291,9 @@ namespace TestManagementServices.Service
                     List<RankDTO> cloneRanks = new List<RankDTO>();
                     foreach (RankDTO r in ranks)
                     {
-                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, r.position, 0));
+                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
                     }
-                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, -1, 0);
+                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, 0);
                     for (int k = 0; k < tests.Count; k++)
                     {
                         if(tests[k].RankId == null && tests[k].Point != null)
@@ -322,7 +321,7 @@ namespace TestManagementServices.Service
                     rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count);
                     rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalEmp);
                     cloneRanks.Add(notRanked);
-                    cloneRanks = cloneRanks.OrderBy(r => r.position).ToList();
+
                     rankStatisticItem.series = cloneRanks;
                     rankStatisticItems.Add(rankStatisticItem);
                     configCount++;
@@ -482,7 +481,7 @@ namespace TestManagementServices.Service
                 {
 
                     CatalogueInRankDTO catalogueInRank = new CatalogueInRankDTO(configurationRankDTOs[i].rankId,
-                        configurationRankDTOs[i].rank, null, configurationRankDTOs[i].position);
+                        configurationRankDTOs[i].rank, null);
                     List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
@@ -574,7 +573,6 @@ namespace TestManagementServices.Service
                 }
                 string potentialRank = test.PotentialRank == null ? AppConstrain.UNKNOWN_RANK : test.PotentialRank.Name;
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.SCALE_DOWN_NUMB);
-                configurationRankDTOs = configurationRankDTOs.OrderBy(c => c.position).ToList();
                 catalogueInRankDTOs = catalogueInRankDTOs.OrderBy(t => t.position).ToList();
                 catas = catas.OrderByDescending(c => c.differentPoint).ToList();
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
