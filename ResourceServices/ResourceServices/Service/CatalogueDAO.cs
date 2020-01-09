@@ -38,6 +38,12 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
+                var catalogueInRanks = context.Rank.Where(r => r.IsActive == true && r.CompanyId == catalogue.companyId)
+                            .Select(r => new CatalogueInRank { 
+                                RankId = r.RankId,
+                                Point = 0,
+                                IsActive = true
+                            }).ToList();
                 Catalogue cata = new Catalogue();
                 cata.CompanyId = catalogue.companyId;
                 cata.Description = catalogue.description;
@@ -45,7 +51,11 @@ namespace ResourceServices.Service
                 cata.IsActive =true;
                 cata.IsDefault = false;
                 cata.CreateDate = DateTime.UtcNow;
-                context.Catalogue.Add(cata);    
+                if(catalogueInRanks.Count > 0)
+                {
+                    cata.CatalogueInRank = catalogueInRanks;
+                }
+                context.Catalogue.Add(cata);
                 context.SaveChanges();
             }
 
@@ -55,14 +65,23 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                Catalogue cata = new Catalogue
+                var catalogueInRanks = context.Rank.Where(r => r.IsActive == true && r.IsDefault == true)
+                            .Select(r => new CatalogueInRank
+                            {
+                                RankId = r.RankId,
+                                Point = 0,
+                                IsActive = true
+                            }).ToList();
+                Catalogue cata = new Catalogue();
+                cata.Description = catalogue.description;
+                cata.Name = catalogue.name;
+                cata.IsActive = true;
+                cata.IsDefault = true;
+                cata.CreateDate = DateTime.UtcNow;
+                if (catalogueInRanks.Count > 0 )
                 {
-                    Description = catalogue.description,
-                    Name = catalogue.name,
-                    IsActive = true,
-                    CreateDate = DateTime.UtcNow,
-                    IsDefault = true
-                };
+                    cata.CatalogueInRank = catalogueInRanks;
+                }
                 context.Catalogue.Add(cata);
                 context.SaveChanges();
             }
