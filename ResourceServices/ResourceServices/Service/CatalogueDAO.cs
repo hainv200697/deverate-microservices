@@ -44,7 +44,6 @@ namespace ResourceServices.Service
                                 Point = 0,
                                 IsActive = true
                             }).ToList();
-
                 Catalogue cata = new Catalogue();
                 cata.CompanyId = catalogue.companyId;
                 cata.Description = catalogue.description;
@@ -52,7 +51,7 @@ namespace ResourceServices.Service
                 cata.IsActive =true;
                 cata.IsDefault = false;
                 cata.CreateDate = DateTime.UtcNow;
-                if(catalogueInRanks != null)
+                if(catalogueInRanks.Count > 0)
                 {
                     cata.CatalogueInRank = catalogueInRanks;
                 }
@@ -73,14 +72,13 @@ namespace ResourceServices.Service
                                 Point = 0,
                                 IsActive = true
                             }).ToList();
-
                 Catalogue cata = new Catalogue();
                 cata.Description = catalogue.description;
                 cata.Name = catalogue.name;
                 cata.IsActive = true;
                 cata.IsDefault = true;
                 cata.CreateDate = DateTime.UtcNow;
-                if (catalogueInRanks != null)
+                if (catalogueInRanks.Count > 0 )
                 {
                     cata.CatalogueInRank = catalogueInRanks;
                 }
