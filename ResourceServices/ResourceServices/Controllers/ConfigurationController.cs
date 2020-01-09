@@ -100,7 +100,7 @@ namespace ResourceServices.Controllers
 
         [Route("UpdateConfiguration")]
         [HttpPut]
-        public ActionResult<IEnumerable<string>> UpdateConfiguration([FromBody] ConfigurationDTO configuration)
+        public ActionResult UpdateConfiguration([FromBody] ConfigurationDTO configuration)
         {
             try
             {
@@ -115,11 +115,11 @@ namespace ResourceServices.Controllers
 
         [Route("ChangeStatusConfiguration")]
         [HttpPut]
-        public ActionResult<IEnumerable<string>> ChangeStatusConfiguration([FromBody] List<ConfigurationDTO> configuration)
+        public ActionResult ChangeStatusConfiguration([FromBody] List<int> configId, bool isActive)
         {
             try
             {
-                ConfigurationDAO.ChangeStatusConfiguration(configuration);
+                ConfigurationDAO.ChangeStatusConfiguration(configId, isActive);
                 return Ok(Message.changeStatusConfigSucceed);
             }
             catch (Exception)

@@ -23,7 +23,7 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 var ranks = db.Rank.Where(c => c.IsActive == isActive && c.CompanyId == companyId).Select(c => new CompanyRankDTO(c));
-                return ranks.ToList().OrderBy(x => x.position).ToList();
+                return ranks.ToList();
             }
         }
         public static ListRankAndListCatalogueDTO getAllDefaultRank()

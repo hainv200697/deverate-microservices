@@ -8,16 +8,14 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    [JsonObject("CompanyRankDTO", ItemNullValueHandling = NullValueHandling.Ignore)]
     public class CompanyRankDTO
     {
-        [JsonProperty("companyRankId")]
-        public int companyRankId { get; set; }
+        public int rankId { get; set; }
         public int companyId { get; set; }
         public string name { get; set; }
-        public DateTime creatAt { get; set; }
-        public int position { get; set; }
+        public DateTime creatDate { get; set; }
         public bool isActive { get; set; }
+        public List<CatalogueInRankDTO> catalogueInRanks;
 
         public CompanyRankDTO()
         {
@@ -26,11 +24,12 @@ namespace ResourceServices.Model
 
         public CompanyRankDTO(Rank rank)
         {
-            this.companyRankId = rank.RankId;
+            this.rankId = rank.RankId;
             this.companyId = rank.CompanyId.Value;    
             this.name = rank.Name;
-            this.creatAt = rank.CreateDate;
+            this.creatDate = rank.CreateDate;
             this.isActive = rank.IsActive;
+            this.catalogueInRanks = rank.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).OrderBy(x => x.catalogueId).ToList();
         }
     }
 }

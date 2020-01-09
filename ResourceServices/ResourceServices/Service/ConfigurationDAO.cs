@@ -49,31 +49,31 @@ namespace ResourceServices.Service
 
                 Configuration configuration = new Configuration();
 
-                var newlstcatalougeinconfig = new List<CatalogueInConfiguration>();
+                var newLstCatalougeInConfig = new List<CatalogueInConfiguration>();
+                var newLstRankInConfig = new List<RankInConfig>();
 
-                //foreach (var item in configurationDTO.catalogueInConfigurationDTO)
-                //{
-                //    var newCatalogueInRank = new List<CatalogueInRank>();
-                //    foreach (var item2 in item.catalogueInRankDTO)
-                //    {
-                //        var clstatalougeinrank = new CatalogueInRank
-                //        {
-                //            RankId = item2.companyRankId,
-                //            IsActive = true,
-                //            Point = item2.point,
-                //        };
-                //        newCatalogueInRank.Add(clstatalougeinrank);
-                //    }
-                //    var catalougeinconfig = new CatalogueInConfiguration
-                //    {
-                //        //CatalogueInRank = newCatalogueInRank,
-                //        CatalogueId = item.companyCatalogueId,
-                //        WeightPoint = item.weightPoint,
-                //        NumberQuestion = item.numberQuestion,
-                //        IsActive = true
-                //    };
-                //    newlstcatalougeinconfig.Add(catalougeinconfig);
-                //}
+                foreach (var item in configurationDTO.catalogueInConfiguration)
+                {
+                    var catalougeInConfig = new CatalogueInConfiguration
+                    {
+                        CatalogueId = item.catalogueId,
+                        WeightPoint = item.weightPoint,
+                        NumberQuestion = item.numberQuestion,
+                        IsActive = true
+                    };
+                    newLstCatalougeInConfig.Add(catalougeInConfig);
+                }
+
+                foreach(var item in configurationDTO.rankInConfig)
+                {
+                    var rankInConfig = new RankInConfig
+                    {
+                        RankId = item.rankId,
+                        Point = item.point,
+                        IsActive = true
+                    };
+                    newLstRankInConfig.Add(rankInConfig);
+                }
 
                 configuration.CompanyId = configurationDTO.companyId;
                 configuration.Title = configurationDTO.title;
@@ -84,7 +84,8 @@ namespace ResourceServices.Service
                 configuration.Title = configurationDTO.title;
                 configuration.Type = configurationDTO.type;
                 configuration.IsActive = true;
-                configuration.CatalogueInConfiguration = newlstcatalougeinconfig;
+                configuration.CatalogueInConfiguration = newLstCatalougeInConfig;
+                configuration.RankInConfig = newLstRankInConfig;
                 db.Configuration.Add(configuration);
                 db.SaveChanges();
             }
@@ -119,17 +120,12 @@ namespace ResourceServices.Service
             }
         }
 
-        public static void ChangeStatusConfiguration(List<ConfigurationDTO> configurationDTO)
+        public static void ChangeStatusConfiguration(List<int> configId, bool isActive)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                foreach (var item in configurationDTO)
-                {
-                    Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == item.configId);
-                    configuration.IsActive = item.isActive;
-                    db.Configuration.Update(configuration);
-                    db.SaveChanges();
-                }
+                db.Configuration.Where(x => configId.Contains(x.ConfigId)).ToList().ForEach(x => x.IsActive = isActive);
+                db.SaveChanges();
             }
         }
     }

@@ -11,12 +11,11 @@ namespace ResourceServices.Model
     {
         public int catalogueInConfigId { get; set; }
         public int configId { get; set; }
-        public int companyCatalogueId { get; set; }
+        public int catalogueId { get; set; }
         public double weightPoint { get; set; }
         public int numberQuestion { get; set; }
         public bool isActive { get; set; }
         public string catalogueName { get; set; }
-        public List<CatalogueInRankDTO> catalogueInRankDTO;
 
         public CatalogueInConfigurationDTO()
         {
@@ -27,12 +26,11 @@ namespace ResourceServices.Model
         {
             this.catalogueInConfigId = catalogueInConfiguration.CatalogueInConfigId;
             this.configId = catalogueInConfiguration.ConfigId;
-            this.companyCatalogueId = catalogueInConfiguration.CatalogueId;
+            this.catalogueId = catalogueInConfiguration.CatalogueId;
             this.weightPoint = catalogueInConfiguration.WeightPoint;
             this.numberQuestion = catalogueInConfiguration.NumberQuestion;
             this.isActive = catalogueInConfiguration.IsActive;
             this.catalogueName = catalogueInConfiguration.Catalogue.Name;
-            //catalogueInRankDTO = catalogueInConfiguration.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).ToList();
         }
     }
 }
