@@ -47,6 +47,58 @@ namespace ResourceServices.Service
             }
         }
 
+        public static void SaveDefaultRank(List<DefaultRankDTO> defaultRankDTOs)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                //Disable Rank has rankId
+                var defaultRankIdDisable = defaultRankDTOs.Where(x => x.rankId > 0).Select(x => x.rankId).ToList();
+                if (defaultRankIdDisable.Any()) {
+                    var ids = defaultRankIdDisable;
+                    db.Rank
+                        .Where(x => ids.Contains(x.RankId))
+                        .ToList()
+                        .ForEach(r => r.IsActive = false);
+                }
+                List<Rank> defaultRanks = new List<Rank>();
+                foreach(var defaultRank in defaultRankDTOs)
+                {
+                    List<CatalogueInRank> catalogueInRanks = new List<CatalogueInRank>();
+                    foreach(var catalogueInRank in defaultRank.catalogueInRanks)
+                    {
+                        catalogueInRanks.Add(new CatalogueInRank
+                        {
+                            CatalogueId = catalogueInRank.catalogueId,
+                            IsActive = true,
+                            Point = catalogueInRank.point
+                        });
+                    }
+                    defaultRanks.Add(new Rank
+                    {
+                        IsActive = true,
+                        IsDefault = true,
+                        CreateDate = DateTime.UtcNow,
+                        CatalogueInRank = catalogueInRanks,
+                        Name = defaultRank.name
+                    });
+                }
+                db.AddRange(defaultRanks);
+                db.SaveChanges();
+            }
+        }
+
+        public static void DisableDefaultRank(List<int> ids)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                db.Rank
+                    .Where(x => ids.Contains(x.RankId))
+                    .ToList()
+                    .ForEach(r => r.IsActive = false);
+                db.SaveChanges();
+            }
+        }
+
         public static void changeStatusCompanyRank(List<int> rankId, bool status)
         {
             using (DeverateContext db = new DeverateContext())

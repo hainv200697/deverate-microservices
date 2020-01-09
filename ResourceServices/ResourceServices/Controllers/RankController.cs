@@ -28,21 +28,6 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [Route("ChangeStatusCompanyRank")]
-        [HttpPut]
-        public IActionResult ChangeStatusCompanyRank([FromBody] List<int> rankId, bool status)
-        {
-            try
-            {
-                RankDAO.changeStatusCompanyRank(rankId,status);
-                return Ok(Message.changeStatusCompanyRankSucceed);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
         [Route("GetAllDefaultRank")]
         [HttpGet]
         public IActionResult GetAllDefaultRank()
@@ -58,6 +43,35 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-     
+
+        [Route("SaveDefaultRank")]
+        [HttpPost]
+        public IActionResult SaveDefaultRank([FromBody] List<DefaultRankDTO> defaultRankDTOs)
+        {
+            try
+            {
+                RankDAO.SaveDefaultRank(defaultRankDTOs);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Route("DisableDefaultRank")]
+        [HttpPost]
+        public IActionResult DisableDefaultRank([FromBody] List<int> ids)
+        {
+            try
+            {
+                RankDAO.DisableDefaultRank(ids);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 }
