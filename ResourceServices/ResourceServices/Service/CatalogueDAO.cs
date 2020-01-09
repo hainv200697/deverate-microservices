@@ -38,7 +38,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var rank = context.Rank.Where(r => r.IsActive == true && r.CompanyId == catalogue.companyId)
+                var catalogueInRanks = context.Rank.Where(r => r.IsActive == true && r.CompanyId == catalogue.companyId)
                             .Select(r => new CatalogueInRank { 
                                 RankId = r.RankId,
                                 Point = 0,
@@ -52,9 +52,9 @@ namespace ResourceServices.Service
                 cata.IsActive =true;
                 cata.IsDefault = false;
                 cata.CreateDate = DateTime.UtcNow;
-                if(rank != null)
+                if(catalogueInRanks != null)
                 {
-                    cata.CatalogueInRank = rank;
+                    cata.CatalogueInRank = catalogueInRanks;
                 }
                 context.Catalogue.Add(cata);
                 context.SaveChanges();
@@ -66,7 +66,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var rank = context.Rank.Where(r => r.IsActive == true && r.IsDefault == true)
+                var catalogueInRanks = context.Rank.Where(r => r.IsActive == true && r.IsDefault == true)
                             .Select(r => new CatalogueInRank
                             {
                                 RankId = r.RankId,
@@ -80,9 +80,9 @@ namespace ResourceServices.Service
                 cata.IsActive = true;
                 cata.IsDefault = true;
                 cata.CreateDate = DateTime.UtcNow;
-                if (rank != null)
+                if (catalogueInRanks != null)
                 {
-                    cata.CatalogueInRank = rank;
+                    cata.CatalogueInRank = catalogueInRanks;
                 }
                 context.Catalogue.Add(cata);
                 context.SaveChanges();
