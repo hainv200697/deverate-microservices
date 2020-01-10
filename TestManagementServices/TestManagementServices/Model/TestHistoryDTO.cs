@@ -13,14 +13,14 @@ namespace TestManagementServices.Model
         [JsonProperty(PropertyName = "name")]
         public string title { get; set; }
         [JsonProperty(PropertyName = "series")]
-        public List<CompanyCatalogueDTO> catalogues { get; set; }
+        public List<CatalogueDTO> catalogues { get; set; }
         public double? point { get; set; }
         public int? rankId { get; set; }
         public string rank { get; set; }
         public DateTime? createDate { get; set; }
         public DateTime? startTime { get; set; }
         public TestHistoryDTO() { }
-        public TestHistoryDTO(int testId, string title, List<CompanyCatalogueDTO> catalogues, double? point,
+        public TestHistoryDTO(int testId, string title, List<CatalogueDTO> catalogues, double? point,
                 int? rankId, string rank, DateTime? createDate, DateTime? startTime)
         {
             this.testId = testId;

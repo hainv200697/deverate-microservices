@@ -27,7 +27,7 @@ namespace TestManagementServices.Model
         public AnswerDTO(Answer answer)
         {
             this.answerId = answer.AnswerId;
-            this.answer = answer.Answer1;
+            this.answer = answer.AnswerText;
             this.percent = answer.Percent;
             this.isActive = answer.IsActive;
         }

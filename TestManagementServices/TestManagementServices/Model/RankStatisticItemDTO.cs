@@ -10,7 +10,7 @@ namespace TestManagementServices.Model
     public class RankStatisticItemDTO
     {
         public int configId { get; set; }
-        public List<CompanyRankDTO> series { get; set; }
+        public List<RankDTO> series { get; set; }
         public DateTime createDate { get; set; }
         public DateTime? endDate { get; set; }
         public string name { get; set; }
@@ -20,7 +20,7 @@ namespace TestManagementServices.Model
 
 
         public RankStatisticItemDTO() { }
-        public RankStatisticItemDTO(int configId, List<CompanyRankDTO> series,
+        public RankStatisticItemDTO(int configId, List<RankDTO> series,
             DateTime createDate, DateTime? endDate, string name, TestedItemDTO tested, TotalEmpItemDTO totalAccount)
         {
             this.configId = configId;

@@ -19,17 +19,18 @@ namespace TestManagementServices.Models
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
         public int? PotentialRankId { get; set; }
-        public int? CompanyRankId { get; set; }
+        public int? RankId { get; set; }
         public double? Point { get; set; }
         public string Code { get; set; }
         public string Status { get; set; }
         public bool IsActive { get; set; }
+        public bool? IsApprove { get; set; }
 
         public virtual Account Account { get; set; }
         public virtual Applicant Applicant { get; set; }
-        public virtual CompanyRank CompanyRank { get; set; }
         public virtual Configuration Config { get; set; }
-        public virtual CompanyRank PotentialRank { get; set; }
+        public virtual Rank PotentialRank { get; set; }
+        public virtual Rank Rank { get; set; }
         public virtual ICollection<DetailResult> DetailResult { get; set; }
         public virtual ICollection<QuestionInTest> QuestionInTest { get; set; }
     }

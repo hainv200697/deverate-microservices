@@ -12,8 +12,8 @@ namespace TestManagementServices.Model
     {
         public int catalogueInConfigId { get; set; }
         public int configId { get; set; }
-        public int companyCatalogueId { get; set; }
-        public string companyCatalogueName { get; set; }
+        public int catalogueId { get; set; }
+        public string catalogueName { get; set; }
         public double weightPoint { get; set; }
         public bool isActive { get; set; }
         public CatalogueInConfigDTO() { }
@@ -21,8 +21,8 @@ namespace TestManagementServices.Model
         {
             this.catalogueInConfigId = c.CatalogueInConfigId;
             this.configId = c.ConfigId;
-            this.companyCatalogueId = c.CompanyCatalogueId;
-            this.companyCatalogueName = c.CompanyCatalogue.Name;
+            this.catalogueId = c.CatalogueId;
+            this.catalogueName = c.Catalogue.Name;
             this.weightPoint = c.WeightPoint;
             this.isActive = c.IsActive;
         }
