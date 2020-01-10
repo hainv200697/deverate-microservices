@@ -19,7 +19,7 @@ namespace ResourceServices.Model
         public AnswerDTO(Answer ans)
         {
             this.answerId = ans.AnswerId;
-            this.answer = ans.Answer1;
+            this.answer = ans.AnswerText;
             this.percent = ans.Percent;
             this.questionId = ans.QuestionId;
             this.isActive = ans.IsActive;

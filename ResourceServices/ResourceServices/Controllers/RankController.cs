@@ -27,18 +27,16 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-        [Route("updateOrCreateRankIfNotExist")]
-        [HttpPost]
-        public IActionResult updateOrCreateRankIfNotExist([FromBody] List<CompanyRankDTO> companyRankDTO)
+
+        [Route("GetAllDefaultRank")]
+        [HttpGet]
+        public IActionResult GetAllDefaultRank()
         {
             try
             {
-                if (companyRankDTO == null)
-                {
-                    return BadRequest();
-                }
-                RankDAO.updateOrCreateRankIfNotExist(companyRankDTO);
-                return Ok(Message.createCompanyRankSucceed);
+                RankDAO.UpdateRalationIfNot();
+                ListRankAndListCatalogueDTO rank = RankDAO.getAllDefaultRank();
+                return Ok(rank);
             }
             catch (Exception)
             {
@@ -46,14 +44,29 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [Route("ChangeStatusCompanyRank")]
-        [HttpPut]
-        public IActionResult ChangeStatusCompanyRank([FromBody] List<int> rankId, bool status)
+        [Route("SaveDefaultRank")]
+        [HttpPost]
+        public IActionResult SaveDefaultRank([FromBody] List<DefaultRankDTO> defaultRankDTOs)
         {
             try
             {
-                RankDAO.changeStatusCompanyRank(rankId,status);
-                return Ok(Message.changeStatusCompanyRankSucceed);
+                RankDAO.SaveDefaultRank(defaultRankDTOs);
+                return Ok();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Route("DisableDefaultRank")]
+        [HttpPost]
+        public IActionResult DisableDefaultRank([FromBody] List<int> ids)
+        {
+            try
+            {
+                RankDAO.DisableDefaultRank(ids);
+                return Ok();
             }
             catch (Exception)
             {

@@ -17,7 +17,7 @@ namespace AuthenServices.Controllers
         {
             try
             {
-                if (CompanyDAO.checkExistedCompany(companyDataDTO.CompanyDTO.name))
+                if (CompanyDAO.IsExistedCompany(companyDataDTO.CompanyDTO.name))
                 {
                     return BadRequest();
                 }

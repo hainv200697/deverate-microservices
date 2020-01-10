@@ -17,8 +17,6 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class AnswerController : Controller
     {
-        
-
         [HttpGet("GetAnswerByQuestion")]
         public ActionResult GetAnswerByCatalogueId(int id ,bool status)
         {
@@ -92,7 +90,7 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                List<AnswerDefaultDTO> Answers = AnswerDAO.GetDefaultAnswerByQuestion(id, status);
+                List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(id, status);
                 return Ok(Answers);
             }
             catch (Exception)
@@ -106,16 +104,16 @@ namespace ResourceServices.Controllers
 
 
         [HttpPost("CreateAnswerDefault")]
-        public ActionResult CreateAnswerDefault([FromBody] AnswerDefaultDTO answer)
+        public ActionResult CreateAnswerDefault([FromBody] AnswerDTO answer)
         {
             try
             {
-                List<AnswerDefaultDTO> Answers = AnswerDAO.GetDefaultAnswerByQuestion(answer.questionId, true);
+                List<AnswerDTO> Answers = AnswerDAO.GetAnswerByQuestion(answer.questionId, true);
                 if (Answers.Count() > 6)
                 {
                     return BadRequest();
                 }
-                AnswerDAO.CreateDefaultAnswer(answer);
+                AnswerDAO.CreateAnswer(answer);
                 return Ok(Message.createAnswerSucceed);
             }
             catch (Exception)
@@ -126,11 +124,11 @@ namespace ResourceServices.Controllers
 
 
         [HttpPut("UpdateAnswerDefault")]
-        public ActionResult UpdateDefaultAnswer([FromBody]AnswerDefaultDTO ans)
+        public ActionResult UpdateAnswerDefault([FromBody]AnswerDTO ans)
         {
             try
             {
-                AnswerDAO.UpdateDefaultAnswer(ans);
+                AnswerDAO.UpdateAnswer(ans);
                 return Ok(Message.updateAnswerSucceed);
             }
             catch (Exception)
@@ -141,12 +139,12 @@ namespace ResourceServices.Controllers
 
         [HttpPut]
         [Route("RemoveAnswerDefault")]
-        public ActionResult RemoveDefaultAnswer([FromBody] List<AnswerDefaultDTO> ans)
+        public ActionResult RemoveAnswerDefault([FromBody] List<AnswerDTO> ans)
         {
             try
             {
                 int? id = ans[0].questionId;
-                AnswerDAO.removeDefaultAnswer(ans);
+                AnswerDAO.removeAnswer(ans);
                 return Ok(Message.removeAnswerSucceed);
             }
             catch (Exception)
@@ -154,6 +152,5 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
     }
 }

@@ -43,15 +43,13 @@ namespace AuthenServices.Model
         }
 
 
-        public AccountDTO(Account account, bool employee, CompanyRank rank)
+        public AccountDTO(Account account, bool employee)
         {
             this.accountId = account.AccountId;
             this.username = account.Username;
             this.fullname = account.Fullname;
             this.phone = account.Phone;
             this.email = account.Email;
-            this.rankId = rank == null ? 0 : rank.CompanyRankId;
-            this.rankName = rank == null ? "Not ranked" : rank.Name;
             this.address = account.Address;
             this.gender = account.Gender;
             this.joinDate = account.JoinDate;

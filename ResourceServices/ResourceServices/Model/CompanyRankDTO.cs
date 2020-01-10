@@ -24,14 +24,13 @@ namespace ResourceServices.Model
 
         }
 
-        public CompanyRankDTO(CompanyRank rank)
+        public CompanyRankDTO(Rank rank)
         {
-            this.companyRankId = rank.CompanyRankId;
-            this.companyId = rank.CompanyId;    
+            this.companyRankId = rank.RankId;
+            this.companyId = rank.CompanyId.Value;    
             this.name = rank.Name;
             this.creatAt = rank.CreateDate;
             this.isActive = rank.IsActive;
-            this.position = rank.Position;
         }
     }
 }

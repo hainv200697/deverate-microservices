@@ -27,12 +27,12 @@ namespace ResourceServices.Model
         {
             this.catalogueInConfigId = catalogueInConfiguration.CatalogueInConfigId;
             this.configId = catalogueInConfiguration.ConfigId;
-            this.companyCatalogueId = catalogueInConfiguration.CompanyCatalogueId;
+            this.companyCatalogueId = catalogueInConfiguration.CatalogueId;
             this.weightPoint = catalogueInConfiguration.WeightPoint;
             this.numberQuestion = catalogueInConfiguration.NumberQuestion;
             this.isActive = catalogueInConfiguration.IsActive;
-            this.catalogueName = catalogueInConfiguration.CompanyCatalogue.Name;
-            catalogueInRankDTO = catalogueInConfiguration.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).ToList();
+            this.catalogueName = catalogueInConfiguration.Catalogue.Name;
+            //catalogueInRankDTO = catalogueInConfiguration.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).ToList();
         }
     }
 }

@@ -8,8 +8,9 @@ namespace AuthenServices.Models
         public Company()
         {
             Account = new HashSet<Account>();
-            CompanyCatalogue = new HashSet<CompanyCatalogue>();
-            CompanyRank = new HashSet<CompanyRank>();
+            Catalogue = new HashSet<Catalogue>();
+            Configuration = new HashSet<Configuration>();
+            Rank = new HashSet<Rank>();
         }
 
         public int CompanyId { get; set; }
@@ -20,7 +21,8 @@ namespace AuthenServices.Models
         public bool IsActive { get; set; }
 
         public virtual ICollection<Account> Account { get; set; }
-        public virtual ICollection<CompanyCatalogue> CompanyCatalogue { get; set; }
-        public virtual ICollection<CompanyRank> CompanyRank { get; set; }
+        public virtual ICollection<Catalogue> Catalogue { get; set; }
+        public virtual ICollection<Configuration> Configuration { get; set; }
+        public virtual ICollection<Rank> Rank { get; set; }
     }
 }

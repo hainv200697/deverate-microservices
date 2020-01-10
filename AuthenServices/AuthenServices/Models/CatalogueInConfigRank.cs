@@ -12,6 +12,6 @@ namespace AuthenServices.Models
         public bool IsActive { get; set; }
 
         public virtual RankInConfiguration Co { get; set; }
-        public virtual CompanyCatalogue CompanyCatalogue { get; set; }
+        public virtual Catalogue CompanyCatalogue { get; set; }
     }
 }

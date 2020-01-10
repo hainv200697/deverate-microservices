@@ -47,28 +47,22 @@ namespace AuthenServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var items = ms.Fullname.Split(' ');
+                var fullname = RemoveVietnameseTone(ms.Fullname.ToUpper());
+                var items = fullname.Split(' ');
                 string username = items[items.Length - 1];
                 for (int i = 0; i < items.Length - 1; i++)
                 {
                     username += items[i].ElementAt(0);
                 }
-                if (AppConstrain.newestAccount == null)
+                var count = context.Account.Where(x => RemoveVietnameseTone(x.Fullname) == fullname).Count();
+                if (count > 0)
                 {
-                    List<Account> accounts = context.Account.ToList();
-                    AppConstrain.newestAccount = accounts.Count + 1;
+                    username += (count + 1);
                 }
-                else
-                {
-                    AppConstrain.newestAccount++;
-                }
-
-                username = username.ToUpper() + AppConstrain.newestAccount;
-                username = RemoveVietnameseTone(username);
 
                 string password = "";
                 Account account = new Account {
-                    Username = username.ToUpper(),
+                    Username = username,
                     Password = GeneratePasswordHash(out password),
                     Fullname = ms.Fullname,
                     Email = ms.Email,
@@ -94,30 +88,24 @@ namespace AuthenServices.Service
                 List<Account> accountsSave = new List<Account>();
                 foreach (MessageAccount ms in listAccountGenerate)
                 {
-                    var items = ms.Fullname.Split(' ');
+                    var fullname = RemoveVietnameseTone(ms.Fullname.ToUpper());
+                    var items = fullname.Split(' ');
                     string username = items[items.Length - 1];
                     for (int i = 0; i < items.Length - 1; i++)
                     {
                         username += items[i].ElementAt(0);
                     }
-                    if (AppConstrain.newestAccount == null)
+                    var count = context.Account.Where(x => RemoveVietnameseTone(x.Fullname) == fullname).Count();
+                    if (count > 0)
                     {
-                        List<Account> accounts = context.Account.ToList();
-                        AppConstrain.newestAccount = accounts.Count + 1;
+                        username += (count + 1);
                     }
-                    else
-                    {
-                        AppConstrain.newestAccount++;
-                    }
-
-                    username = username.ToUpper() + AppConstrain.newestAccount;
-                    username = RemoveVietnameseTone(username);
 
                     string password = "";
                     Account account = new Account
                     {
-                        Username = username.ToUpper(),
-                        Fullname = ms.Fullname,
+                        Username = username,
+                        Fullname = ms.Fullname.ToUpper(),
                         Email = ms.Email,
                         Gender = ms.Gender,
                         Address = ms.Address,
@@ -195,15 +183,14 @@ namespace AuthenServices.Service
 
         public static string RemoveVietnameseTone(string text)
         {
-            string result = text.ToLower();
-            result = Regex.Replace(result, "à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ|/g", "a");
-            result = Regex.Replace(result, "è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ|/g", "e");
-            result = Regex.Replace(result, "ì|í|ị|ỉ|ĩ|/g", "i");
-            result = Regex.Replace(result, "ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ|/g", "o");
-            result = Regex.Replace(result, "ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ|/g", "u");
-            result = Regex.Replace(result, "ỳ|ý|ỵ|ỷ|ỹ|/g", "y");
-            result = Regex.Replace(result, "đ", "d");
-            return result;
+            text = Regex.Replace(text, "à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ|/g", "A", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, "è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ|/g", "E", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, "ì|í|ị|ỉ|ĩ|/g", "I", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, "ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ|/g", "O", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, "ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ|/g", "U", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, "ỳ|ý|ỵ|ỷ|ỹ|/g", "Y", RegexOptions.IgnoreCase);
+            text = Regex.Replace(text, "đ", "D", RegexOptions.IgnoreCase);
+            return text;
         }
 
         public static List<string> CheckExistedEmail(List<string> listemail, int? companyId)

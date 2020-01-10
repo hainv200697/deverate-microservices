@@ -15,11 +15,11 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var companyCata = context.Question.Include(x => x.CompanyCatalogue)
-                    .Where(x => x.CompanyCatalogue.CompanyId == companyId &&
-                    (catalogueId != 0 ? x.CompanyCatalogue.CompanyCatalogueId == catalogueId : true) 
+                var companyCata = context.Question.Include(x => x.Catalogue)
+                    .Where(x => x.Catalogue.CompanyId == companyId &&
+                    (catalogueId != 0 ? x.Catalogue.CatalogueId == catalogueId : true) 
                     && x.IsActive == status)
-                    .Select(x => new QuestionDTO(x, x.CompanyCatalogue.Name, x.CompanyCatalogueId))
+                    .Select(x => new QuestionDTO(x, x.Catalogue.Name, x.CatalogueId))
                     .ToList();
                 return companyCata;
             }
@@ -32,10 +32,10 @@ namespace ResourceServices.Service
                 foreach (var ques in quest)
                 {
                     Question question = new Question();
-                    question.CompanyCatalogueId = ques.companyCatalogueId;
-                    question.Question1 = ques.question1;
+                    question.CatalogueId = ques.companyCatalogueId;
+                    question.QuestionText = ques.question1;
                     question.IsActive = true;
-                    question.CreateAt = DateTime.UtcNow;
+                    question.CreateDate = DateTime.UtcNow;
                     question.Point = ques.point;
                     question.Answer = ques.answer;
                     context.Question.Add(question);
@@ -49,7 +49,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 Question question = context.Question.SingleOrDefault(x => x.QuestionId == ques.questionId);
-                question.Question1 = ques.question1;
+                question.QuestionText = ques.question1;
                 context.Question.Update(question);
                 context.SaveChanges();
             }
@@ -81,7 +81,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var check = context.Question.Where(x => ques.Contains(x.Question1) && x.CompanyCatalogueId == companyCatalogueId).Select(x => x.Question1).ToList();
+                var check = context.Question.Where(x => ques.Contains(x.QuestionText) && x.CatalogueId == companyCatalogueId).Select(x => x.QuestionText).ToList();
                 return check;
             }
         }
@@ -90,7 +90,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var check = context.DefaultQuestion.Where(x => ques.Contains(x.Question) && x.DefaultCatalogueId == defaultCatalogueId).Select(x => x.Question).ToList();
+                var check = context.Question.Where(x => ques.Contains(x.QuestionText) && x.CatalogueId == defaultCatalogueId).Select(x => x.QuestionText).ToList();
                 return check;
             }
         }
@@ -99,20 +99,20 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var defaultQuestions = new List<DefaultQuestion>();
+                var defaultQuestions = new List<Question>();
                 foreach (var ques in quest)
                 {
-                    defaultQuestions.Add(new DefaultQuestion
+                    defaultQuestions.Add(new Question
                     {
-                        DefaultCatalogueId = ques.catalogueDefaultId,
-                        Question = ques.question,
+                        CatalogueId = ques.catalogueDefaultId,
+                        QuestionText = ques.question,
                         IsActive = true,
                         Point = ques.point,
                         CreateDate = DateTime.UtcNow,
-                        DefaultAnswer = ques.answer
+                        Answer = ques.answer
                     });
                 }
-                context.DefaultQuestion.AddRange(defaultQuestions);
+                context.Question.AddRange(defaultQuestions);
                 context.SaveChanges();
             }
         }
@@ -121,9 +121,9 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                DefaultQuestion question = context.DefaultQuestion.SingleOrDefault(x => x.DefaultQuestionId == ques.questionDefaultId);
-                question.Question = ques.question;
-                context.DefaultQuestion.Update(question);
+                Question question = context.Question.SingleOrDefault(x => x.QuestionId == ques.questionDefaultId);
+                question.QuestionText = ques.question;
+                context.Question.Update(question);
                 context.SaveChanges();
             }
         }
@@ -132,9 +132,11 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var defaultCata = context.DefaultQuestion.Include(x => x.DefaultCatalogue)
-                    .Where(x =>  x.DefaultCatalogueId == catalogueId && x.IsActive == status)
-                    .Select(x => new QuestionDefaultDTO(x, x.DefaultCatalogue.Name)).ToList();
+                var defaultCata = context.Question.Include(x => x.Catalogue)
+                    .Where(x => x.Catalogue.IsDefault == true &&
+                    (catalogueId != 0 ? x.Catalogue.CatalogueId == catalogueId : true)
+                    && x.IsActive == status)
+                    .Select(x => new QuestionDefaultDTO(x, x.Catalogue.Name)).ToList();
                 return defaultCata;
             }
         }
@@ -145,14 +147,14 @@ namespace ResourceServices.Service
             {
                 foreach (var ques in Question)
                 {
-                    DefaultQuestion questionDb = context.DefaultQuestion.SingleOrDefault(c => c.DefaultQuestionId == ques.questionDefaultId);
+                    Question questionDb = context.Question.SingleOrDefault(c => c.QuestionId == ques.questionDefaultId);
                     questionDb.IsActive = ques.isActive;
                     if (ques.isActive == false)
                     {
-                        List<AnswerDefaultDTO> answers = context.DefaultAnswer.Where(answer => answer.DefaultQuestionId == questionDb.DefaultQuestionId).Select(answer => new AnswerDefaultDTO(answer)).ToList();
+                        List<AnswerDefaultDTO> answers = context.Answer.Where(answer => answer.QuestionId == questionDb.QuestionId).Select(answer => new AnswerDefaultDTO(answer)).ToList();
                         foreach (var item in answers)
                         {
-                            DefaultAnswer AnswerDb = context.DefaultAnswer.SingleOrDefault(c => c.DefaultAnswerId == item.answerId);
+                            Answer AnswerDb = context.Answer.SingleOrDefault(c => c.AnswerId == item.answerId);
                             AnswerDb.IsActive = false;
                         }
                     }

@@ -16,12 +16,12 @@ namespace ResourceServices.Model
         {
         }
 
-        public AnswerDefaultDTO(DefaultAnswer ans)
+        public AnswerDefaultDTO(Answer ans)
         {
-            this.answerId = ans.DefaultAnswerId;
-            this.answer = ans.Answer;
+            this.answerId = ans.AnswerId;
+            this.answer = ans.AnswerText;
             this.percent = ans.Percent;
-            this.questionId = ans.DefaultQuestionId;
+            this.questionId = ans.QuestionId;
             this.isActive = ans.IsActive;
         }
 
