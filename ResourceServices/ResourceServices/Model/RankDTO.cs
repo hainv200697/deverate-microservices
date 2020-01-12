@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    public class DefaultRankDTO
+    public class RankDTO
     {
         public int rankId { get; set; }
         public string name { get; set; }
@@ -15,11 +15,11 @@ namespace ResourceServices.Model
         public bool isDefault { get; set; }
         public List<CatalogueInRankDTO> catalogueInRanks { get; set; }
 
-        public DefaultRankDTO()
+        public RankDTO()
         {
 
         }
-        public DefaultRankDTO(Rank defaultRank)
+        public RankDTO(Rank defaultRank)
         {
             this.rankId = defaultRank.RankId;
             this.name = defaultRank.Name;

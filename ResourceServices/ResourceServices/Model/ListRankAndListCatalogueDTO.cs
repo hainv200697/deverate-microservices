@@ -7,7 +7,7 @@ namespace ResourceServices.Model
 {
     public class ListRankAndListCatalogueDTO
     {
-        public List<DefaultRankDTO> defaultRankDTOs { get; set; }
-        public List<CatalogueDefaultDTO> catalogueDefaultDTOs { get; set; }
+        public List<RankDTO> RankDTOs { get; set; }
+        public List<CatalogueDTO> catalogueDTOs { get; set; }
     }
 }

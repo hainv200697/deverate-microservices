@@ -15,12 +15,28 @@ namespace ResourceServices.Controllers
 
         [Route("GetAllCompanyRank")]
         [HttpGet]
-        public IActionResult GetAllRank(bool isActive, int companyId)
+        public IActionResult GetAllRank(int companyId)
         {
             try
             {
-                List<CompanyRankDTO> rank = RankDAO.getAllCompanyRank(isActive, companyId);
+                RankDAO.UpdateRelationIfNotCompanyRank(companyId);
+                ListRankAndListCatalogueDTO rank = RankDAO.getAllCompanyRank(companyId);
                 return Ok(rank);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [Route("SaveCompanyRank")]
+        [HttpPost]
+        public IActionResult SaveCompanyRank([FromBody] List<RankDTO> companyRankDTOs, int companyId)
+        {
+            try
+            {
+                RankDAO.SaveCompanyRank(companyRankDTOs,companyId);
+                return Ok();
             }
             catch (Exception)
             {
@@ -46,7 +62,7 @@ namespace ResourceServices.Controllers
 
         [Route("SaveDefaultRank")]
         [HttpPost]
-        public IActionResult SaveDefaultRank([FromBody] List<DefaultRankDTO> defaultRankDTOs)
+        public IActionResult SaveDefaultRank([FromBody] List<RankDTO> defaultRankDTOs)
         {
             try
             {
