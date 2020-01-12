@@ -31,6 +31,7 @@ namespace ResourceServices.Service
                 answer.AnswerText = ans.answer;
                 answer.Percent = ans.percent;
                 answer.IsActive = true;
+                answer.CreateDate = DateTime.UtcNow;
                 answer.QuestionId = ans.questionId.Value;
                 context.Answer.Add(answer);
                 context.SaveChanges();

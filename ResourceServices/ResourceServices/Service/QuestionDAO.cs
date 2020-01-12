@@ -31,6 +31,10 @@ namespace ResourceServices.Service
             {
                 foreach (var ques in quest)
                 {
+                    foreach(var ans in ques.answer)
+                    {
+                        ans.CreateDate = DateTime.UtcNow;
+                    }
                     Question question = new Question();
                     question.CatalogueId = ques.companyCatalogueId;
                     question.QuestionText = ques.question1;
