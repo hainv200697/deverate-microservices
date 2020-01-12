@@ -12,6 +12,7 @@ namespace ResourceServices.Model
         public int configId { get; set; }
         public bool isActive { get; set; }
         public double point { get; set; }
+        public string rank { get; set; }
 
         public RankInConfigDTO()
         {
@@ -24,6 +25,7 @@ namespace ResourceServices.Model
             this.configId = rankInConfig.ConfigId;
             this.isActive = rankInConfig.IsActive;
             this.point = rankInConfig.Point;
+            this.rank = rankInConfig.Rank.Name;
         }
 
     }
