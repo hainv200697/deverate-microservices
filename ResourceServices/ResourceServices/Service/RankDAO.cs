@@ -114,7 +114,7 @@ namespace ResourceServices.Service
             }
         }
 
-        public static ListRankAndListCatalogueDTO getAllDefaultRank()
+        public static ListRankAndListCompanyCatalogueDTO getAllDefaultRank()
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -125,13 +125,13 @@ namespace ResourceServices.Service
                     .ToList();
                 var catalogues = db.Catalogue
                     .Where(x => x.IsActive && x.IsDefault)
-                    .Select(x => new CatalogueDefaultDTO(x))
-                    .OrderBy(x => x.catalogueId)
+                    .Select(x => new CatalogueDTO(x))
+                    .OrderBy(x => x.companyCatalogueId)
                     .ToList();
-                return new ListRankAndListCatalogueDTO
+                return new ListRankAndListCompanyCatalogueDTO
                 {
-                    catalogueDefaultDTOs = catalogues,
-                    defaultRankDTOs = ranks                };
+                    catalogueDTOs = catalogues,
+                    RankDTOs = ranks                };
             }
         }
 
