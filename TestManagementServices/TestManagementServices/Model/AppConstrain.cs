@@ -45,6 +45,20 @@ namespace TestManagementServices.Model
             return rNumb > AppConstrain.SCALE_UP_NUMB ? AppConstrain.SCALE_UP_NUMB : rNumb;
         }
 
+        public static string GenerateCode()
+        {
+            string code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
+                AppConstrain.includeNumeric, AppConstrain.includeSpecial,
+                AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
 
+            while (!PasswordGenerator.PasswordIsValid(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
+                AppConstrain.includeNumeric, AppConstrain.includeSpecial, AppConstrain.includeSpaces, code))
+            {
+                code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
+                    AppConstrain.includeNumeric, AppConstrain.includeSpecial,
+                    AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
+            }
+            return code;
+        }
     }
 }
