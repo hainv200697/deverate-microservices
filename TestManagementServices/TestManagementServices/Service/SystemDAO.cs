@@ -576,8 +576,8 @@ namespace TestManagementServices.Service
                     List<ConfigurationRankDTO> configurationRanks = GetRankPoint(test);
                     configurationRanks = configurationRanks.OrderBy(o => o.point).ToList();
                     ConfigurationRankDTO tmp = new ConfigurationRankDTO();
-                    tmp.rankId = configurationRanks[0].rankId;
-                    tmp.point = configurationRanks[0].point;
+                    tmp.rankId = -1;
+                    tmp.point = 0;
                     int potentialRankId = configurationRanks[0].rankId;
                     foreach (ConfigurationRankDTO cr in configurationRanks)
                     {
@@ -608,33 +608,34 @@ namespace TestManagementServices.Service
                             }
                         }
                     }
-                    rank = db.Rank.SingleOrDefault(r => r.RankId == tmp.rankId).Name;
-                    if (rank == null)
+                    if(tmp.rankId == -1)
                     {
-                        return null;
+                        test.RankId = null;
                     }
-                    foreach (CatalogueInRank cir in catalogueInRanks)
+                    else
                     {
-                        if (cir.RankId == tmp.rankId)
+                        foreach (RankInConfig r in rankInConfigs)
                         {
-                            if(tmp.point < cir.Point)
+                            if (r.RankId == tmp.rankId)
                             {
-                                test.RankId = null;
+                                if(totalPoint < r.Point)
+                                {
+                                    test.RankId = null;
+                                }
+                                else
+                                {
+                                    test.RankId = tmp.rankId;
+                                }
                             }
-                            else
-                            {
-                                test.RankId = tmp.rankId;
-                            }
-                            break;
                         }
-
                     }
+
                     test.PotentialRankId = potentialRankId;
                     test.Point = totalPoint;
                 }
                 db.SaveChanges();
 
-                return new RankPoint(rank, totalPoint);
+                return new RankPoint(test.RankId.ToString(), 0);
             }
         }
 
@@ -694,6 +695,7 @@ namespace TestManagementServices.Service
                     .ToList();
                 rankInConfigs.ForEach(r => rankIds.Add(r.RankId));
                 List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
+                    .Include(c => c.Rank)
                     .Where(r => rankIds.Contains(r.RankId))
                     .ToList();
                 foreach (CatalogueInRank cir in catalogueInRanks)
@@ -750,14 +752,17 @@ namespace TestManagementServices.Service
                         }
                     }
                 }
+                List<int> catalogueIds = new List<int>();
+                cataloguePoints.ForEach(c => catalogueIds.Add(c.catalogueId));
                 List<CatalogueInConfiguration> catalogueInConfigurations = db.CatalogueInConfiguration.Where(c => c.ConfigId == configId).ToList();
-                for(int i = 0; i < cataloguePoints.Count; i++)
+                for(int i = 0; i < catalogueIds.Count; i++)
                 {
                     for(int j = 0; j < catalogueInConfigurations.Count; j++)
                     {
-                        if(cataloguePoints[i].catalogueId == catalogueInConfigurations[j].CatalogueId)
+                        if(catalogueIds[i] == catalogueInConfigurations[j].CatalogueId)
                         {
                             cataloguePoints[i].catalogueId = catalogueInConfigurations[j].CatalogueInConfigId;
+                            
                         }
                     }
                 }
@@ -773,6 +778,7 @@ namespace TestManagementServices.Service
                     double point = cataloguePoints[i].cataloguePoint * catalogueWeightPoints[i].weightPoint / AppConstrain.SCALE_UP_NUMB;
                     detail.Point = cataloguePoints[i].cataloguePoint;
                     detail.IsActive = true;
+                    detail.TestId = test.TestId;
                     details.Add(detail);
                     totalPoint += point;
                 }

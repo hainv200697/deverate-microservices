@@ -65,7 +65,7 @@ namespace TestManagementServices.Controllers
                 int applicantId = SystemDAO.GetApplicantId(userTest.testId);
                 return Ok(applicantId);
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return StatusCode(500);
             }
