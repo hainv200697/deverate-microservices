@@ -472,10 +472,15 @@ namespace TestManagementServices.Service
                     .Where(c => catalogueIds.Contains(c.CatalogueId))
                     .Select(o => new CatalogueDTO(o))
                     .ToList();
+                List<int> rankIds = db.RankInConfig
+                    .Where(r => r.ConfigId == test.ConfigId)
+                    .Select(r => r.RankId)
+                    .ToList();
                 List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
+                    .Include(c => c.Catalogue)
                     .Include(c => c.Rank)
-                    //.Where(cic => catalogeInConfigIds
-                    //.Contains(cic.CatalogueInConfigId))
+                    .Where(cic => rankIds
+                    .Contains(cic.RankId))
                     .ToList();
                 for (int i = 0; i < configurationRankDTOs.Count; i++)
                 {
