@@ -18,7 +18,7 @@ namespace ResourceServices.Service
             this.context = context;
         }
 
-        public static ListRankAndListCompanyCatalogueDTO getAllCompanyRank(int companyId)
+        public static ListRankAndListCatalogueDTO getAllCompanyRank(int companyId)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -31,7 +31,7 @@ namespace ResourceServices.Service
                     .Include(x => x.Question)
                     .Select(x => new CatalogueDTO(x))
                     .ToList();
-                return new ListRankAndListCompanyCatalogueDTO
+                return new ListRankAndListCatalogueDTO
                 {
                     RankDTOs = ranks,
                     catalogueDTOs = catalogues
@@ -114,7 +114,7 @@ namespace ResourceServices.Service
             }
         }
 
-        public static ListRankAndListCompanyCatalogueDTO getAllDefaultRank()
+        public static ListRankAndListCatalogueDTO getAllDefaultRank()
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -128,7 +128,7 @@ namespace ResourceServices.Service
                     .Select(x => new CatalogueDTO(x))
                     .OrderBy(x => x.companyCatalogueId)
                     .ToList();
-                return new ListRankAndListCompanyCatalogueDTO
+                return new ListRankAndListCatalogueDTO
                 {
                     catalogueDTOs = catalogues,
                     RankDTOs = ranks                };

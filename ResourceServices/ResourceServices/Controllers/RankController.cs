@@ -20,7 +20,7 @@ namespace ResourceServices.Controllers
             try
             {
                 RankDAO.UpdateRelationIfNotCompanyRank(companyId);
-                ListRankAndListCompanyCatalogueDTO rank = RankDAO.getAllCompanyRank(companyId);
+                ListRankAndListCatalogueDTO rank = RankDAO.getAllCompanyRank(companyId);
                 return Ok(rank);
             }
             catch (Exception)
@@ -51,7 +51,7 @@ namespace ResourceServices.Controllers
             try
             {
                 RankDAO.UpdateRalationIfNot();
-                ListRankAndListCompanyCatalogueDTO rank = RankDAO.getAllDefaultRank();
+                ListRankAndListCatalogueDTO rank = RankDAO.getAllDefaultRank();
                 return Ok(rank);
             }
             catch (Exception)

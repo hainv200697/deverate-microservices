@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace ResourceServices.Model
 {
-    public class ListRankAndListCompanyCatalogueDTO
+    public class ListRankAndListCatalogueDTO
     {
         public List<RankDTO> RankDTOs { get; set; }
         public List<CatalogueDTO> catalogueDTOs { get; set; }
