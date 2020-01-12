@@ -15,6 +15,7 @@ namespace ResourceServices.Model
         public double weightPoint { get; set; }
         public int numberQuestion { get; set; }
         public bool isActive { get; set; }
+        public string catalogue { get; set; }
 
         public CatalogueInConfigurationDTO()
         {
@@ -29,6 +30,7 @@ namespace ResourceServices.Model
             this.weightPoint = catalogueInConfiguration.WeightPoint;
             this.numberQuestion = catalogueInConfiguration.NumberQuestion;
             this.isActive = catalogueInConfiguration.IsActive;
+            this.catalogue = catalogueInConfiguration.Catalogue.Name;
         }
     }
 }

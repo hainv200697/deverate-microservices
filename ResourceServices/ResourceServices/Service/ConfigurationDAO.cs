@@ -97,7 +97,9 @@ namespace ResourceServices.Service
             {
                 var config = db.Configuration
                     .Include(c => c.CatalogueInConfiguration)
+                    .ThenInclude(c => c.Catalogue)
                     .Include(c => c.RankInConfig)
+                    .ThenInclude(c => c.Rank)
                     .Where(c => c.ConfigId == configId)
                     .Select(c => new ConfigurationDTO(c));
                 return config.FirstOrDefault();
