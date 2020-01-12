@@ -19,7 +19,8 @@ namespace ResourceServices.Model
         public int duration { get; set; }
         public bool isActive { get; set; }
         public bool type { get; set; }
-        public List<CatalogueInConfigurationDTO> catalogueInConfigurationDTO;
+        public List<CatalogueInConfigurationDTO> catalogueInConfigurations;
+        public List<RankInConfigDTO> rankInConfigs;
 
         public ConfigurationDTO()
         {
@@ -36,7 +37,8 @@ namespace ResourceServices.Model
             this.duration = configuration.Duration;
             this.type = configuration.Type;
             this.isActive = configuration.IsActive;
-            catalogueInConfigurationDTO = configuration.CatalogueInConfiguration.Select(x => new CatalogueInConfigurationDTO(x)).ToList();
+            this.catalogueInConfigurations = configuration.CatalogueInConfiguration.Select(x => new CatalogueInConfigurationDTO(x)).ToList();
+            this.rankInConfigs = configuration.RankInConfig.Select(x => new RankInConfigDTO(x)).ToList();
         }
     }
 }

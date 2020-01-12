@@ -49,31 +49,31 @@ namespace ResourceServices.Service
 
                 Configuration configuration = new Configuration();
 
-                var newlstcatalougeinconfig = new List<CatalogueInConfiguration>();
+                var newLstCatalougeInConfig = new List<CatalogueInConfiguration>();
+                var newLstRankInConfig = new List<RankInConfig>();
 
-                //foreach (var item in configurationDTO.catalogueInConfigurationDTO)
-                //{
-                //    var newCatalogueInRank = new List<CatalogueInRank>();
-                //    foreach (var item2 in item.catalogueInRankDTO)
-                //    {
-                //        var clstatalougeinrank = new CatalogueInRank
-                //        {
-                //            RankId = item2.companyRankId,
-                //            IsActive = true,
-                //            Point = item2.point,
-                //        };
-                //        newCatalogueInRank.Add(clstatalougeinrank);
-                //    }
-                //    var catalougeinconfig = new CatalogueInConfiguration
-                //    {
-                //        //CatalogueInRank = newCatalogueInRank,
-                //        CatalogueId = item.companyCatalogueId,
-                //        WeightPoint = item.weightPoint,
-                //        NumberQuestion = item.numberQuestion,
-                //        IsActive = true
-                //    };
-                //    newlstcatalougeinconfig.Add(catalougeinconfig);
-                //}
+                foreach (var item in configurationDTO.catalogueInConfigurations)
+                {
+                    var catalougeInConfig = new CatalogueInConfiguration
+                    {
+                        CatalogueId = item.catalogueId,
+                        WeightPoint = item.weightPoint,
+                        NumberQuestion = item.numberQuestion,
+                        IsActive = true
+                    };
+                    newLstCatalougeInConfig.Add(catalougeInConfig);
+                }
+
+                foreach (var item in configurationDTO.rankInConfigs)
+                {
+                    var rankInConfig = new RankInConfig
+                    {
+                        RankId = item.rankId,
+                        Point = item.point,
+                        IsActive = true
+                    };
+                    newLstRankInConfig.Add(rankInConfig);
+                }
 
                 configuration.CompanyId = configurationDTO.companyId;
                 configuration.Title = configurationDTO.title;
@@ -84,7 +84,8 @@ namespace ResourceServices.Service
                 configuration.Title = configurationDTO.title;
                 configuration.Type = configurationDTO.type;
                 configuration.IsActive = true;
-                configuration.CatalogueInConfiguration = newlstcatalougeinconfig;
+                configuration.CatalogueInConfiguration = newLstCatalougeInConfig;
+                configuration.RankInConfig = newLstRankInConfig;
                 db.Configuration.Add(configuration);
                 db.SaveChanges();
             }
@@ -96,10 +97,7 @@ namespace ResourceServices.Service
             {
                 var config = db.Configuration
                     .Include(c => c.CatalogueInConfiguration)
-                    //.ThenInclude(x => x.CatalogueInRank)
-                    //.ThenInclude(x => x.CompanyRank)
-                    .Include(x => x.CatalogueInConfiguration)
-                    .ThenInclude(x => x.Catalogue)
+                    .Include(c => c.RankInConfig)
                     .Where(c => c.ConfigId == configId)
                     .Select(c => new ConfigurationDTO(c));
                 return config.FirstOrDefault();
