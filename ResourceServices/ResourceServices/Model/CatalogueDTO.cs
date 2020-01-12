@@ -19,6 +19,7 @@ namespace ResourceServices.Model
             this.name = catalogue.Name;
             this.companyCatalogueId = catalogue.CatalogueId;
             this.isActive = catalogue.IsActive;
+            this.quescount = catalogue.Question.Count(x => x.IsActive);
             this.description = catalogue.Description;
         }
         public CatalogueDTO(Catalogue catalogue,bool status , int count)
