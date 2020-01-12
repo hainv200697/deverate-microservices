@@ -35,6 +35,10 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Set trạng thái quá hạn cho bài kiểm tra
+        /// </summary>
+        /// <param name="testId"></param>
         public static void ExpireTest(int testId)
         {
             using (DeverateContext context = new DeverateContext())
@@ -45,6 +49,11 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Trộn câu hỏi
+        /// </summary>
+        /// <param name="questions"></param>
+        /// <returns></returns>
         public static List<QuestionDTO> Shuffle(List<QuestionDTO> questions)
         {
             Random rand = new Random();
@@ -60,6 +69,11 @@ namespace TestManagementServices.Service
             return questions;
         }
 
+        /// <summary>
+        /// Lấy ID của ứng viên theo bài test
+        /// </summary>
+        /// <param name="testId"></param>
+        /// <returns></returns>
         public static int GetApplicantId(int testId)
         {
             using (DeverateContext db = new DeverateContext())
@@ -73,6 +87,11 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Trộn câu hỏi
+        /// </summary>
+        /// <param name="questions"></param>
+        /// <returns></returns>
         public static List<QuestionDTO> ShuffleQuestion(List<QuestionDTO> questions)
         {
             Random rand = new Random();
@@ -88,6 +107,11 @@ namespace TestManagementServices.Service
             return questions;
         }
 
+        /// <summary>
+        /// Trộn câu hỏi
+        /// </summary>
+        /// <param name="questions"></param>
+        /// <returns></returns>
         public static List<Question> ShuffleQuestion(List<Question> questions)
         {
             Random rand = new Random();
@@ -103,6 +127,13 @@ namespace TestManagementServices.Service
             return questions;
         }
 
+        /// <summary>
+        /// Tạo test cho ứng viên
+        /// </summary>
+        /// <param name="configId"></param>
+        /// <param name="applicants"></param>
+        /// <param name="oneForAll"></param>
+        /// <returns></returns>
         public static string GenerateTestForApplicants(string configId, List<ApplicantDTO> applicants, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
@@ -136,6 +167,12 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Kiểm tra xem đã tạo bài test chưa
+        /// </summary>
+        /// <param name="accountId"></param>
+        /// <param name="tests"></param>
+        /// <returns></returns>
         public static int isAvailableTest(int? accountId, List<Test> tests)
         {
             for (int i = 0; i < tests.Count; i++)
@@ -145,6 +182,12 @@ namespace TestManagementServices.Service
             return -1;
         }
 
+        /// <summary>
+        /// Disable những bài test cũ
+        /// </summary>
+        /// <param name="accountIds"></param>
+        /// <param name="tests"></param>
+        /// <returns></returns>
         public static List<Test> removeAvailableTests(List<int?> accountIds, List<Test> tests)
         {
             for (int i = 0; i < tests.Count; i++)
@@ -161,6 +204,13 @@ namespace TestManagementServices.Service
             return tests;
         }
 
+        /// <summary>
+        /// Tạo bài test cho nhân viên
+        /// </summary>
+        /// <param name="accountIds"></param>
+        /// <param name="configId"></param>
+        /// <param name="oneForAll"></param>
+        /// <returns></returns>
         public static string GenerateTest(List<int> accountIds, string configId, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
@@ -193,6 +243,11 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Tạo bài test mẫu
+        /// </summary>
+        /// <param name="sampleConfig"></param>
+        /// <returns></returns>
         public static SampleTestDTO CreateSampleTest(SampleConfigDTO sampleConfig)
         {
             using (DeverateContext db = new DeverateContext())
@@ -225,13 +280,18 @@ namespace TestManagementServices.Service
                             companyCatalogues[i].questionList = null;
                         }
                     }
-
                 }
                 questions = ShuffleQuestion(questions);
                 return new SampleTestDTO(companyCatalogues, questions);
             }
         }
 
+        /// <summary>
+        /// Tạo bài test cho ứng viên
+        /// </summary>
+        /// <param name="applicants"></param>
+        /// <param name="config"></param>
+        /// <param name="oneForAll"></param>
         public static void CreateTestForApplicant(List<ApplicantDTO> applicants, Configuration config, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
@@ -241,7 +301,6 @@ namespace TestManagementServices.Service
                 for (int i = 0; i < catalogues.Count; i++)
                 {
                     catalogues[i].NumberQuestion = catalogues[i].NumberQuestion > catalogues[i].Catalogue.Question.Count ? catalogues[i].Catalogue.Question.Count : catalogues[i].NumberQuestion;
-
                 }
                 List<Test> tests = new List<Test>();
                 if (oneForAll == true)
@@ -254,7 +313,6 @@ namespace TestManagementServices.Service
                         {
                             questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                         }
-
                     }
                     foreach (ApplicantDTO app in applicants)
                     {
@@ -276,7 +334,7 @@ namespace TestManagementServices.Service
                             QuestionInTest = inTests,
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
-                            Code = GenerateCode(),
+                            Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
                             IsActive = true
                         };
@@ -285,7 +343,6 @@ namespace TestManagementServices.Service
                 }
                 else
                 {
-                    
                     foreach (ApplicantDTO app in applicants)
                     {
                         for (int i = 0; i < catalogues.Count; i++)
@@ -296,7 +353,6 @@ namespace TestManagementServices.Service
                             {
                                 questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                             }
-
                         }
                         questions = ShuffleQuestion(questions);
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
@@ -309,14 +365,13 @@ namespace TestManagementServices.Service
                             };
                             inTests.Add(qit);
                         }
-
                         Test t = new Test()
                         {
                             ApplicantId = app.applicantId,
                             QuestionInTest = inTests,
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
-                            Code = GenerateCode(),
+                            Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
                             IsActive = true
                         };
@@ -329,6 +384,13 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Tạo bài test cho nhân viên công ty
+        /// </summary>
+        /// <param name="accounts"></param>
+        /// <param name="config"></param>
+        /// <param name="oneForAll"></param>
+        /// <returns></returns>
         public static List<int> CreateTestForEmployee(List<AccountDTO> accounts, Configuration config, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
@@ -380,7 +442,7 @@ namespace TestManagementServices.Service
                             QuestionInTest = inTests,
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
-                            Code = GenerateCode(),
+                            Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
                             IsActive = true
                         };
@@ -427,7 +489,7 @@ namespace TestManagementServices.Service
                             QuestionInTest = inTests,
                             ConfigId = config.ConfigId,
                             CreateDate = DateTime.UtcNow,
-                            Code = GenerateCode(),
+                            Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
                             IsActive = true
                         };
@@ -446,25 +508,14 @@ namespace TestManagementServices.Service
             }
         }
 
-        public static string GenerateCode()
-        {
-            string code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
-                AppConstrain.includeNumeric, AppConstrain.includeSpecial,
-                AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
-
-            while (!PasswordGenerator.PasswordIsValid(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
-                AppConstrain.includeNumeric, AppConstrain.includeSpecial, AppConstrain.includeSpaces, code))
-            {
-                code = PasswordGenerator.GeneratePassword(AppConstrain.includeLowercase, AppConstrain.includeUppercase,
-                    AppConstrain.includeNumeric, AppConstrain.includeSpecial,
-                    AppConstrain.includeSpaces, AppConstrain.lengthOfPassword);
-            }
-            return code;
-        }
-
+        /// <summary>
+        /// Lấy danh sách câu hỏi từng catalogue
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="catalogueId"></param>
+        /// <returns></returns>
         public static List<QuestionDTO> GetQuestionOfCatalogue(DeverateContext db, int? catalogueId)
         {
-
             List<QuestionDTO> questions = db.Question
                                .Include(c => c.Catalogue)
                                .Where(c => c.CatalogueId == catalogueId && c.IsActive == true)
@@ -476,6 +527,11 @@ namespace TestManagementServices.Service
             return questions;
         }
 
+        /// <summary>
+        /// Lấy danh sách câu trả lời của câu hỏi
+        /// </summary>
+        /// <param name="questionId"></param>
+        /// <returns></returns>
         public static List<AnswerDTO> GetAnswerOfQuestion(int? questionId)
         {
             using(DeverateContext db = new DeverateContext())
@@ -488,6 +544,13 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Lấy số câu hỏi từng catalogue
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="totalQuestion"></param>
+        /// <param name="catalogues"></param>
+        /// <returns></returns>
         public static List<CatalogueDTO> GetNumberOfQuestionEachCatalogue(DeverateContext db, int? totalQuestion, List<CatalogueDTO> catalogues)
         {
             if (totalQuestion == 0)
@@ -510,6 +573,11 @@ namespace TestManagementServices.Service
             return catalogues;
         }
 
+        /// <summary>
+        /// Lấy trọng số của các catalogue
+        /// </summary>
+        /// <param name="configId"></param>
+        /// <returns></returns>
         public static List<CatalogueDTO> GetCatalogueWeights( int? configId)
         {
             using(DeverateContext db = new DeverateContext())
@@ -527,11 +595,13 @@ namespace TestManagementServices.Service
                 }
                 return companyCatalogues;
             }
-
         }
 
-
-
+        /// <summary>
+        /// Tính toán rank mà ứng viên đạt được
+        /// </summary>
+        /// <param name="userTest"></param>
+        /// <returns></returns>
         public static RankPoint EvaluateRank(UserTest userTest)
         {
             using (DeverateContext db = new DeverateContext())
@@ -545,7 +615,6 @@ namespace TestManagementServices.Service
                 {
                     return null;
                 }
-
                 test.Status = AppConstrain.SUBMITTED;
                 test.FinishTime = DateTime.UtcNow;
                 db.SaveChanges();
@@ -556,9 +625,7 @@ namespace TestManagementServices.Service
                     answerIds.Add(userTest.questionInTest[i].answerId);
                 }
                 var anss = db.Answer.Where(a => answerIds.Contains(a.AnswerId)).ToList();
-                string rank = AppConstrain.UNKNOWN_RANK;
                 double totalPoint = 0;
-
                 if (anss.Count != 0)
                 {
                     anss.ForEach(a => answers.Add(new AnswerDTO(a)));
@@ -639,6 +706,12 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Tự động lưu đáp án của ứng viên
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="userTest"></param>
+        /// <returns></returns>
         public static bool AutoSaveAnswer(DeverateContext db, UserTest userTest)
         {
             Test test = db.Test.SingleOrDefault(c => c.TestId == userTest.testId);
@@ -650,6 +723,10 @@ namespace TestManagementServices.Service
             return true;
         }
 
+        /// <summary>
+        /// Lưu phần đáp án của ứng viên
+        /// </summary>
+        /// <param name="userTest"></param>
         public static void SaveAnswer(UserTest userTest)
         {
             using (DeverateContext db = new DeverateContext())
@@ -682,6 +759,11 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Lấy danh sách rank + điểm
+        /// </summary>
+        /// <param name="test"></param>
+        /// <returns></returns>
         public static List<ConfigurationRankDTO> GetRankPoint(Test test)
         {
             using(DeverateContext db = new DeverateContext())
@@ -729,6 +811,15 @@ namespace TestManagementServices.Service
 
         }
 
+        /// <summary>
+        /// Tính điểm kết quả của bài test
+        /// </summary>
+        /// <param name="answers"></param>
+        /// <param name="test"></param>
+        /// <param name="companyId"></param>
+        /// <param name="testId"></param>
+        /// <param name="configId"></param>
+        /// <returns></returns>
         public static double CalculateResultPoint(TestAnswerDTO answers, Test test, int? companyId, int? testId, int configId)
         {
             using (DeverateContext db = new DeverateContext())
@@ -791,6 +882,11 @@ namespace TestManagementServices.Service
            
         }
 
+        /// <summary>
+        /// Lấy trọng số từng catalogue
+        /// </summary>
+        /// <param name="testId"></param>
+        /// <returns></returns>
         public static List<CatalogueWeightPointDTO> GetWeightPoints(int? testId)
         {
             using(DeverateContext db = new DeverateContext())
@@ -809,6 +905,14 @@ namespace TestManagementServices.Service
 
         }
 
+        /// <summary>
+        /// Tính điểm từng catalogue
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="answers"></param>
+        /// <param name="companyId"></param>
+        /// <param name="testId"></param>
+        /// <returns></returns>
         public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers, int? companyId, int? testId)
         {
             var cataInCompany = db.Catalogue.Where(c => c.CompanyId == companyId).ToList();
@@ -859,6 +963,12 @@ namespace TestManagementServices.Service
             return cataloguePoints;
         }
 
+        /// <summary>
+        /// Lấy danh sách bài test của ứng viên
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="accountId"></param>
+        /// <returns></returns>
         public static List<TestInfoDTO> GetAllTestTodayByUsername(DeverateContext db, int accountId)
         {
             List<TestInfoDTO> tests = db.Test
@@ -872,6 +982,12 @@ namespace TestManagementServices.Service
             return tests;
         }
 
+        /// <summary>
+        /// Lấy thông tin config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="testId"></param>
+        /// <returns></returns>
         public static ConfigurationDTO GetConfig(DeverateContext db, int testId)
         {
             var config = db.Configuration.Include(z => z.Test).Where(c => c.Test.Any(x => x.TestId == testId)).FirstOrDefault();
@@ -879,6 +995,12 @@ namespace TestManagementServices.Service
             return new ConfigurationDTO(config, test);
         }
 
+        /// <summary>
+        /// Lấy danh sách câu hỏi + câu trả lời của bài test
+        /// </summary>
+        /// <param name="testInfo"></param>
+        /// <param name="checkCode"></param>
+        /// <returns></returns>
         public static UserTest GetQuestionInTest(TestInfoDTO testInfo, bool checkCode)
         {
             using (DeverateContext context = new DeverateContext())
@@ -926,6 +1048,12 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Lấy danh sách bài test của config
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public static List<TestInfoDTO> GetTestByConfig(DeverateContext db, int id)
         {
             var results = db.Test.Where(t => t.ConfigId == id)
@@ -934,6 +1062,11 @@ namespace TestManagementServices.Service
             return results;
         }
 
+        /// <summary>
+        /// Lấy thông tin bài test
+        /// </summary>
+        /// <param name="testId"></param>
+        /// <returns></returns>
         public static TestInfoDTO GetTestByTestId(int testId)
         {
             using (DeverateContext db = new DeverateContext())
@@ -942,6 +1075,10 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Tự động submit bài test khi hết thời gian hoặc quá hạn
+        /// </summary>
+        /// <param name="testId"></param>
         public static void AutoSubmit(int testId)
         {
             TestInfoDTO testInfo = GetTestByTestId(testId);
@@ -949,6 +1086,11 @@ namespace TestManagementServices.Service
             EvaluateRank(userTest);
         }
 
+        /// <summary>
+        /// Gửi access code làm test đến cho ứng viên
+        /// </summary>
+        /// <param name="listestResendCode"></param>
+        /// <param name="isEmployee"></param>
         public static void SendMailQuizCode(List<int> listestResendCode, bool isEmployee)
         {
             using (DeverateContext context = new DeverateContext())
@@ -992,6 +1134,12 @@ namespace TestManagementServices.Service
             }
         }
 
+        /// <summary>
+        /// Kiểm tra access code của bài test
+        /// </summary>
+        /// <param name="testId"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
         public static int CheckCode(int testId, string code)
         {
             using (DeverateContext context = new DeverateContext())
