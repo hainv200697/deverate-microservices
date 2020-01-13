@@ -514,20 +514,24 @@ namespace TestManagementServices.Service
                             catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
                             if (test.Rank == null && test.Point != null)
                             {
-                                int pos = 0;
-                                if (catalogueInRanks[pos].CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catalogueInRanks[pos].RankId == test.PotentialRankId)
+                                for (int k = 0; k < catalogueInRanks.Count; k++)
                                 {
-                                    nextRank = catalogueInRanks[pos].Rank.Name;
-                                    catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
-                                    if (catas[i].differentPoint >= 0)
+                                    int pos = k + 1;
+                                    if (pos > catalogueInRanks.Count - 1) continue;
+                                    if (catalogueInRanks[pos].CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catalogueInRanks[pos].RankId == test.PotentialRankId)
                                     {
-                                        catas[i].differentPoint = 0;
+                                        nextRank = catalogueInRanks[pos].Rank.Name;
+                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
+                                        if (catas[i].differentPoint >= 0)
+                                        {
+                                            catas[i].differentPoint = 0;
+                                        }
+                                        else
+                                        {
+                                            catas[i].differentPoint *= -1;
+                                        }
+                                        break;
                                     }
-                                    else
-                                    {
-                                        catas[i].differentPoint *= -1;
-                                    }
-                                    break;
                                 }
                             }
                             else if(test.RankId == test.PotentialRankId)
