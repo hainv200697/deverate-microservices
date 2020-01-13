@@ -18,6 +18,7 @@ namespace ResourceServices.Service
                 var ranks = db.Rank.Where(c => c.IsActive && c.CompanyId == companyId)
                     .Include(c => c.CatalogueInRank)
                     .ThenInclude(c => c.Catalogue)
+                    .ThenInclude(c => c.Question)
                     .Select(c => new RankDTO(c))
                     .ToList();
                 var catalogues = db.Catalogue.Where(x => x.IsActive && x.CompanyId == companyId)
