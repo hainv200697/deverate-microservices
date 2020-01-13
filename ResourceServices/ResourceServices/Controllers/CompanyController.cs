@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ResourceServices.Model;
 using ResourceServices.Models;
 using ResourceServices.Service;
@@ -10,6 +11,7 @@ namespace ResourceServices.Controllers
     [Route("CompanyAPI")]
     public class CompanyController: Controller
     {
+        [Authorize(Roles = "System Manager")]
         [Route("GetAllCompany")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompany()

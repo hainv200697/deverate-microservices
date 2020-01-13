@@ -8,7 +8,7 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'AuthenServices' ">
     <StartAction>Project</StartAction>
     <LaunchUrl>api/values</LaunchUrl>
-    <ApplicationURL>http://localhost:5002</ApplicationURL>
+    <ApplicationURL>http://localhost:5000</ApplicationURL>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
