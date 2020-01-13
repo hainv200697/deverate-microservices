@@ -11,7 +11,7 @@ namespace ResourceServices.Controllers
     [Route("CompanyAPI")]
     public class CompanyController: Controller
     {
-        [Authorize(Roles = "System Manager")]
+        [Authorize(Roles = UserRoles.SystemManager)]
         [Route("GetAllCompany")]
         [HttpGet]
         public ActionResult<IEnumerable<string>> GetAllCompany()
