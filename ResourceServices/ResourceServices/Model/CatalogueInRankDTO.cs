@@ -14,6 +14,7 @@ namespace ResourceServices.Model
         public double point { get; set; }
         public bool isActive { get; set; }
         public string catalogue { get; set; }
+        public int questionCount { get; set; }
         public CatalogueInRankDTO() { }
 
         public CatalogueInRankDTO(CatalogueInRank catalogueInRank)
@@ -23,6 +24,7 @@ namespace ResourceServices.Model
             this.point = catalogueInRank.Point;
             this.isActive = catalogueInRank.IsActive;
             this.catalogue = catalogueInRank.Catalogue.Name;
+            this.questionCount = catalogueInRank.Catalogue.Question.Count(x => x.IsActive);
         }
     }
 }
