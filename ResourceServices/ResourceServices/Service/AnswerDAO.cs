@@ -2,10 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using AuthenServices.Models;
 using ResourceServices.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace ResourceServices.Service
 {

@@ -11,14 +11,6 @@ namespace ResourceServices.Service
 {
     public class CompanyDAO
     {
-        DeverateContext context;
-
-        public CompanyDAO(DeverateContext context)
-        {
-            this.context = context;
-        }
-
-
         public static List<CompanyDTO> GetAllCompany()
         {
             using (DeverateContext db = new DeverateContext())

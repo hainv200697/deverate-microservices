@@ -1,13 +1,7 @@
-﻿using AuthenServices.Model;
-using AuthenServices.Models;
-using ResourceServices.Model;
+﻿using ResourceServices.Model;
 using ResourceServices.Models;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 
 namespace AuthenServices.Service

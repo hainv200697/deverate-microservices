@@ -11,13 +11,6 @@ namespace ResourceServices.Service
 {
     public class ConfigurationDAO
     {
-        DeverateContext context;
-
-        public ConfigurationDAO(DeverateContext context)
-        {
-            this.context = context;
-        }
-
         public static List<ConfigurationDTO> GetAllConfigurationForApplicant(bool type, int companyId)
         {
             using (DeverateContext db = new DeverateContext())

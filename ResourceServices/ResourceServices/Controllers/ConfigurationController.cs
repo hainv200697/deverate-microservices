@@ -1,27 +1,14 @@
-﻿using AuthenServices.Models;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Mvc;
 using ResourceServices.Model;
-using ResourceServices.Models;
-using ResourceServices.RabbitMQ;
 using ResourceServices.Service;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ResourceServices.Controllers
 {
     [Route("ConfigurationApi")]
     public class ConfigurationController : Controller
     {
-        DeverateContext context;
-
-        public ConfigurationController(DeverateContext context)
-        {
-            this.context = context;
-        }
-
         [Route("GetAllConfiguration")]
         [HttpGet]
         public ActionResult GetAllCompany(bool type, int companyId)

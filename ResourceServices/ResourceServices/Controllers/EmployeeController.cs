@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using AuthenServices.Models;
-using System.Net.Http;
 using ResourceServices.Model;
-using ResourceServices.Service;
-using System.Net;
 using Newtonsoft.Json;
-using ResourceServices.Models;
-using Microsoft.AspNetCore.Authorization;
 using AuthenServices.Model;
 using AuthenServices.Service;
 using ResourceServices.RabbitMQ;
@@ -20,14 +13,6 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class EmployeeController : Controller
     {
-
-        DeverateContext context;
-
-        public EmployeeController(DeverateContext context)
-        {
-            this.context = context;
-        }
-
         [HttpPost("CreateEmployee")]
         public ActionResult CreateEmployee([FromBody] List<MessageAccount> ListAccountGenerate)
         {
@@ -60,7 +45,7 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPost("ResendPassword")]
-        public ActionResult ResendPassword([FromBody] List<string> ListAccountSendPass, int? companyId)
+        public ActionResult ResendPassword([FromBody] List<string> ListAccountSendPass, int companyId)
         {
             try
             {
@@ -80,7 +65,7 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPut("UpdateEmployeeStatus")]
-        public ActionResult UpdateEmployeeStatus([FromBody] List<int> listEmpId,bool? status)
+        public ActionResult UpdateEmployeeStatus([FromBody] List<int> listEmpId,bool status)
         {
             try
             {
@@ -88,10 +73,10 @@ namespace ResourceServices.Controllers
                 {
                     return BadRequest();
                 }
-                AccountDAO.UpdateEmployeeStatus(listEmpId,status);
+                AccountDAO.UpdateEmployeeStatus(listEmpId, status);
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -109,7 +94,7 @@ namespace ResourceServices.Controllers
                 List<AccountDTO> listAccount = AccountDAO.GetAccountByRole(companyId, role);
                 return Ok(listAccount);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -123,7 +108,7 @@ namespace ResourceServices.Controllers
                 ProfileDTO profile = AccountDAO.GetProfile(accountId);
                 return Ok(profile);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -137,21 +122,21 @@ namespace ResourceServices.Controllers
                 AccountDAO.UpdateProfile(profile);
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
         }
 
         [HttpGet("GetEmployee")]
-        public ActionResult Gêtmployee(int configId, int companyId)
+        public ActionResult Getmployee(int configId, int companyId)
         {
             try
             {
                 List<AccountDTO> accounts = AccountDAO.GetEmployees(configId, companyId);
                 return Ok(accounts);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: 	resource-5cb6cd7f7c-54plf
+  name: 	resource-7fb6f4cc7d-96bnm
 spec:
   type: ClusterIP
   selector:

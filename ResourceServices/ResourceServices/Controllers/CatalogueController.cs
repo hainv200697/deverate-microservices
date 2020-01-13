@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using AuthenServices.Models;
-using System.Net.Http;
 using ResourceServices.Model;
 using ResourceServices.Service;
-using System.Net;
-using ResourceServices.Models;
 
 namespace ResourceServices.Controllers
 {
@@ -120,7 +114,7 @@ namespace ResourceServices.Controllers
                 CatalogueDAO.CreateCatalogueDefault(catalog);
                 return Ok(Message.createCatalogueSucceed);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }

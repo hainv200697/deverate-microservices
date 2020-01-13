@@ -11,13 +11,6 @@ namespace ResourceServices.Service
 {
     public class RankDAO
     {
-        DeverateContext context;
-
-        public RankDAO(DeverateContext context)
-        {
-            this.context = context;
-        }
-
         public static ListRankAndListCatalogueDTO getAllCompanyRank(int companyId)
         {
             using (DeverateContext db = new DeverateContext())

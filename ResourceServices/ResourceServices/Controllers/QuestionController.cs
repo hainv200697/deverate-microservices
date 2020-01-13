@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using AuthenServices.Models;
-using System.Net.Http;
 using ResourceServices.Model;
 using ResourceServices.Service;
-using System.Net;
-using Newtonsoft.Json;
-using ResourceServices.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace ResourceServices.Controllers
 {
@@ -135,7 +128,7 @@ namespace ResourceServices.Controllers
                 QuestionDAO.CreateDefaultQuestion(question);
                 return Ok(Message.createQuestionSucceed);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return StatusCode(500);
             }

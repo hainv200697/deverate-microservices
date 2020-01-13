@@ -8,7 +8,7 @@
   <PropertyGroup Condition=" '$(RunConfiguration)' == 'AuthenServices' ">
     <StartAction>Project</StartAction>
     <LaunchUrl>api/values</LaunchUrl>
-    <ApplicationURL>http://localhost:54319/</ApplicationURL>
+    <ApplicationURL>http://localhost:5002</ApplicationURL>
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="wwwroot\" />
@@ -33,4 +33,7 @@
     <DotNetCliToolReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Tools" Version="2.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Controllers\ValuesController.cs" />
+  </ItemGroup>
 </Project>
