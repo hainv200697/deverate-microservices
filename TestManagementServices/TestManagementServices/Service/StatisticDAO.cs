@@ -626,9 +626,14 @@ namespace TestManagementServices.Service
                     test.rankId = tests[i].RankId;
                     test.createDate = tests[i].CreateDate;
                     test.startTime = tests[i].StartTime;
+                    test.status = tests[i].Status;
                     foreach (Rank r in ranks)
                     {
-                        if (tests[i].RankId == null) break;
+                        if (tests[i].RankId == null)
+                        {
+                            test.rank = AppConstrain.UNKNOWN_RANK;
+                            break;
+                        }
                         if (r.RankId == tests[i].RankId)
                         {
                             test.rank = r.Name;

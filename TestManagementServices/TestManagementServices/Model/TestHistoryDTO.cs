@@ -19,9 +19,10 @@ namespace TestManagementServices.Model
         public string rank { get; set; }
         public DateTime? createDate { get; set; }
         public DateTime? startTime { get; set; }
+        public string status { get; set; }
         public TestHistoryDTO() { }
         public TestHistoryDTO(int testId, string title, List<CatalogueDTO> catalogues, double? point,
-                int? rankId, string rank, DateTime? createDate, DateTime? startTime)
+                int? rankId, string rank, DateTime? createDate, DateTime? startTime, string status)
         {
             this.testId = testId;
             this.title = title;
@@ -31,6 +32,7 @@ namespace TestManagementServices.Model
             this.rank = rank;
             this.createDate = createDate;
             this.startTime = startTime;
+            this.status = status;
         }
     }
 }
