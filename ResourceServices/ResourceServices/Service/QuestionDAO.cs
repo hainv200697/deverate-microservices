@@ -106,6 +106,10 @@ namespace ResourceServices.Service
                 var defaultQuestions = new List<Question>();
                 foreach (var ques in quest)
                 {
+                    foreach (var ans in ques.answer)
+                    {
+                        ans.CreateDate = DateTime.UtcNow;
+                    }
                     defaultQuestions.Add(new Question
                     {
                         CatalogueId = ques.catalogueDefaultId,
