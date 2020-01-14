@@ -462,16 +462,9 @@ namespace TestManagementServices.Service
                 List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration
                     .Include(c => c.Catalogue)
                     .Where(c => c.ConfigId == test.ConfigId)
-                    .OrderBy(c => c.WeightPoint)
                     .Select(c => new CatalogueInConfigDTO(c))
                     .ToList();
-                List<int?> catalogueIds = new List<int?>();
-                List<int> catalogeInConfigIds = new List<int>();
-                foreach(CatalogueInConfigDTO cic in catalogueInConfigs)
-                {
-                    catalogueIds.Add(cic.catalogueId);
-                    catalogeInConfigIds.Add(cic.catalogueInConfigId);
-                }
+                List<int> catalogueIds = catalogueInConfigs.Select(c => c.catalogueId).ToList();
                 List<CatalogueInRankDTO> catalogueInRankDTOs = new List<CatalogueInRankDTO>();
                 List<CatalogueDTO> catas = db.Catalogue
                     .Where(c => catalogueIds.Contains(c.CatalogueId))
@@ -494,7 +487,7 @@ namespace TestManagementServices.Service
                     List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
-                        if (cir.RankId == configurationRankDTOs[i].rankId)
+                        if (cir.RankId == configurationRankDTOs[i].rankId && cir.Point != 0 && catalogueIds.Contains(cir.CatalogueId))
                         {
                             catalogues.Add(new CatalogueDTO(cir.CatalogueId,
                                 cir.Catalogue.Name, null,
@@ -582,7 +575,6 @@ namespace TestManagementServices.Service
                 }
                 string potentialRank = test.PotentialRank == null ? AppConstrain.UNKNOWN_RANK : test.PotentialRank.Name;
                 double statisticPoint = AppConstrain.RoundDownNumber(test.Point.Value, AppConstrain.SCALE_DOWN_NUMB);
-                catas = catas.OrderByDescending(c => c.differentPoint).ToList();
                 return new CandidateResultDTO(test.AccountId, configurationRankDTOs, catas,
                     catalogueInRankDTOs, catalogueInConfigs, statisticPoint,
                     test.RankId, (test.Rank == null ? AppConstrain.UNKNOWN_RANK : test.Rank.Name),
