@@ -83,37 +83,5 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
         }
-
-
-        [Route("UpdateConfiguration")]
-        [HttpPut]
-        public ActionResult<IEnumerable<string>> UpdateConfiguration([FromBody] ConfigurationDTO configuration)
-        {
-            try
-            {
-                ConfigurationDAO.UpdateConfiguration(configuration);
-                return Ok(Message.updateConfigSucceed);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-        }
-
-        [Route("ChangeStatusConfiguration")]
-        [HttpPut]
-        public ActionResult<IEnumerable<string>> ChangeStatusConfiguration([FromBody] List<ConfigurationDTO> configuration)
-        {
-            try
-            {
-                ConfigurationDAO.ChangeStatusConfiguration(configuration);
-                return Ok(Message.changeStatusConfigSucceed);
-            }
-            catch (Exception)
-            {
-                return StatusCode(500);
-            }
-
-        }
     }
 }
