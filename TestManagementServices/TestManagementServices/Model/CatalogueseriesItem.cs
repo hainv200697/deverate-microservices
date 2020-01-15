@@ -5,8 +5,8 @@ namespace TestManagementServices.Model
 {
     public class CatalogueSeriesItem
     {
-        public string date { get; set; }
-        public double point { get; set; }
+        public string name { get; set; }
+        public double value { get; set; }
         [JsonIgnore]
         public int numberTest { get; set; }
     }

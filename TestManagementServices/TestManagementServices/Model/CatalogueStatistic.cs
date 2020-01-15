@@ -7,7 +7,7 @@ namespace TestManagementServices.Model
     {
         [JsonIgnore]
         public int CatalogueInConfigId { get; set; }
-        public string catalogueName { get; set; }
+        public string name { get; set; }
         public List<CatalogueSeriesItem> series { get; set; }
     }
 }

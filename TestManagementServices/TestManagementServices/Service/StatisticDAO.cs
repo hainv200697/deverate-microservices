@@ -207,7 +207,7 @@ namespace TestManagementServices.Service
                     result.Add(new CatalogueStatistic
                     {
                         CatalogueInConfigId = catalogueInConfig.CatalogueInConfigId,
-                        catalogueName = catalogueInConfig.Catalogue.Name,
+                        name = catalogueInConfig.Catalogue.Name,
                         series = new List<CatalogueSeriesItem>()
                     });
                 }
@@ -230,17 +230,17 @@ namespace TestManagementServices.Service
                     foreach(var detailResult in test.DetailResult)
                     {
                         var index = result.FindIndex(x => x.CatalogueInConfigId == detailResult.CatalogueInConfigId);
-                        var seriesIndex = result[index].series.FindIndex(x => x.date == date);
+                        var seriesIndex = result[index].series.FindIndex(x => x.name == date);
                         if (seriesIndex >= 0)
                         {
-                            result[index].series[seriesIndex].point += detailResult.Point;
+                            result[index].series[seriesIndex].value += detailResult.Point;
                             result[index].series[seriesIndex].numberTest++;
                         } else
                         {
                             result[index].series.Add(new CatalogueSeriesItem
                             {
-                                date = date,
-                                point = detailResult.Point,
+                                name = date,
+                                value = detailResult.Point,
                                 numberTest = 1
                             });
                         }
@@ -252,7 +252,7 @@ namespace TestManagementServices.Service
                 {
                     foreach(var catalogueseriesItem in catalogueStatistic.series)
                     {
-                        catalogueseriesItem.point = catalogueseriesItem.point / catalogueseriesItem.numberTest;
+                        catalogueseriesItem.value = catalogueseriesItem.value / catalogueseriesItem.numberTest;
                     }
                 }
                 return result;
