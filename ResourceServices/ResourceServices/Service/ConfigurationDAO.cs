@@ -98,30 +98,5 @@ namespace ResourceServices.Service
                 return config.FirstOrDefault();
             }
         }
-
-        public static void UpdateConfiguration(ConfigurationDTO configurationDTO)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == configurationDTO.configId);
-                configuration.Title = configurationDTO.title;
-                configuration.StartDate = configurationDTO.startDate;
-                configuration.EndDate = configurationDTO.endDate;
-                configuration.Duration = configurationDTO.duration;
-                db.SaveChanges();
-            }
-        }
-
-        public static void ChangeStatusConfiguration(List<int> configIds, bool isActive)
-        {
-            using (DeverateContext db = new DeverateContext())
-            {
-                db.Configuration
-                    .Where(x => configIds.Contains(x.ConfigId))
-                    .ToList()
-                    .ForEach(x => x.IsActive = isActive);
-                db.SaveChanges();
-            }
-        }
     }
 }
