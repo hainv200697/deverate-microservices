@@ -514,7 +514,6 @@ namespace TestManagementServices.Service
                             catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
                             if (test.Rank == null && test.Point != null)
                             {
-                                
                                 nextRank = ranks[pos].Name;
                                 for (int k = 0; k < ranks[pos].CatalogueInRank.Count; k++)
                                 {

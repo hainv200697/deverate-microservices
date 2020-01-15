@@ -700,6 +700,25 @@ namespace TestManagementServices.Service
                     test.PotentialRankId = potentialRankId;
                     test.Point = totalPoint;
                 }
+                else
+                {
+                    List<CatalogueInConfiguration> catalogueInConfigurations = db.CatalogueInConfiguration
+                        .Where(c => c.ConfigId == test.ConfigId)
+                        .ToList();
+                    List<DetailResult> details = new List<DetailResult>();
+                    foreach(CatalogueInConfiguration cic in catalogueInConfigurations)
+                    {
+                        DetailResult dr = new DetailResult
+                        {
+                            CatalogueInConfigId = cic.CatalogueInConfigId,
+                            IsActive = true,
+                            Point = 0,
+                        };
+                        details.Add(dr);
+                    }
+                    test.DetailResult = details;
+                    test.Point = 0;
+                }
                 db.SaveChanges();
 
                 return new RankPoint(test.RankId.ToString(), 0);
