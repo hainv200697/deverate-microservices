@@ -540,10 +540,10 @@ namespace TestManagementServices.Service
                                 pos = getRankPos(ranks, test.RankId);
                                 if (pos == -1)
                                 {
-                                    nextRank = getRankName(ranks, test.RankId);
+                                    nextRank = null;
                                     break;
                                 }
-                                nextRank = ranks[pos].Name;
+                                nextRank = ranks[pos + 1].Name;
                                 for (int k = 0; k < ranks[pos].CatalogueInRank.Count; k++)
                                 {
                                     CatalogueInRank cir = ranks[pos].CatalogueInRank.ToList()[k];
