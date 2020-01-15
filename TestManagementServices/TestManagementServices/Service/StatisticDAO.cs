@@ -471,8 +471,14 @@ namespace TestManagementServices.Service
                     .Select(o => new CatalogueDTO(o))
                     .ToList();
                 List<int> rankIds = db.RankInConfig
+                    .OrderBy(r => r.Point)
                     .Where(r => r.ConfigId == test.ConfigId)
                     .Select(r => r.RankId)
+                    .ToList();
+                List<Rank> ranks = db.Rank
+                    .Include(r => r.CatalogueInRank)
+                    .ThenInclude(r => r.Catalogue)
+                    .Where(r => rankIds.Contains(r.RankId))
                     .ToList();
                 List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
                     .Include(c => c.Catalogue)
@@ -503,18 +509,19 @@ namespace TestManagementServices.Service
                     for (int j = 0; j < catas.Count; j++)
                     {
                         if (test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId == catas[j].catalogueId)
-                        {   
+                        {
+                            int pos = 0;
                             catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
                             if (test.Rank == null && test.Point != null)
                             {
-                                for (int k = 0; k < catalogueInRanks.Count; k++)
+                                
+                                nextRank = ranks[pos].Name;
+                                for (int k = 0; k < ranks[pos].CatalogueInRank.Count; k++)
                                 {
-                                    int pos = k + 1;
-                                    if (pos > catalogueInRanks.Count - 1) continue;
-                                    if (catalogueInRanks[pos].CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catalogueInRanks[pos].RankId == test.PotentialRankId)
+                                    CatalogueInRank cir = ranks[pos].CatalogueInRank.ToList()[k];
+                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catas[i].catalogueId == cir.CatalogueId)
                                     {
-                                        nextRank = catalogueInRanks[pos].Rank.Name;
-                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
+                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
                                         if (catas[i].differentPoint >= 0)
                                         {
                                             catas[i].differentPoint = 0;
@@ -525,18 +532,24 @@ namespace TestManagementServices.Service
                                         }
                                         break;
                                     }
+
                                 }
                             }
                             else if(test.RankId == test.PotentialRankId)
                             {
-                                for(int k = 0; k < catalogueInRanks.Count; k++)
+                                pos = getRankPos(ranks, test.RankId);
+                                if (pos == -1)
                                 {
-                                    int pos = k + 1;
-                                    if (pos > catalogueInRanks.Count - 1) continue;
-                                    if (catalogueInRanks[k].CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catalogueInRanks[k].RankId == test.PotentialRankId)
+                                    nextRank = getRankName(ranks, test.RankId);
+                                    break;
+                                }
+                                nextRank = ranks[pos].Name;
+                                for (int k = 0; k < ranks[pos].CatalogueInRank.Count; k++)
+                                {
+                                    CatalogueInRank cir = ranks[pos].CatalogueInRank.ToList()[k];
+                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catas[i].catalogueId == cir.CatalogueId)
                                     {
-                                        nextRank = catalogueInRanks[pos].Rank.Name;
-                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - catalogueInRanks[pos].Point;
+                                        catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
                                         if (catas[i].differentPoint >= 0)
                                         {
                                             catas[i].differentPoint = 0;
@@ -547,6 +560,7 @@ namespace TestManagementServices.Service
                                         }
                                         break;
                                     }
+
                                 }
                             }
                             else
@@ -580,6 +594,33 @@ namespace TestManagementServices.Service
                     test.RankId, (test.Rank == null ? AppConstrain.UNKNOWN_RANK : test.Rank.Name),
                     test.PotentialRankId, potentialRank, lowerTestPercent, nextRank);
             }
+        }
+
+        public static string getRankName(List<Rank> ranks, int? rankId)
+        {
+            for (int i = 0; i < ranks.Count; i++)
+            {
+                if (ranks[i].RankId == rankId)
+                {
+                    return ranks[i].Name;
+                }
+            }
+            return null;
+        }
+        public static int getRankPos(List<Rank> ranks, int? rankId)
+        {
+            for(int i = 0; i < ranks.Count; i++)
+            {
+                if(ranks[i].RankId == rankId)
+                {
+                    if(i == ranks.Count - 1)
+                    {
+                        return -1;
+                    }
+                    return i;
+                }
+            }
+            return -1;
         }
 
         /// <summary>
