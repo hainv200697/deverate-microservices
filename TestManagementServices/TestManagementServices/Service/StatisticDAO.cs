@@ -186,6 +186,7 @@ namespace TestManagementServices.Service
                 return context.Test
                     .Include(x => x.Rank)
                     .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .OrderBy(x => x.CreateDate)
                     .GroupBy(t => t.Rank.Name)
                     .Select(g => new RankApplicantStatistic { name = g.Key, value = g.Count() })
                     .ToList();
@@ -221,6 +222,7 @@ namespace TestManagementServices.Service
                 var tests = context.Test
                     .Include(x => x.DetailResult)
                     .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .OrderBy(x => x.CreateDate)
                     .ToList();
                 foreach(var test in tests)
                 {
