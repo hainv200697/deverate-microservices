@@ -112,17 +112,15 @@ namespace ResourceServices.Service
             }
         }
 
-        public static void ChangeStatusConfiguration(List<ConfigurationDTO> configurationDTO)
+        public static void ChangeStatusConfiguration(List<int> configIds, bool isActive)
         {
             using (DeverateContext db = new DeverateContext())
             {
-                foreach (var item in configurationDTO)
-                {
-                    Configuration configuration = db.Configuration.SingleOrDefault(con => con.ConfigId == item.configId);
-                    configuration.IsActive = item.isActive;
-                    db.Configuration.Update(configuration);
-                    db.SaveChanges();
-                }
+                db.Configuration
+                    .Where(x => configIds.Contains(x.ConfigId))
+                    .ToList()
+                    .ForEach(x => x.IsActive = isActive);
+                db.SaveChanges();
             }
         }
     }

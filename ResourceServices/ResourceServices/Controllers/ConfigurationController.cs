@@ -102,11 +102,11 @@ namespace ResourceServices.Controllers
 
         [Route("ChangeStatusConfiguration")]
         [HttpPut]
-        public ActionResult<IEnumerable<string>> ChangeStatusConfiguration([FromBody] List<ConfigurationDTO> configuration)
+        public IActionResult ChangeStatusConfiguration([FromBody] List<int> configIds, bool isActive)
         {
             try
             {
-                ConfigurationDAO.ChangeStatusConfiguration(configuration);
+                ConfigurationDAO.ChangeStatusConfiguration(configIds, isActive);
                 return Ok(Message.changeStatusConfigSucceed);
             }
             catch (Exception)
