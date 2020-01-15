@@ -171,6 +171,92 @@ namespace TestManagementServices.Service
             }
         }
 
+        internal static object RankStatisticApplicant(int configId, DateTime? from, DateTime? to)
+        {
+            using(DeverateContext context = new DeverateContext())
+            {
+                if (from == null)
+                {
+                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).StartDate;
+                }
+                if (to == null)
+                {
+                    to = DateTime.UtcNow;
+                }
+                return context.Test
+                    .Include(x => x.Rank)
+                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .GroupBy(t => t.Rank.Name)
+                    .Select(g => new RankApplicantStatistic { name = g.Key, value = g.Count() })
+                    .ToList();
+            }
+        }
+
+        public static List<CatalogueStatistic> CatalogueStatisticApplicant(int configId, DateTime? from, DateTime? to)
+        {
+            using(DeverateContext context = new DeverateContext())
+            {
+                List<CatalogueStatistic> result = new List<CatalogueStatistic>();
+                var configuration = context.Configuration
+                                            .Include(x => x.CatalogueInConfiguration)
+                                            .ThenInclude(x => x.Catalogue)
+                                            .FirstOrDefault(x => x.ConfigId == configId);
+                foreach(var catalogueInConfig in configuration.CatalogueInConfiguration)
+                {
+                    result.Add(new CatalogueStatistic
+                    {
+                        CatalogueInConfigId = catalogueInConfig.CatalogueInConfigId,
+                        catalogueName = catalogueInConfig.Catalogue.Name,
+                        series = new List<CatalogueSeriesItem>()
+                    });
+                }
+                if (from == null)
+                {
+                    from = configuration.StartDate;
+                }
+                if (to == null)
+                {
+                    to = DateTime.UtcNow;
+                }
+                var tests = context.Test
+                    .Include(x => x.DetailResult)
+                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .ToList();
+                foreach(var test in tests)
+                {
+                    var date = test.CreateDate.Value.ToString("dd/MM/yyyy");
+                    foreach(var detailResult in test.DetailResult)
+                    {
+                        var index = result.FindIndex(x => x.CatalogueInConfigId == detailResult.CatalogueInConfigId);
+                        var seriesIndex = result[index].series.FindIndex(x => x.date == date);
+                        if (seriesIndex >= 0)
+                        {
+                            result[index].series[seriesIndex].point += detailResult.Point;
+                            result[index].series[seriesIndex].numberTest++;
+                        } else
+                        {
+                            result[index].series.Add(new CatalogueSeriesItem
+                            {
+                                date = date,
+                                point = detailResult.Point,
+                                numberTest = 1
+                            });
+                        }
+                    }
+                }
+
+                // Average for series
+                foreach(var catalogueStatistic in result)
+                {
+                    foreach(var catalogueseriesItem in catalogueStatistic.series)
+                    {
+                        catalogueseriesItem.point = catalogueseriesItem.point / catalogueseriesItem.numberTest;
+                    }
+                }
+                return result;
+            }
+        }
+
         /// <summary>
         /// Thông kê chi tiết điểm số trong công ty
         /// </summary>

@@ -12,7 +12,7 @@ namespace TestManagementServices.Service
 {
     public class SystemDAO
     {
-        public static string SendTestMail(int? configId, bool isUpdate)
+        public static string SendTestMail(int configId, bool isUpdate)
         {
             using (DeverateContext db = new DeverateContext())
             {

@@ -65,7 +65,7 @@ namespace TestManagementServices.Controllers
                 int applicantId = SystemDAO.GetApplicantId(userTest.testId);
                 return Ok(applicantId);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -232,6 +232,32 @@ namespace TestManagementServices.Controllers
                     return BadRequest();
                 }
                 return Ok(check);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("CatalogueStatisticApplicant")]
+        public IActionResult CatalogueStatisticApplicant(int configId, DateTime? from, DateTime? to)
+        {
+            try
+            {
+                return Ok(StatisticDAO.CatalogueStatisticApplicant(configId, from, to));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("RankStatisticApplicant")]
+        public IActionResult RankStatisticApplicant(int configId, DateTime? from, DateTime? to)
+        {
+            try
+            {
+                return Ok(StatisticDAO.RankStatisticApplicant(configId, from, to));
             }
             catch (Exception)
             {
