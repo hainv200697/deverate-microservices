@@ -857,7 +857,9 @@ namespace TestManagementServices.Service
                     detail.Point = cataloguePoints[i].cataloguePoint;
                     detail.IsActive = true;
                     detail.TestId = test.TestId;
+                    detail.CatalogueInConfig = db.CatalogueInConfiguration.Where(c => c.CatalogueInConfigId == detail.CatalogueInConfigId).FirstOrDefault();
                     details.Add(detail);
+                    
                     totalPoint += point;
                 }
                 if (details.Count > 0)
