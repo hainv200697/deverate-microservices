@@ -630,7 +630,7 @@ namespace TestManagementServices.Service
                 {
                     anss.ForEach(a => answers.Add(new AnswerDTO(a)));
                     TestAnswerDTO testAnswer = new TestAnswerDTO(answers, userTest.testId);
-                    totalPoint = CalculateResultPoint(testAnswer, test, test.Config.CompanyId, userTest.testId, test.ConfigId);
+                    totalPoint = CalculateResultPoint(testAnswer, test, userTest.testId, test.ConfigId);
                     List<int> rankIds = new List<int>();
                     List<RankInConfig> rankInConfigs = db.RankInConfig
                         .Where(r => r.ConfigId == test.ConfigId)
@@ -696,12 +696,29 @@ namespace TestManagementServices.Service
                             }
                         }
                     }
-
                     test.PotentialRankId = potentialRankId;
                     test.Point = totalPoint;
                 }
+                else
+                {
+                    List<CatalogueInConfiguration> catalogueInConfigurations = db.CatalogueInConfiguration
+                        .Where(c => c.ConfigId == test.ConfigId)
+                        .ToList();
+                    List<DetailResult> details = new List<DetailResult>();
+                    foreach(CatalogueInConfiguration cic in catalogueInConfigurations)
+                    {
+                        DetailResult dr = new DetailResult
+                        {
+                            CatalogueInConfigId = cic.CatalogueInConfigId,
+                            IsActive = true,
+                            Point = 0,
+                        };
+                        details.Add(dr);
+                    }
+                    test.DetailResult = details;
+                    test.Point = 0;
+                }
                 db.SaveChanges();
-
                 return new RankPoint(test.RankId.ToString(), 0);
             }
         }
@@ -736,7 +753,6 @@ namespace TestManagementServices.Service
                 {
                     questionIds.Add(userTest.questionInTest[i].questionId);
                 }
-
                 var qitss = db.QuestionInTest.Where(o => questionIds.Contains(o.QuestionId) && o.TestId == userTest.testId).ToList();
                 for (int i = 0; i < qitss.Count; i++)
                 {
@@ -751,7 +767,6 @@ namespace TestManagementServices.Service
                             {
                                 qitss[i].AnswerId = userTest.questionInTest[j].answerId;
                             }
-                            
                     }
 
                 }
@@ -768,47 +783,13 @@ namespace TestManagementServices.Service
         {
             using(DeverateContext db = new DeverateContext())
             {
-
-                List<ConfigurationRankDTO> rankDTOs = new List<ConfigurationRankDTO>();
-                int numbOfCatalogue = test.Config.CatalogueInConfiguration.Count;
-                List<int> rankIds = new List<int>();
-                List<RankInConfig> rankInConfigs = db.RankInConfig
+                List<ConfigurationRankDTO> rankInConfigs = db.RankInConfig
+                    .OrderBy(r => r.Point)
                     .Where(r => r.ConfigId == test.ConfigId)
+                    .Select(r => new ConfigurationRankDTO(r.RankId, r.Rank.Name, r.Point))
                     .ToList();
-                rankInConfigs.ForEach(r => rankIds.Add(r.RankId));
-                List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
-                    .Include(c => c.Rank)
-                    .Where(r => rankIds.Contains(r.RankId))
-                    .ToList();
-                foreach (CatalogueInRank cir in catalogueInRanks)
-                {
-                    if(rankDTOs.Count > 0)
-                    {
-                        bool isContain = false;
-                        for(int i = 0; i < rankDTOs.Count; i++)
-                        {
-                            if(rankDTOs[i].rankId == cir.RankId)
-                            {
-                                isContain = true;
-                                rankDTOs[i].point += (cir.Point / numbOfCatalogue);
-                                break;
-                            }
-                        }
-                        if (isContain == false)
-                        {
-                            rankDTOs.Add(new ConfigurationRankDTO(cir.RankId, cir.Rank.Name,
-                                (cir.Point / numbOfCatalogue)));
-                        }
-                    }
-                    else
-                    {
-                        rankDTOs.Add(new ConfigurationRankDTO(cir.RankId, cir.Rank.Name,
-                            (cir.Point / numbOfCatalogue)));
-                    }
-                }
-                return rankDTOs;
+                return rankInConfigs;
             }
-
         }
 
         /// <summary>
@@ -820,29 +801,14 @@ namespace TestManagementServices.Service
         /// <param name="testId"></param>
         /// <param name="configId"></param>
         /// <returns></returns>
-        public static double CalculateResultPoint(TestAnswerDTO answers, Test test, int? companyId, int? testId, int configId)
+        public static double CalculateResultPoint(TestAnswerDTO answers, Test test, int? testId, int configId)
         {
             using (DeverateContext db = new DeverateContext())
             {
                 double totalPoint = 0;
-                List<CataloguePointDTO> defaultCataloguePoints = CalculateCataloguePoints(db, answers, companyId, testId);
-                List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
+                List<CataloguePointDTO> cataloguePoints = CalculateCataloguePoints(db, answers, configId, testId);
                 List<CatalogueWeightPointDTO> catalogueWeightPoints = GetWeightPoints(answers.testId);
-                for (int i = 0; i < defaultCataloguePoints.Count; i++)
-                {
-                    for (int j = 0; j < catalogueWeightPoints.Count; j++)
-                    {
-                        if (defaultCataloguePoints[i].catalogueId == catalogueWeightPoints[j].catalogueId)
-                        {
-                            if (!cataloguePoints.Contains(defaultCataloguePoints[i]))
-                            {
-                                cataloguePoints.Add(defaultCataloguePoints[i]);
-                            }
 
-                            break;
-                        }
-                    }
-                }
                 List<int> catalogueIds = new List<int>();
                 cataloguePoints.ForEach(c => catalogueIds.Add(c.catalogueId));
                 List<CatalogueInConfiguration> catalogueInConfigurations = db.CatalogueInConfiguration.Where(c => c.ConfigId == configId).ToList();
@@ -870,7 +836,9 @@ namespace TestManagementServices.Service
                     detail.Point = cataloguePoints[i].cataloguePoint;
                     detail.IsActive = true;
                     detail.TestId = test.TestId;
+                    detail.CatalogueInConfig = db.CatalogueInConfiguration.Where(c => c.CatalogueInConfigId == detail.CatalogueInConfigId).FirstOrDefault();
                     details.Add(detail);
+                    
                     totalPoint += point;
                 }
                 if (details.Count > 0)
@@ -913,9 +881,9 @@ namespace TestManagementServices.Service
         /// <param name="companyId"></param>
         /// <param name="testId"></param>
         /// <returns></returns>
-        public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers, int? companyId, int? testId)
+        public static List<CataloguePointDTO> CalculateCataloguePoints(DeverateContext db, TestAnswerDTO answers, int configId, int? testId)
         {
-            var cataInCompany = db.Catalogue.Where(c => c.CompanyId == companyId).ToList();
+            var cataInCompany = db.CatalogueInConfiguration.Where(c => c.ConfigId == configId).Select(c => c.Catalogue).ToList();
             List<CataloguePointDTO> cataloguePoints = new List<CataloguePointDTO>();
             List<AnswerDTO> anss = new List<AnswerDTO>(answers.answers);
             List<int?> questIds = new List<int?>();
