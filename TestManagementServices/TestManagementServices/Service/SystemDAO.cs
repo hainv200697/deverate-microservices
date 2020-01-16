@@ -696,7 +696,6 @@ namespace TestManagementServices.Service
                             }
                         }
                     }
-
                     test.PotentialRankId = potentialRankId;
                     test.Point = totalPoint;
                 }
@@ -720,7 +719,6 @@ namespace TestManagementServices.Service
                     test.Point = 0;
                 }
                 db.SaveChanges();
-
                 return new RankPoint(test.RankId.ToString(), 0);
             }
         }
@@ -755,7 +753,6 @@ namespace TestManagementServices.Service
                 {
                     questionIds.Add(userTest.questionInTest[i].questionId);
                 }
-
                 var qitss = db.QuestionInTest.Where(o => questionIds.Contains(o.QuestionId) && o.TestId == userTest.testId).ToList();
                 for (int i = 0; i < qitss.Count; i++)
                 {
@@ -770,7 +767,6 @@ namespace TestManagementServices.Service
                             {
                                 qitss[i].AnswerId = userTest.questionInTest[j].answerId;
                             }
-                            
                     }
 
                 }
@@ -787,13 +783,11 @@ namespace TestManagementServices.Service
         {
             using(DeverateContext db = new DeverateContext())
             {
-                List<int> rankIds = new List<int>();
                 List<ConfigurationRankDTO> rankInConfigs = db.RankInConfig
+                    .OrderBy(r => r.Point)
                     .Where(r => r.ConfigId == test.ConfigId)
                     .Select(r => new ConfigurationRankDTO(r.RankId, r.Rank.Name, r.Point))
                     .ToList();
-                rankInConfigs = rankInConfigs.OrderBy(r => r.point).ToList();
-                rankInConfigs.ForEach(r => rankIds.Add(r.rankId));
                 return rankInConfigs;
             }
         }
