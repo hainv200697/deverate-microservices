@@ -787,9 +787,6 @@ namespace TestManagementServices.Service
         {
             using(DeverateContext db = new DeverateContext())
             {
-
-                //List<ConfigurationRankDTO> rankDTOs = new List<ConfigurationRankDTO>();
-                //int numbOfCatalogue = test.Config.CatalogueInConfiguration.Count;
                 List<int> rankIds = new List<int>();
                 List<ConfigurationRankDTO> rankInConfigs = db.RankInConfig
                     .Where(r => r.ConfigId == test.ConfigId)
@@ -797,39 +794,8 @@ namespace TestManagementServices.Service
                     .ToList();
                 rankInConfigs = rankInConfigs.OrderBy(r => r.point).ToList();
                 rankInConfigs.ForEach(r => rankIds.Add(r.rankId));
-                //List<CatalogueInRank> catalogueInRanks = db.CatalogueInRank
-                //    .Include(c => c.Rank)
-                //    .Where(r => rankIds.Contains(r.RankId))
-                //    .ToList();
-                //foreach (CatalogueInRank cir in catalogueInRanks)
-                //{
-                //    if (rankDTOs.Count > 0)
-                //    {
-                //        bool isContain = false;
-                //        for (int i = 0; i < rankDTOs.Count; i++)
-                //        {
-                //            if (rankDTOs[i].rankId == cir.RankId)
-                //            {
-                //                isContain = true;
-                //                rankDTOs[i].point += (cir.Point / numbOfCatalogue);
-                //                break;
-                //            }
-                //        }
-                //        if (isContain == false)
-                //        {
-                //            rankDTOs.Add(new ConfigurationRankDTO(cir.RankId, cir.Rank.Name,
-                //                (cir.Point / numbOfCatalogue)));
-                //        }
-                //    }
-                //    else
-                //    {
-                //        rankDTOs.Add(new ConfigurationRankDTO(cir.RankId, cir.Rank.Name,
-                //            (cir.Point / numbOfCatalogue)));
-                //    }
-                //}
                 return rankInConfigs;
             }
-
         }
 
         /// <summary>

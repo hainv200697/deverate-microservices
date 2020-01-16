@@ -594,28 +594,12 @@ namespace TestManagementServices.Service
                     test.PotentialRankId, potentialRank, lowerTestPercent, nextRank);
             }
         }
-
-        public static string getRankName(List<Rank> ranks, int? rankId)
-        {
-            for (int i = 0; i < ranks.Count; i++)
-            {
-                if (ranks[i].RankId == rankId)
-                {
-                    return ranks[i].Name;
-                }
-            }
-            return null;
-        }
         public static int getRankPos(List<Rank> ranks, int? rankId)
         {
-            for(int i = 0; i < ranks.Count; i++)
+            for(int i = 0; i < ranks.Count - 1; i++)
             {
                 if(ranks[i].RankId == rankId)
                 {
-                    if(i == ranks.Count - 1)
-                    {
-                        return -1;
-                    }
                     return i;
                 }
             }
