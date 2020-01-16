@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using AuthenServices.Models;
 using Microsoft.AspNetCore.Mvc;
 using TestManagementServices.Model;
-using TestManagementServices.Models;
 using TestManagementServices.Service;
 
 namespace TestManagementServices.Controllers
@@ -13,16 +9,8 @@ namespace TestManagementServices.Controllers
     [Route("api/[controller]")]
     public class SystemController : Controller
     {
-        ResponseMessage rm = new ResponseMessage();
-        DeverateContext context;
-
-        public SystemController(DeverateContext context)
-        {
-            this.context = context;
-        }
-
         [HttpGet("SendTestMail/{configId}")]
-        public ActionResult<IEnumerable<string>> SendTestMail(int? configId)
+        public ActionResult SendTestMail(int configId)
         {
 
             string message = SystemDAO.SendTestMail(configId, false);
@@ -41,7 +29,7 @@ namespace TestManagementServices.Controllers
             {
                 return Ok(StatisticDAO.GetStatisticByTestId(testId));
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return StatusCode(500);
             }
@@ -67,7 +55,6 @@ namespace TestManagementServices.Controllers
             try
             {
                 SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
-
                 return Ok();
             }
             catch (Exception)
@@ -82,7 +69,6 @@ namespace TestManagementServices.Controllers
             try
             {
                 SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
-
                 return Ok();
             }
             catch(Exception)
