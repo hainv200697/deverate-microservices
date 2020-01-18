@@ -19,7 +19,7 @@ namespace ResourceServices.Models
         public int Duration { get; set; }
         public bool Type { get; set; }
         public bool IsActive { get; set; }
-        public int ExpiredDate { get; set; }
+        public int ExpiredDays { get; set; }
 
         public virtual Company Company { get; set; }
         public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }

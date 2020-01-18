@@ -71,7 +71,7 @@ namespace ResourceServices.Service
                 configuration.CompanyId = configurationDTO.companyId;
                 configuration.Title = configurationDTO.title;
                 configuration.CreateDate = DateTime.UtcNow;
-                configuration.ExpiredDate = configurationDTO.expiredDate;
+                configuration.ExpiredDays = configurationDTO.expiredDays;
                 configuration.Duration = configurationDTO.duration;
                 configuration.Title = configurationDTO.title;
                 configuration.Type = configurationDTO.type;
