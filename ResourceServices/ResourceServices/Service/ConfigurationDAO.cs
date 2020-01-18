@@ -31,7 +31,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Where(x => x.EndDate.Value >= DateTime.UtcNow.AddHours(1).AddMinutes(x.Duration)  && x.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
+                return db.Configuration.Where(x => x.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
             }
         }
 
@@ -71,8 +71,7 @@ namespace ResourceServices.Service
                 configuration.CompanyId = configurationDTO.companyId;
                 configuration.Title = configurationDTO.title;
                 configuration.CreateDate = DateTime.UtcNow;
-                configuration.StartDate = configurationDTO.startDate;
-                configuration.EndDate = configurationDTO.endDate;
+                configuration.ExpiredDate = configurationDTO.expiredDate;
                 configuration.Duration = configurationDTO.duration;
                 configuration.Title = configurationDTO.title;
                 configuration.Type = configurationDTO.type;

@@ -14,8 +14,7 @@ namespace ResourceServices.Model
         public int companyId { get; set; }
         public string title { get; set; }
         public DateTime createDate { get; set; }
-        public DateTime startDate { get; set; }
-        public DateTime? endDate { get; set; }
+        public int expiredDate { get; set; }
         public int duration { get; set; }
         public bool isActive { get; set; }
         public bool type { get; set; }
@@ -32,8 +31,7 @@ namespace ResourceServices.Model
             this.companyId = configuration.CompanyId;
             this.title = configuration.Title;
             this.createDate = configuration.CreateDate;
-            this.startDate = configuration.StartDate;
-            this.endDate = configuration.EndDate;
+            this.expiredDate = configuration.ExpiredDate;
             this.duration = configuration.Duration;
             this.type = configuration.Type;
             this.isActive = configuration.IsActive;
