@@ -21,7 +21,7 @@ namespace TestManagementServices.Service
                                  join t in db.Test on c.ConfigId equals t.ConfigId
                                  join a in db.Account on t.AccountId equals a.AccountId
                                  where c.ConfigId == configId && c.IsActive == true
-                                 select new TestMailDTO(a.Email, a.Fullname, c.Title, c.StartDate, c.EndDate,
+                                 select new TestMailDTO(a.Email, a.Fullname, c.Title, c.CreateDate, c.ExpiredDays,
                                  isUpdate == false ? t.Code : null, t.TestId.ToString());
                     if (result.ToList().Count == 0)
                     {
@@ -134,7 +134,7 @@ namespace TestManagementServices.Service
         /// <param name="applicants"></param>
         /// <param name="oneForAll"></param>
         /// <returns></returns>
-        public static string GenerateTestForApplicants(string configId, List<ApplicantDTO> applicants, bool oneForAll = false)
+        public static string GenerateTestForApplicants(string configId, List<ApplicantDTO> applicants, DateTime startDate, DateTime endDate, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -156,7 +156,7 @@ namespace TestManagementServices.Service
                 {
                     return Message.noApplicantException;
                 }
-                CreateTestForApplicant(applicants, con, oneForAll);
+                CreateTestForApplicant(applicants, con, startDate, endDate, oneForAll);
                 List<int> applicantIds = new List<int>();
                 foreach (ApplicantDTO applicant in applicants)
                 {
@@ -210,8 +210,10 @@ namespace TestManagementServices.Service
         /// <param name="accountIds"></param>
         /// <param name="configId"></param>
         /// <param name="oneForAll"></param>
+        /// <param name="startDate"></param>
+        /// <param name="endDate"></param>
         /// <returns></returns>
-        public static string GenerateTest(List<int> accountIds, string configId, bool oneForAll = false)
+        public static string GenerateTest(List<int> accountIds, string configId, DateTime startDate, DateTime endDate, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -237,7 +239,7 @@ namespace TestManagementServices.Service
                 {
                     return Message.noEmployeeException;
                 }
-                List<int> testIds = CreateTestForEmployee(accounts, con, oneForAll);
+                List<int> testIds = CreateTestForEmployee(accounts, con, startDate, endDate, oneForAll);
                 SendMailQuizCode(testIds, true);
                 return null;
             }
@@ -292,7 +294,7 @@ namespace TestManagementServices.Service
         /// <param name="applicants"></param>
         /// <param name="config"></param>
         /// <param name="oneForAll"></param>
-        public static void CreateTestForApplicant(List<ApplicantDTO> applicants, Configuration config, bool oneForAll = false)
+        public static void CreateTestForApplicant(List<ApplicantDTO> applicants, Configuration config, DateTime startDate, DateTime endDate, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -336,7 +338,9 @@ namespace TestManagementServices.Service
                             CreateDate = DateTime.UtcNow,
                             Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
-                            IsActive = true
+                            IsActive = true,
+                            StartDate = startDate,
+                            EndDate = endDate
                         };
                         tests.Add(t);
                     }
@@ -373,7 +377,8 @@ namespace TestManagementServices.Service
                             CreateDate = DateTime.UtcNow,
                             Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
-                            IsActive = true
+                            IsActive = true,
+                            EndDate = DateTime.UtcNow.AddDays(config.ExpiredDays)
                         };
                         tests.Add(t);
                         questions = new List<QuestionDTO>();
@@ -391,7 +396,7 @@ namespace TestManagementServices.Service
         /// <param name="config"></param>
         /// <param name="oneForAll"></param>
         /// <returns></returns>
-        public static List<int> CreateTestForEmployee(List<AccountDTO> accounts, Configuration config, bool oneForAll = false)
+        public static List<int> CreateTestForEmployee(List<AccountDTO> accounts, Configuration config, DateTime startDate, DateTime endDate, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -444,7 +449,9 @@ namespace TestManagementServices.Service
                             CreateDate = DateTime.UtcNow,
                             Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
-                            IsActive = true
+                            IsActive = true,
+                            StartDate = startDate,
+                            EndDate = endDate
                         };
                         tests.Add(t);
                     }
@@ -944,8 +951,8 @@ namespace TestManagementServices.Service
                 .Include(t => t.Account)
                 .Where(t => t.AccountId == accountId && t.IsActive == true)
                 .Select(t => new TestInfoDTO(t.ConfigId, t.AccountId,
-                t.TestId, t.Config.Title, null, t.Status, t.Config.StartDate,
-                t.Config.EndDate, t.Config.IsActive))
+                t.TestId, t.Config.Title, null, t.Status, t.Config.CreateDate,
+                t.Config.ExpiredDays, t.Config.IsActive))
                 .ToList();
             return tests;
         }
@@ -1074,8 +1081,8 @@ namespace TestManagementServices.Service
                              x.Account.Email,
                              x.Account.Fullname,
                              x.Config.Title,
-                             x.Config.StartDate,
-                             x.Config.EndDate,
+                             x.Config.CreateDate,
+                             x.Config.ExpiredDays,
                              x.Code,
                              x.TestId.ToString()
                              )
@@ -1089,8 +1096,8 @@ namespace TestManagementServices.Service
                         x.Applicant.Email,
                         x.Applicant.Fullname,
                         x.Config.Title,
-                        x.Config.StartDate,
-                        x.Config.EndDate,
+                        x.Config.CreateDate,
+                        x.Config.ExpiredDays,
                         x.Code,
                         x.TestId.ToString()
                         )

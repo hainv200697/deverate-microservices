@@ -51,11 +51,11 @@ namespace TestManagementServices.RabbitMQ
                 {
                     case AppConstrain.GEN_TEST_CONSUMER:
                         EmployeeTestDTO employeeTest = JsonConvert.DeserializeObject<EmployeeTestDTO>(message);
-                        SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
+                        SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.startDate, employeeTest.endDate, employeeTest.oneForAll);
                         break;
                     case AppConstrain.GEN_TEST_APPLICANT:
                         ApplicantTestDTO applicantTest = JsonConvert.DeserializeObject<ApplicantTestDTO>(message);
-                        SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
+                        SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants, applicantTest.startDate, applicantTest.endDate);
                         break;
                 }
             };

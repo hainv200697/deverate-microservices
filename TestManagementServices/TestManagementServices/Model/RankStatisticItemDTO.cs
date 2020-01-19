@@ -12,7 +12,7 @@ namespace TestManagementServices.Model
         public int configId { get; set; }
         public List<RankDTO> series { get; set; }
         public DateTime createDate { get; set; }
-        public DateTime? endDate { get; set; }
+        public int expiredDays { get; set; }
         public string name { get; set; }
         public TestedItemDTO tested { get; set; }
         public TotalEmpItemDTO totalAccount { get; set; }
@@ -21,12 +21,12 @@ namespace TestManagementServices.Model
 
         public RankStatisticItemDTO() { }
         public RankStatisticItemDTO(int configId, List<RankDTO> series,
-            DateTime createDate, DateTime? endDate, string name, TestedItemDTO tested, TotalEmpItemDTO totalAccount)
+            DateTime createDate, int expiredDays, string name, TestedItemDTO tested, TotalEmpItemDTO totalAccount)
         {
             this.configId = configId;
             this.series = series;
             this.createDate = createDate;
-            this.endDate = endDate;
+            this.expiredDays = expiredDays;
             this.name = name;
             this.tested = tested;
             this.totalAccount = totalAccount;

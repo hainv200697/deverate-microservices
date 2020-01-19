@@ -82,7 +82,7 @@ namespace TestManagementServices.Service
                     gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
-                    gsi.endDate = configurations[j].EndDate;
+                    gsi.expiredDays = configurations[j].ExpiredDays;
                     gsi.name = configurations[j].Title;
                     gsi.numberOfFinishedTest = numberOfFinishedTest > totalTest ? totalTest : numberOfFinishedTest;
                     gsi.totalTest = totalTest;
@@ -128,7 +128,7 @@ namespace TestManagementServices.Service
                     RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
                     rankStatisticItem.configId = applicantConfigs[j].ConfigId;
                     rankStatisticItem.createDate = applicantConfigs[j].CreateDate;
-                    rankStatisticItem.endDate = applicantConfigs[j].EndDate;
+                    rankStatisticItem.expiredDays = applicantConfigs[j].ExpiredDays;
                     rankStatisticItem.name = applicantConfigs[j].Title;
                     List<RankDTO> cloneRanks = new List<RankDTO>();
                     foreach (RankDTO r in ranks)
@@ -177,7 +177,7 @@ namespace TestManagementServices.Service
             {
                 if (from == null)
                 {
-                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).StartDate;
+                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).CreateDate;
                 }
                 if (to == null)
                 {
@@ -213,7 +213,7 @@ namespace TestManagementServices.Service
                 }
                 if (from == null)
                 {
-                    from = configuration.StartDate;
+                    from = configuration.CreateDate;
                 }
                 if (to == null)
                 {
@@ -379,7 +379,7 @@ namespace TestManagementServices.Service
                     RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
                     rankStatisticItem.configId = configurations[j].ConfigId;
                     rankStatisticItem.createDate = configurations[j].CreateDate;
-                    rankStatisticItem.endDate = configurations[j].EndDate;
+                    rankStatisticItem.expiredDays = configurations[j].ExpiredDays;
                     rankStatisticItem.name = configurations[j].Title;
                     List<RankDTO> cloneRanks = new List<RankDTO>();
                     foreach (RankDTO r in ranks)
@@ -490,7 +490,7 @@ namespace TestManagementServices.Service
                     gsi.configGPA = numberOfTest == 0 ? 0 : AppConstrain.RoundDownNumber(totalGPA / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
                     gsi.series = cloneCatalogues;
                     gsi.createDate = configurations[j].CreateDate;
-                    gsi.endDate = configurations[j].EndDate;
+                    gsi.expiredDays = configurations[j].ExpiredDays;
                     gsi.name = configurations[j].Title;
                     gsi.numberOfFinishedTest = numberOfFinishedTest > totalTest ? totalTest : numberOfFinishedTest;
                     gsi.totalTest = totalTest;
