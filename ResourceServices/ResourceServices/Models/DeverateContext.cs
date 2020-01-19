@@ -183,10 +183,6 @@ namespace ResourceServices.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
-
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(250);
@@ -300,7 +296,11 @@ namespace ResourceServices.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
                 entity.Property(e => e.FinishTime).HasColumnType("datetime");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
