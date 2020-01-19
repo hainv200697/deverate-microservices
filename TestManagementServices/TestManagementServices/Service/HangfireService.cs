@@ -48,7 +48,7 @@ namespace TestManagementServices.Service
                     var tests = context.Test
                         .Include(c => c.Config)
                         .Where(t => t.Status == "Pending"
-                        && ((t.Config.Type && DateTime.Compare(now, (t.Config.CreateDate.AddDays(t.Config.ExpiredDays))) > 0) ||
+                        && ((t.Config.Type && DateTime.Compare(now, (t.StartDate.AddDays(t.Config.ExpiredDays))) > 0) ||
                             (!t.Config.Type && (now - t.CreateDate.Value).TotalDays > 3)))
                         .ToList();
                     tests.ForEach(t => t.Status = "Expired");
