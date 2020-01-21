@@ -32,7 +32,7 @@ namespace ResourceServices.Service
             }
         }
 
-        public static void actionRequest(int configId,int accountId, bool isApprove)
+        public static void ActionRequest(int configId,int accountId, bool isApprove)
         {
             using (DeverateContext context = new DeverateContext())
             {

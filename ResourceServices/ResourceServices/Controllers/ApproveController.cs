@@ -30,7 +30,7 @@ namespace ResourceServices.Controllers
         {
             try
             {
-                ApproveDAO.actionRequest(configId,accountId,isApprove);
+                ApproveDAO.ActionRequest(configId,accountId,isApprove);
                 return Ok();
             }
             catch (Exception)
