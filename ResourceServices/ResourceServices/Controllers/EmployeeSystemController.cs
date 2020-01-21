@@ -20,14 +20,6 @@ namespace ResourceServices.Controllers
     [Route("api/[controller]")]
     public class EmployeeSystemController : Controller
     {
-
-        DeverateContext context;
-
-        public EmployeeSystemController(DeverateContext context)
-        {
-            this.context = context;
-        }
-
         [HttpPost("SystemCreateEmployee")]
         public ActionResult CreateEmployee([FromBody] List<MessageAccount> ListAccountGenerate)
         {
