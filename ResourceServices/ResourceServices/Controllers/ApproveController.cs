@@ -25,8 +25,8 @@ namespace ResourceServices.Controllers
             }
         }
 
-        [HttpGet("GetActionRequest")]
-        public ActionResult GetActionRequest(int configId,int accountId, bool isApprove)
+        [HttpGet("ApproveOrRejectRank")]
+        public ActionResult ApproveOrRejectRank(int configId,int accountId, bool isApprove)
         {
             try
             {
