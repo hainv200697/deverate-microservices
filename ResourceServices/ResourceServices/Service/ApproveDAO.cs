@@ -16,7 +16,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 var approve = context.Test.Include(x=> x.Rank).Include(x=> x.Account).ThenInclude(x=>x.Rank)
-                    .Where(x=> x.ConfigId == configId && x.IsApprove == null)
+                    .Where(x=> x.ConfigId == configId && x.IsApprove == null && x.Status == "Submitted")
                     .Select(x => new ApproveRankDTO
                     {
                         accountId = x.AccountId,
