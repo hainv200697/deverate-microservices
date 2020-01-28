@@ -27,7 +27,7 @@ namespace TestManagementServices.Controllers
         public IActionResult GetConfig(int testId)
         {
             ConfigurationDTO con = SystemDAO.GetConfig(context, testId);
-            if (con.status == "Pending" && con.accountId != null && DateTime.Compare(DateTime.UtcNow, con.startDate.Value.AddDays(con.expỉredDays)) > 0)
+            if (con.status == "Pending" && con.accountId != null && DateTime.Compare(DateTime.UtcNow, con.startDate.Value.AddDays(con.expiredDays)) > 0)
             {
                 SystemDAO.ExpireTest(testId);
                 con = SystemDAO.GetConfig(context, testId);
