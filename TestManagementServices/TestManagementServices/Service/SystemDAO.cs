@@ -498,7 +498,9 @@ namespace TestManagementServices.Service
                             CreateDate = DateTime.UtcNow,
                             Code = AppConstrain.GenerateCode(),
                             Status = AppConstrain.PENDING,
-                            IsActive = true
+                            IsActive = true,
+                            StartDate = startDate,
+                            EndDate = endDate
                         };
                         tests.Add(t);
                         questions = new List<QuestionDTO>();

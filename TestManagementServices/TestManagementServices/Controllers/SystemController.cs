@@ -58,7 +58,7 @@ namespace TestManagementServices.Controllers
                     employeeTest.startDate, employeeTest.endDate, employeeTest.oneForAll);
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return StatusCode(500);
             }
