@@ -97,5 +97,18 @@ namespace ResourceServices.Service
                 return config.FirstOrDefault();
             }
         }
+
+        public static void ChangeStatusConfiguration(List<int> configIds, bool isActive)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                db.Configuration
+                    .Where(x => configIds.Contains(x.ConfigId))
+                    .ToList()
+                    .ForEach(x => x.IsActive = isActive);
+                db.SaveChanges();
+            }
+        }
+
     }
 }
