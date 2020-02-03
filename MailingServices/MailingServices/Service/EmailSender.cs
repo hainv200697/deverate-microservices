@@ -69,6 +69,9 @@ namespace MailingServices.Service
                 StreamReader str = new StreamReader(FilePath);
                 string htmlBody = str.ReadToEnd();
                 htmlBody = htmlBody.Replace("[fullname]", testMailDTO.fullName);
+                htmlBody = htmlBody.Replace("[title]", testMailDTO.title);
+                htmlBody = htmlBody.Replace("[StartDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.startDate));
+                htmlBody = htmlBody.Replace("[EndDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.endDate));
                 htmlBody = htmlBody.Replace("[url]", "http://deverate-system.s3-website-ap-southeast-1.amazonaws.com/test/" + testMailDTO.testId);
                 htmlBody = htmlBody.Replace("[code]", testMailDTO.code);
                 str.Close();
