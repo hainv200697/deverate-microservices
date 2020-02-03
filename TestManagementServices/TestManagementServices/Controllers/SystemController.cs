@@ -54,10 +54,11 @@ namespace TestManagementServices.Controllers
         {
             try
             {
-                SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId, employeeTest.oneForAll);
+                SystemDAO.GenerateTest(employeeTest.accountIds, employeeTest.configId,
+                    employeeTest.startDate, employeeTest.endDate, employeeTest.oneForAll);
                 return Ok();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return StatusCode(500);
             }
@@ -68,7 +69,7 @@ namespace TestManagementServices.Controllers
         {
             try
             {
-                SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants);
+                SystemDAO.GenerateTestForApplicants(applicantTest.configId, applicantTest.applicants, applicantTest.startDate, applicantTest.endDate);
                 return Ok();
             }
             catch(Exception)
