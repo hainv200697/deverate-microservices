@@ -13,7 +13,7 @@ namespace ResourceServices.Controllers
     public class ApplicantController : Controller
     {
         [HttpPost("CreateApplicant")]
-        public ActionResult CreateApplicant([FromBody] List<ApplicantDTO> listApplicant, int configId)
+        public ActionResult CreateApplicant([FromBody] List<ApplicantDTO> listApplicant, int configId, DateTime startDate, DateTime endDate)
         {
             try
             {
@@ -30,7 +30,7 @@ namespace ResourceServices.Controllers
                 }
                 List<ApplicantDTO> applicants = new List<ApplicantDTO>();
                 applicants = ApplicantDAO.createApplicant(listApplicant);
-                ApplicantTestDTO appTest = new ApplicantTestDTO(configId, applicants);
+                ApplicantTestDTO appTest = new ApplicantTestDTO(configId, applicants,startDate,endDate);
                 Producer producer = new Producer();
                 producer.PublishMessage(JsonConvert.SerializeObject(appTest), "GenerateApplicantTest");
                 return Ok();
