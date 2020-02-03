@@ -21,7 +21,7 @@ namespace TestManagementServices.Service
                                  join t in db.Test on c.ConfigId equals t.ConfigId
                                  join a in db.Account on t.AccountId equals a.AccountId
                                  where c.ConfigId == configId && c.IsActive == true
-                                 select new TestMailDTO(a.Email, a.Fullname, c.Title, c.CreateDate, c.ExpiredDays,
+                                 select new TestMailDTO(a.Email, a.Fullname, c.Title, t.StartDate, t.EndDate,
                                  isUpdate == false ? t.Code : null, t.TestId.ToString());
                     if (result.ToList().Count == 0)
                     {
@@ -1083,8 +1083,8 @@ namespace TestManagementServices.Service
                              x.Account.Email,
                              x.Account.Fullname,
                              x.Config.Title,
-                             x.Config.CreateDate,
-                             x.Config.ExpiredDays,
+                             x.StartDate,
+                             x.EndDate,
                              x.Code,
                              x.TestId.ToString()
                              )
@@ -1098,8 +1098,8 @@ namespace TestManagementServices.Service
                         x.Applicant.Email,
                         x.Applicant.Fullname,
                         x.Config.Title,
-                        x.Config.CreateDate,
-                        x.Config.ExpiredDays,
+                        x.StartDate,
+                        x.EndDate,
                         x.Code,
                         x.TestId.ToString()
                         )
