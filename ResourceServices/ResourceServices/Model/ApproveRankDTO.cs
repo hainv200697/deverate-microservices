@@ -5,6 +5,7 @@ namespace AuthenServices.Model
 {
     public class ApproveRankDTO
     {
+        public int testId { get; set; }
         public int? accountId { get; set; }
         public string username { get; set; }
         public string fullname { get; set; }

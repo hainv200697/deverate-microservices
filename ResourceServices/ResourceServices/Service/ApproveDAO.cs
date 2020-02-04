@@ -16,10 +16,12 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 var newConfig = context.Configuration.OrderByDescending(c => c.CreateDate).FirstOrDefault();
+                List<Test> tests = new List<Test>();
                 var approve = context.Test.Include(x => x.Rank).Include(x => x.Account).ThenInclude(x => x.Rank)
                     .Where(x => x.ConfigId == configId && x.IsApprove == null && x.FinishTime != null)
                     .Select(x => new ApproveRankDTO
                     {
+                        testId = x.TestId,
                         accountId = x.AccountId,
                         fullname = x.Account.Fullname,
                         username = x.Account.Username,
@@ -34,6 +36,7 @@ namespace ResourceServices.Service
                     .Where(x => x.ConfigId == newConfig.ConfigId && x.IsApprove == null && x.FinishTime != null)
                     .Select(x => new ApproveRankDTO
                     {
+                        testId = x.TestId,
                         accountId = x.AccountId,
                         fullname = x.Account.Fullname,
                         username = x.Account.Username,
@@ -48,11 +51,17 @@ namespace ResourceServices.Service
                         {
                             if(item.accountId == newItem.accountId)
                             {
+                                Test test = new Test();
+                                test.TestId = item.testId;
+                                test.IsApprove = false;
+                                tests.Add(test);
                                 approve.Remove(item);
                             }
                         }
                     }
                 }
+                context.UpdateRange(tests);
+                context.SaveChanges();
                 return approve;
             }
         }
