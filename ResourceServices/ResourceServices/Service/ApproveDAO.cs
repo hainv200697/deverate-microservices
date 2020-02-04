@@ -15,8 +15,9 @@ namespace ResourceServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                var approve = context.Test.Include(x=> x.Rank).Include(x=> x.Account).ThenInclude(x=>x.Rank)
-                    .Where(x=> x.ConfigId == configId && x.IsApprove == null)
+                var newConfig = context.Configuration.OrderByDescending(c => c.CreateDate).FirstOrDefault();
+                var approve = context.Test.Include(x => x.Rank).Include(x => x.Account).ThenInclude(x => x.Rank)
+                    .Where(x => x.ConfigId == configId && x.IsApprove == null && x.FinishTime != null)
                     .Select(x => new ApproveRankDTO
                     {
                         accountId = x.AccountId,
@@ -26,9 +27,33 @@ namespace ResourceServices.Service
                         accountRankName = x.Account.Rank.Name,
                         rankInTestId = x.RankId,
                         rankInTestName = x.Rank.Name,
-                    });
-
-                return approve.ToList();
+                    }).ToList();
+                if (newConfig.ConfigId != configId)
+                {
+                    var newApprove = context.Test.Include(x => x.Rank).Include(x => x.Account).ThenInclude(x => x.Rank)
+                    .Where(x => x.ConfigId == newConfig.ConfigId && x.IsApprove == null && x.FinishTime != null)
+                    .Select(x => new ApproveRankDTO
+                    {
+                        accountId = x.AccountId,
+                        fullname = x.Account.Fullname,
+                        username = x.Account.Username,
+                        accountRankId = x.Account.RankId,
+                        accountRankName = x.Account.Rank.Name,
+                        rankInTestId = x.RankId,
+                        rankInTestName = x.Rank.Name,
+                    }).ToList();
+                    foreach(var newItem in newApprove)
+                    {
+                        foreach (var item in approve.ToList())
+                        {
+                            if(item.accountId == newItem.accountId)
+                            {
+                                approve.Remove(item);
+                            }
+                        }
+                    }
+                }
+                return approve;
             }
         }
 
@@ -44,7 +69,6 @@ namespace ResourceServices.Service
                 }
                 context.Test.Update(test);
                 context.SaveChanges();
-
             }
         }
 
