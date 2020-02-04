@@ -554,6 +554,17 @@ namespace TestManagementServices.Service
             }
         }
 
+        public static List<Answer> GetAnswers(int questionId)
+        {
+            using(DeverateContext db = new DeverateContext())
+            {
+                List<Answer> answers = db.Answer
+                    .Where(a => a.QuestionId == questionId)
+                    .ToList();
+                return answers;
+            }
+        }
+
         /// <summary>
         /// Lấy số câu hỏi từng catalogue
         /// </summary>
