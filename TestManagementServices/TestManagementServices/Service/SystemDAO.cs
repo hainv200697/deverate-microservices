@@ -418,7 +418,7 @@ namespace TestManagementServices.Service
                             .Question.Take(catalogues[i].NumberQuestion).ToList();
                         foreach (Question q in tempQuestions)
                         {
-                            questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
+                            questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.Where(a => a.IsActive == true).ToList()));
                         }
 
                     }
@@ -475,7 +475,7 @@ namespace TestManagementServices.Service
                             List<Question> tempQuestions = catalogues[i].Catalogue.Question.Take(catalogues[i].NumberQuestion).ToList();
                             foreach (Question q in tempQuestions)
                             {
-                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
+                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.Where(a => a.IsActive == true).ToList()));
                             }
 
                         }
@@ -548,7 +548,7 @@ namespace TestManagementServices.Service
             {
                 List<AnswerDTO> answerDTOs = db.Answer
                 .Include(a => a.Question)
-                .Where(a => a.Question.QuestionId == questionId)
+                .Where(a => a.Question.QuestionId == questionId && a.IsActive == true)
                 .Select(a => new AnswerDTO(a)).ToList();
                 return answerDTOs;
             }
@@ -559,7 +559,7 @@ namespace TestManagementServices.Service
             using(DeverateContext db = new DeverateContext())
             {
                 List<Answer> answers = db.Answer
-                    .Where(a => a.QuestionId == questionId)
+                    .Where(a => a.QuestionId == questionId && a.IsActive == true)
                     .ToList();
                 return answers;
             }
