@@ -8,6 +8,8 @@ namespace TestManagementServices.Model
     public class ApplicantTestDTO
     {
         public string configId { get; set; }
+        public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
         public List<ApplicantDTO> applicants { get; set; }
         public DateTime startDate { get; set; }
         public DateTime endDate { get; set; }
