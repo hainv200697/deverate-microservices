@@ -26,11 +26,11 @@ namespace ResourceServices.Controllers
         }
 
         [HttpGet("ApproveOrRejectRank")]
-        public ActionResult ApproveOrRejectRank(int configId,int accountId, bool isApprove)
+        public ActionResult ApproveOrRejectRank(int testId, bool isApprove)
         {
             try
             {
-                ApproveDAO.ActionRequest(configId,accountId,isApprove);
+                ApproveDAO.ActionRequest(testId, isApprove);
                 return Ok();
             }
             catch (Exception)
