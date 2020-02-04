@@ -52,7 +52,7 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPost("SystemResendPassword")]
-        public ActionResult ResendPassword([FromBody] List<string> ListAccountSendPass, int? companyId)
+        public ActionResult ResendPassword([FromBody] List<string> ListAccountSendPass, int companyId)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace ResourceServices.Controllers
         }
 
         [HttpPut("SystemUpdateEmployeeStatus")]
-        public ActionResult UpdateEmployeeStatus([FromBody] List<int> listEmpId,bool? status)
+        public ActionResult UpdateEmployeeStatus([FromBody] List<int> listEmpId,bool status)
         {
             try
             {

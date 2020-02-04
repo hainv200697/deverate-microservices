@@ -54,6 +54,7 @@ namespace ResourceServices.Service
             {
                 Question question = context.Question.SingleOrDefault(x => x.QuestionId == ques.questionId);
                 question.QuestionText = ques.question1;
+                question.Point = ques.point;
                 context.Question.Update(question);
                 context.SaveChanges();
             }
