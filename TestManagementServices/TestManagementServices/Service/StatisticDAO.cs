@@ -171,7 +171,55 @@ namespace TestManagementServices.Service
             }
         }
 
-        internal static object RankStatisticApplicant(int configId, DateTime? from, DateTime? to)
+        public static List<StatusTestApplicant> GroupStatusTestByConfigId(int configId, DateTime? from, DateTime? to)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                if (from == null)
+                {
+                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).CreateDate;
+                }
+                if (to == null)
+                {
+                    to = DateTime.UtcNow;
+                }
+                var tests = context.Test
+                    .Include(x => x.Rank)
+                    .Include(x => x.Applicant)
+                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to)
+                    .ToList();
+                List<StatusTestApplicant> result = new List<StatusTestApplicant>();
+                result.Add(new StatusTestApplicant { name = "Total", value = tests.Count });
+                result.Add(new StatusTestApplicant { name = "Pending", value = tests.Where(x => x.Status == "Pending" || x.Status == "Doing").ToList().Count });
+                result.Add(new StatusTestApplicant { name = "Submitted", value = tests.Where(x => x.Status == "Submitted").ToList().Count });
+                result.Add(new StatusTestApplicant { name = "Expired", value = tests.Where(x => x.Status == "Expired").ToList().Count });
+                return result;
+            }
+        }
+
+        public static List<ApplicantResult> ApplicantResultByConfigId(int configId, DateTime? from, DateTime? to)
+        {
+            using (DeverateContext context = new DeverateContext())
+            {
+                if (from == null)
+                {
+                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).CreateDate;
+                }
+                if (to == null)
+                {
+                    to = DateTime.UtcNow;
+                }
+                return context.Test
+                    .Include(x => x.Rank)
+                    .Include(x => x.Applicant)
+                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .OrderBy(x => x.Point)
+                    .Select(t => new ApplicantResult(t))
+                    .ToList();
+            }
+        }
+
+        public static List<RankApplicantStatistic> RankStatisticApplicant(int configId, DateTime? from, DateTime? to)
         {
             using(DeverateContext context = new DeverateContext())
             {

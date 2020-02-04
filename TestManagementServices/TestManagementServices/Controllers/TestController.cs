@@ -264,6 +264,32 @@ namespace TestManagementServices.Controllers
                 return StatusCode(500);
             }
         }
+
+        [HttpGet("ApplicantResultByConfigId")]
+        public IActionResult ApplicantResultByConfigId(int configId, DateTime? from, DateTime? to)
+        {
+            try
+            {
+                return Ok(StatisticDAO.ApplicantResultByConfigId(configId, from, to));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
+
+        [HttpGet("GroupStatusTestByConfigId")]
+        public IActionResult GroupStatusTestByConfigId(int configId, DateTime? from, DateTime? to)
+        {
+            try
+            {
+                return Ok(StatisticDAO.GroupStatusTestByConfigId(configId, from, to));
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
+        }
     }
 
 }
