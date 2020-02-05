@@ -69,6 +69,22 @@ namespace TestManagementServices.Service
             return questions;
         }
 
+
+        public static List<QuestionInTest> ShuffleQuestionInTest(List<QuestionInTest> questions)
+        {
+            Random rand = new Random();
+            int n = questions.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = rand.Next(n + 1);
+                QuestionInTest value = questions[k];
+                questions[k] = questions[n];
+                questions[n] = value;
+            }
+            return questions;
+        }
+
         /// <summary>
         /// Lấy ID của ứng viên theo bài test
         /// </summary>
@@ -318,7 +334,6 @@ namespace TestManagementServices.Service
                     }
                     foreach (ApplicantDTO app in applicants)
                     {
-                        questions = ShuffleQuestion(questions);
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach (QuestionDTO q in questions)
                         {
@@ -358,7 +373,6 @@ namespace TestManagementServices.Service
                                 questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
                             }
                         }
-                        questions = ShuffleQuestion(questions);
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach (QuestionDTO q in questions)
                         {
@@ -418,7 +432,7 @@ namespace TestManagementServices.Service
                             .Question.Take(catalogues[i].NumberQuestion).ToList();
                         foreach (Question q in tempQuestions)
                         {
-                            questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
+                            questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.Where(a => a.IsActive == true).ToList()));
                         }
 
                     }
@@ -431,7 +445,6 @@ namespace TestManagementServices.Service
                                 continue;
                             }
                         }
-                        questions = ShuffleQuestion(questions);
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach(QuestionDTO q in questions)
                         {
@@ -475,11 +488,10 @@ namespace TestManagementServices.Service
                             List<Question> tempQuestions = catalogues[i].Catalogue.Question.Take(catalogues[i].NumberQuestion).ToList();
                             foreach (Question q in tempQuestions)
                             {
-                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
+                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.Where(a => a.IsActive == true).ToList()));
                             }
 
                         }
-                        questions = ShuffleQuestion(questions);
                         List<QuestionInTest> inTests = new List<QuestionInTest>();
                         foreach (QuestionDTO q in questions)
                         {
@@ -548,9 +560,20 @@ namespace TestManagementServices.Service
             {
                 List<AnswerDTO> answerDTOs = db.Answer
                 .Include(a => a.Question)
-                .Where(a => a.Question.QuestionId == questionId)
+                .Where(a => a.Question.QuestionId == questionId && a.IsActive == true)
                 .Select(a => new AnswerDTO(a)).ToList();
                 return answerDTOs;
+            }
+        }
+
+        public static List<Answer> GetAnswers(int questionId)
+        {
+            using(DeverateContext db = new DeverateContext())
+            {
+                List<Answer> answers = db.Answer
+                    .Where(a => a.QuestionId == questionId && a.IsActive == true)
+                    .ToList();
+                return answers;
             }
         }
 
@@ -1010,9 +1033,10 @@ namespace TestManagementServices.Service
                 var questionInTest = context.QuestionInTest
                                      .Include(x => x.Question)
                                      .ThenInclude(y => y.Answer)
-                                     .Where(t => t.TestId == test.TestId);
+                                     .Where(t => t.TestId == test.TestId).ToList();
                 var result = new List<QuestionInTestDTO>();
-                foreach (QuestionInTest item in questionInTest.ToList())
+                questionInTest = ShuffleQuestionInTest(questionInTest);
+                foreach (QuestionInTest item in questionInTest)
                 {
                     result.Add(new QuestionInTestDTO(item.TestId, item.QuestionId,
                         item.AnswerId, item.Question.Answer.ToList(), item.Question.QuestionText));

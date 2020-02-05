@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TestManagementServices.Models;
+using TestManagementServices.Service;
 
 namespace TestManagementServices.Model
 {
@@ -41,6 +42,10 @@ namespace TestManagementServices.Model
             this.name = name;
             this.numberOfQuestion = numberOfQuestion;
             this.weightPoint = weightPoint;
+            for(int i = 0; i < questionList.Count; i++)
+            {
+                questionList[i].Answer = SystemDAO.GetAnswers(questionList[i].QuestionId);
+            }
             this.questionList = questionList;
         }
 
