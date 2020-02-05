@@ -17,13 +17,14 @@ namespace TestManagementServices.Models
         public string status { get; set; }
         public bool isActive { get; set; }
         public DateTime startDate { get; set; }
+        public DateTime endDate { get; set; }
         public int expiredDays { get; set; }
         public TestInfoDTO()
         {
 
         }
 
-        public TestInfoDTO(int? configId, int? accountId, int? testId, string title, string code,string status,DateTime start, int expiredDays, bool isActive)
+        public TestInfoDTO(int? configId, int? accountId, int? testId, string title, string code,string status,DateTime start, DateTime end, int expiredDays, bool isActive)
         {
             this.configId = configId;
             this.accountId = accountId;
@@ -32,6 +33,7 @@ namespace TestManagementServices.Models
             this.code = code;
             this.status = status;
             this.startDate = start;
+            this.endDate = end;
             this.expiredDays = expiredDays;
             this.isActive = isActive;
         }
