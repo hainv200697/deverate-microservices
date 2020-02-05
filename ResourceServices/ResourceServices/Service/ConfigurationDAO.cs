@@ -19,6 +19,23 @@ namespace ResourceServices.Service
             }
         }
 
+        public static List<ConfigStatisticApplicantDTO> GetConfigurationForStatisticApplicant(bool type, int companyId)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+                return db.Configuration
+                    .Include(a => a.Company)
+                    .Include(a => a.Test)
+                    .Where(c => c.CompanyId == companyId && c.Type == type)
+                    .Select(c => new ConfigStatisticApplicantDTO
+                    {
+                        configId = c.ConfigId,
+                        startDate = c.Test.OrderBy(x => x.StartDate).First().StartDate
+                    }).OrderByDescending(x => x.configId).ToList();
+            }
+        }
+
+
         public static List<ConfigurationDTO> GetAllConfiguration(bool type, int companyId)
         {
             using (DeverateContext db = new DeverateContext())

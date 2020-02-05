@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AuthenServices.Model;
+using Microsoft.AspNetCore.Mvc;
 using ResourceServices.Model;
 using ResourceServices.Service;
 using System;
@@ -98,6 +99,21 @@ namespace ResourceServices.Controllers
                 return StatusCode(500);
             }
 
+        }
+
+        [Route("GetConfigurationForStatisticApplicant")]
+        [HttpGet]
+        public ActionResult GetConfigurationForStatisticApplicant(bool type, int companyId)
+        {
+            try
+            {
+                List<ConfigStatisticApplicantDTO> con = ConfigurationDAO.GetConfigurationForStatisticApplicant(type, companyId);
+                return Ok(con);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500);
+            }
         }
 
     }
