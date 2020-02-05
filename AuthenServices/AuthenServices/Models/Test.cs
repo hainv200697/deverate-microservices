@@ -24,6 +24,9 @@ namespace AuthenServices.Models
         public string Code { get; set; }
         public string Status { get; set; }
         public bool IsActive { get; set; }
+        public bool? IsApprove { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
         public virtual Account Account { get; set; }
         public virtual Applicant Applicant { get; set; }

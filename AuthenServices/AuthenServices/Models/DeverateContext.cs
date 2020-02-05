@@ -183,10 +183,6 @@ namespace AuthenServices.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.Property(e => e.EndDate).HasColumnType("datetime");
-
-                entity.Property(e => e.StartDate).HasColumnType("datetime");
-
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(250);
@@ -264,7 +260,6 @@ namespace AuthenServices.Models
                 entity.HasOne(d => d.Company)
                     .WithMany(p => p.Rank)
                     .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_CompanyRank_Company");
             });
 
@@ -301,7 +296,11 @@ namespace AuthenServices.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.Property(e => e.EndDate).HasColumnType("datetime");
+
                 entity.Property(e => e.FinishTime).HasColumnType("datetime");
+
+                entity.Property(e => e.StartDate).HasColumnType("datetime");
 
                 entity.Property(e => e.StartTime).HasColumnType("datetime");
 
