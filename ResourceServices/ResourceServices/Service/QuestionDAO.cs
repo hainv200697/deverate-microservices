@@ -132,6 +132,7 @@ namespace ResourceServices.Service
             {
                 Question question = context.Question.SingleOrDefault(x => x.QuestionId == ques.questionDefaultId);
                 question.QuestionText = ques.question;
+                question.Point = ques.point;
                 context.Question.Update(question);
                 context.SaveChanges();
             }
