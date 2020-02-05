@@ -103,11 +103,11 @@ namespace ResourceServices.Controllers
 
         [Route("GetConfigurationForStatisticApplicant")]
         [HttpGet]
-        public ActionResult GetConfigurationForStatisticApplicant(bool type, int companyId)
+        public ActionResult GetConfigurationForStatisticApplicant( int companyId)
         {
             try
             {
-                List<ConfigStatisticApplicantDTO> con = ConfigurationDAO.GetConfigurationForStatisticApplicant(type, companyId);
+                List<ConfigStatisticApplicantDTO> con = ConfigurationDAO.GetConfigurationForStatisticApplicant(companyId);
                 return Ok(con);
             }
             catch (Exception)

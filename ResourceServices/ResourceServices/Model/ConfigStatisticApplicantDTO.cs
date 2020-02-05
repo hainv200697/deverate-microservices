@@ -6,6 +6,7 @@ namespace AuthenServices.Model
     public class ConfigStatisticApplicantDTO
     {
         public int configId { get; set; }
+        public string title { get; set; }
         public DateTime startDate { get; set; }
 
         public ConfigStatisticApplicantDTO()
