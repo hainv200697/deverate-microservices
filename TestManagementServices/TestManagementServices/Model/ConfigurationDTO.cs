@@ -14,6 +14,7 @@ namespace TestManagementServices.Model
         public int? accountId { get; set; }
         public int? applicantId { get; set; }
         public DateTime createDate { get; set; }
+        public DateTime endDate { get; set; }
         public DateTime startDate { get; set; }
         public int expiredDays { get; set; }
         public int duration { get; set; }
@@ -29,6 +30,7 @@ namespace TestManagementServices.Model
             this.companyId = config.CompanyId;
             this.createDate = config.CreateDate;
             this.startDate = test.StartDate;
+            this.endDate = test.EndDate;
             this.expiredDays = config.ExpiredDays;
             this.duration = config.Duration;
             this.isActive = config.IsActive;

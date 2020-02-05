@@ -954,7 +954,7 @@ namespace TestManagementServices.Service
                 .Include(t => t.Account)
                 .Where(t => t.AccountId == accountId && t.IsActive == true)
                 .Select(t => new TestInfoDTO(t.ConfigId, t.AccountId,
-                t.TestId, t.Config.Title, null, t.Status, t.Config.CreateDate,
+                t.TestId, t.Config.Title, null, t.Status, t.StartDate, t.EndDate,
                 t.Config.ExpiredDays, t.Config.IsActive))
                 .ToList();
             return tests;
