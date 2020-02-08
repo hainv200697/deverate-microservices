@@ -30,12 +30,14 @@ namespace AuthenServices.Service
                     Phone = companyData.CompanyDTO.phone,
                     IsActive = companyData.CompanyDTO.isActive,
                   };
-                var result = db.Company.Add(com);
                 var defaultCatalogues = db.Catalogue
                                            .Include(x => x.Question)
                                            .ThenInclude(x => x.Answer)
                                            .Where(x => x.IsActive && x.IsDefault).ToList();
-                var defaultRanks = db.Rank.Where(x => x.IsActive && x.IsDefault).ToList();
+                var defaultRanks = db.Rank
+                                     .Include(x => x.CatalogueInRank)
+                                     .ThenInclude(c => c.Catalogue)
+                                     .Where(x => x.IsActive && x.IsDefault).ToList();
 
                 // Clone Catalogue
                 List<Catalogue> companyCatalogues = new List<Catalogue>();
@@ -96,6 +98,19 @@ namespace AuthenServices.Service
                     });
                 }
                 com.Rank = companyRanks;
+                // Clone CatalogueInRank
+                var result = db.Company.Add(com);
+                List<CatalogueInRank> catalogueInRanks = new List<CatalogueInRank>();
+                foreach(var defaultRank in defaultRanks)
+                {
+                    var rankId = com.Rank.FirstOrDefault(x => x.Name == defaultRank.Name).RankId;
+                    foreach(var catalogueInRank in defaultRank.CatalogueInRank)
+                    {
+                        var cataId = com.Catalogue.FirstOrDefault(x => x.Name == catalogueInRank.Catalogue.Name).CatalogueId;
+                        catalogueInRanks.Add(new CatalogueInRank { CatalogueId = cataId, RankId = rankId, Point = catalogueInRank.Point, IsActive = true });
+                    }
+                }
+                db.CatalogueInRank.AddRange(catalogueInRanks);
                 db.SaveChanges();
                 return result.Entity;
             }
