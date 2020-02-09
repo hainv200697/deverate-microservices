@@ -9,6 +9,7 @@ namespace TestManagementServices.Model
         public string rank { get; set; }
         public double point { get; set; }
         public string email { get; set; }
+        public DateTime createDate { get; set; }
 
         public ApplicantResult(Test t)
         {
@@ -22,6 +23,7 @@ namespace TestManagementServices.Model
             }
             point = t.Point.Value;
             email = t.Applicant.Email;
+            createDate = t.CreateDate;
         }
     }
 }

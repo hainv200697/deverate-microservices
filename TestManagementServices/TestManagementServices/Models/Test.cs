@@ -15,7 +15,7 @@ namespace TestManagementServices.Models
         public int ConfigId { get; set; }
         public int? AccountId { get; set; }
         public int? ApplicantId { get; set; }
-        public DateTime? CreateDate { get; set; }
+        public DateTime CreateDate { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? FinishTime { get; set; }
         public int? PotentialRankId { get; set; }

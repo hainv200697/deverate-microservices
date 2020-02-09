@@ -274,7 +274,7 @@ namespace TestManagementServices.Service
                     .ToList();
                 foreach(var test in tests)
                 {
-                    var date = test.CreateDate.Value.ToString("dd/MM/yyyy");
+                    var date = test.CreateDate.ToString("dd/MM/yyyy");
                     foreach(var detailResult in test.DetailResult)
                     {
                         var index = result.FindIndex(x => x.CatalogueInConfigId == detailResult.CatalogueInConfigId);

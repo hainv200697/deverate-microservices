@@ -16,7 +16,7 @@ spec:
       - env:
         - name: SPRING_EUREKA
           value: http://eureka-cluster-ip-service:8761/eureka
-        image: asia.gcr.io/carbide-ward-264607/resource:1.0.4
+        image: asia.gcr.io/carbide-ward-264607/resource:1.0.5
         name: resource
         ports:
         - containerPort: 80
