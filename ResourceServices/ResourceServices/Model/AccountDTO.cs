@@ -50,7 +50,7 @@ namespace AuthenServices.Model
             this.joinDate = account.JoinDate;
             this.roleId = account.RoleId;
             
-            if(account.Rank == null && this.roleId != 3)
+            if(this.roleId != 3)
             {
                 this.rankName = "";
             }else if (account.Rank == null)
