@@ -629,7 +629,7 @@ namespace TestManagementServices.Service
                     List<CatalogueDTO> catalogues = new List<CatalogueDTO>();
                     foreach (CatalogueInRank cir in catalogueInRanks)
                     {
-                        if (cir.RankId == configurationRankDTOs[i].rankId && cir.Point != 0 && catalogueIds.Contains(cir.CatalogueId))
+                        if (cir.RankId == configurationRankDTOs[i].rankId && catalogueIds.Contains(cir.CatalogueId))
                         {
                             catalogues.Add(new CatalogueDTO(cir.CatalogueId,
                                 cir.Catalogue.Name, null,
