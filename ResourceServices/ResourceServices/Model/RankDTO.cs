@@ -26,7 +26,7 @@ namespace ResourceServices.Model
             this.createDate = defaultRank.CreateDate;
             this.isActive = defaultRank.IsActive;
             this.isDefault = defaultRank.IsDefault;
-            this.catalogueInRanks = defaultRank.CatalogueInRank.Select(x => new CatalogueInRankDTO(x)).OrderBy(x => x.catalogueId).ToList();
+            this.catalogueInRanks = defaultRank.CatalogueInRank.Where(x => x.Catalogue.IsActive).Select(x => new CatalogueInRankDTO(x)).OrderBy(x => x.catalogueId).ToList();
         }
     }
 }
