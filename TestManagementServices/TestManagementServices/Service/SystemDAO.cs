@@ -293,7 +293,7 @@ namespace TestManagementServices.Service
                             List<Question> tempQuestions = companyCatalogues[i].questionList.Take(companyCatalogues[i].numberOfQuestion).ToList();
                             foreach (Question q in tempQuestions)
                             {
-                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.Answer.ToList()));
+                                questions.Add(new QuestionDTO(q.QuestionId, q.QuestionText, q.CatalogueId, q.Answer.ToList()));
                             }
                             companyCatalogues[i].questionList = null;
                         }
