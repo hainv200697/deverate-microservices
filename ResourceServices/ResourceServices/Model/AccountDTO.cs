@@ -49,14 +49,15 @@ namespace AuthenServices.Model
             this.gender = account.Gender;
             this.joinDate = account.JoinDate;
             this.roleId = account.RoleId;
-            if (account.Rank == null && this.roleId == 3)
-            {
-                this.rankName = "Not Rank";
-            }
-            else if(account.Rank == null && this.roleId != 3)
+            
+            if(account.Rank == null && this.roleId != 3)
             {
                 this.rankName = "";
-            }else
+            }else if (account.Rank == null)
+            {
+                this.rankName = "Not Ranked";
+            }
+            else
             {
                 this.rankName = account.Rank.Name;
             }
