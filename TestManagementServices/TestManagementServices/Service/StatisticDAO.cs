@@ -107,10 +107,6 @@ namespace TestManagementServices.Service
                     .Where(c => c.CompanyId == testOwnerId && c.Type == false)
                     .ToList();
                 if (applicantConfigs.Count == 0) return null;
-                List<RankDTO> ranks = db.Rank
-                    .Where(r => r.IsActive == true && r.CompanyId == account.CompanyId)
-                    .Select(r => new RankDTO(r))
-                    .ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
                 for (int j = 0; j < applicantConfigs.Count; j++)
@@ -131,11 +127,15 @@ namespace TestManagementServices.Service
                     rankStatisticItem.expiredDays = applicantConfigs[j].ExpiredDays;
                     rankStatisticItem.name = applicantConfigs[j].Title;
                     List<RankDTO> cloneRanks = new List<RankDTO>();
+                    List<RankDTO> ranks = db.RankInConfig
+                    .Where(r => r.IsActive == true && r.ConfigId == applicantConfigs[j].ConfigId)
+                    .Select(r => new RankDTO(r.Rank, r.Point))
+                    .ToList();
                     foreach (RankDTO r in ranks)
                     {
-                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
+                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0, r.point));
                     }
-                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, 0);
+                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, 0, 0);
                     List<Test> tests = applicantConfigs[j].Test.ToList();
                     for (int k = 0; k < tests.Count; k++)
                     {
@@ -163,6 +163,7 @@ namespace TestManagementServices.Service
                     rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count, AppConstrain.APPLICANT_DO_TEST);
                     rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalApp, AppConstrain.TOTAL_APPLICANT_DO_TEST);
                     cloneRanks.Add(notRanked);
+                    cloneRanks = cloneRanks.OrderBy(c => c.point).ToList();
                     rankStatisticItem.series = cloneRanks;
                     rankStatisticItems.Add(rankStatisticItem);
                     configCount++;
@@ -404,11 +405,7 @@ namespace TestManagementServices.Service
                 List<Configuration> configurations = db.Configuration
                     .Include(t => t.Test)
                     .ThenInclude(t => t.Account)
-                    .Where(t => t.CompanyId == account.CompanyId).ToList();
-                List<RankDTO> ranks = db.Rank
-                    .Where(r => r.IsActive == true && r.CompanyId == account.CompanyId)
-                    .Select(r => new RankDTO(r))
-                    .ToList();
+                    .Where(t => t.CompanyId == account.CompanyId && t.Type == true).ToList();
                 List<RankStatisticItemDTO> rankStatisticItems = new List<RankStatisticItemDTO>();
                 int configCount = 0;
                 for (int j = 0; j < configurations.Count; j++)
@@ -430,11 +427,15 @@ namespace TestManagementServices.Service
                     rankStatisticItem.expiredDays = configurations[j].ExpiredDays;
                     rankStatisticItem.name = configurations[j].Title;
                     List<RankDTO> cloneRanks = new List<RankDTO>();
+                    List<RankDTO> ranks = db.RankInConfig
+                    .Where(r => r.IsActive == true && r.ConfigId == configurations[j].ConfigId)
+                    .Select(r => new RankDTO(r.Rank, r.Point))
+                    .ToList();
                     foreach (RankDTO r in ranks)
                     {
-                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0));
+                        cloneRanks.Add(new RankDTO(r.companyRankId, r.name, 0, r.point));
                     }
-                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, 0);
+                    RankDTO notRanked = new RankDTO(-1, AppConstrain.UNKNOWN_RANK, 0, 0);
                     for (int k = 0; k < tests.Count; k++)
                     {
                         if(tests[k].RankId == null && tests[k].Point != null)
@@ -448,6 +449,7 @@ namespace TestManagementServices.Service
                         }
                         for (int m = 0; m < cloneRanks.Count; m++)
                         {
+                            if (tests[k].RankId == null) break;
                             if (tests[k].RankId == cloneRanks[m].companyRankId)
                             {
                                 if (!totalOfDidTests.Contains(tests[k].AccountId))
@@ -461,6 +463,7 @@ namespace TestManagementServices.Service
                     rankStatisticItem.tested = new TestedItemDTO(totalOfDidTests.Count);
                     rankStatisticItem.totalAccount = new TotalEmpItemDTO(totalEmp);
                     cloneRanks.Add(notRanked);
+                    cloneRanks = cloneRanks.OrderBy(c => c.point).ToList();
                     rankStatisticItem.series = cloneRanks;
                     rankStatisticItems.Add(rankStatisticItem);
                     configCount++;
@@ -498,7 +501,7 @@ namespace TestManagementServices.Service
                 for (int j = 0; j < configurations.Count; j++)
                 {
                     int totalTest = configurations[j].Test.Count;
-                    int numberOfTest = configurations[j].Test.Where(t => t.Status == AppConstrain.SUBMITTED).ToList().Count();
+                    int numberOfTest = configurations[j].Test.Where(t => t.Status == AppConstrain.SUBMITTED && t.Point != null).ToList().Count();
                     int numberOfFinishedTest = 0;
                     List<CatalogueDTO> cloneCatalogues = new List<CatalogueDTO>();
                     foreach (Catalogue c in catalogueInCompanies)
