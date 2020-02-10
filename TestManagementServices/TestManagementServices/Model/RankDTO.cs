@@ -12,7 +12,7 @@ namespace TestManagementServices.Model
     {
         public int companyRankId { get; set; }
         public string name { get; set; }
-        public int point { get; set; }
+        public double point { get; set; }
         public DateTime CreateDate { get; set; }
         public bool isActive { get; set; }
         [JsonProperty(PropertyName = "value")]
@@ -27,11 +27,22 @@ namespace TestManagementServices.Model
 
         }
 
-        public RankDTO(int companyRankId, string name, int count)
+        public RankDTO(Rank rank, double point)
+        {
+            this.companyRankId = rank.RankId;
+            this.name = rank.Name;
+            this.isActive = rank.IsActive;
+            this.CreateDate = rank.CreateDate;
+            this.point = point;
+
+        }
+
+        public RankDTO(int companyRankId, string name, int count, double point)
         {
             this.companyRankId = companyRankId;
             this.name = name;
             this.count = count;
+            this.point = point;
         }
     }
 }
