@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace MailingServices.Service
 {
@@ -46,6 +47,7 @@ namespace MailingServices.Service
             htmlBody = htmlBody.Replace("[fullname]", messageAccountDTO.Fullname);
             htmlBody = htmlBody.Replace("[username]", messageAccountDTO.Username);
             htmlBody = htmlBody.Replace("[password]", messageAccountDTO.Password);
+            htmlBody = htmlBody.Replace("[passwordURL]", HttpUtility.UrlEncode(messageAccountDTO.Password));
             str.Close();
             SendMailAsync(messageAccountDTO.Email, subject, htmlBody);
         }
@@ -70,8 +72,8 @@ namespace MailingServices.Service
                 string htmlBody = str.ReadToEnd();
                 htmlBody = htmlBody.Replace("[fullname]", testMailDTO.fullName);
                 htmlBody = htmlBody.Replace("[title]", testMailDTO.title);
-                htmlBody = htmlBody.Replace("[StartDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.startDate));
-                htmlBody = htmlBody.Replace("[EndDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.endDate));
+                htmlBody = htmlBody.Replace("[StartDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.startDate.AddHours(7)));
+                htmlBody = htmlBody.Replace("[EndDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.endDate.AddHours(7)));
                 htmlBody = htmlBody.Replace("[url]", "http://deverate-system.s3-website-ap-southeast-1.amazonaws.com/test/" + testMailDTO.testId);
                 htmlBody = htmlBody.Replace("[code]", testMailDTO.code);
                 str.Close();
