@@ -31,6 +31,7 @@ namespace ResourceServices.Model
         {
             this.questionDefaultId = ques.QuestionId;
             this.catalogueName = cataName;
+            this.catalogueDefaultId = ques.CatalogueId;
             this.question = ques.QuestionText;
             this.point = ques.Point;
             this.creatAt = DateTime.UtcNow;
