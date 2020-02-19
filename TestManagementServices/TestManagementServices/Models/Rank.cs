@@ -9,7 +9,7 @@ namespace TestManagementServices.Models
         {
             Account = new HashSet<Account>();
             CatalogueInRank = new HashSet<CatalogueInRank>();
-            RankInConfig = new HashSet<RankInConfig>();
+            RankInSemester = new HashSet<RankInSemester>();
             TestPotentialRank = new HashSet<Test>();
             TestRank = new HashSet<Test>();
         }
@@ -24,7 +24,7 @@ namespace TestManagementServices.Models
         public virtual Company Company { get; set; }
         public virtual ICollection<Account> Account { get; set; }
         public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
-        public virtual ICollection<RankInConfig> RankInConfig { get; set; }
+        public virtual ICollection<RankInSemester> RankInSemester { get; set; }
         public virtual ICollection<Test> TestPotentialRank { get; set; }
         public virtual ICollection<Test> TestRank { get; set; }
     }

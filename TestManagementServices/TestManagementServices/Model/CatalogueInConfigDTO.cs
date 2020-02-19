@@ -17,10 +17,10 @@ namespace TestManagementServices.Model
         public double weightPoint { get; set; }
         public bool isActive { get; set; }
         public CatalogueInConfigDTO() { }
-        public CatalogueInConfigDTO(CatalogueInConfiguration c)
+        public CatalogueInConfigDTO(CatalogueInSemester c)
         {
-            this.catalogueInConfigId = c.CatalogueInConfigId;
-            this.configId = c.ConfigId;
+            this.catalogueInConfigId = c.CatalogueInSemesterId;
+            this.configId = c.SemesterId;
             this.catalogueId = c.CatalogueId;
             this.catalogueName = c.Catalogue.Name;
             this.weightPoint = c.WeightPoint;

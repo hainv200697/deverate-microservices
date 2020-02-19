@@ -12,7 +12,7 @@ namespace TestManagementServices.Models
         }
 
         public int TestId { get; set; }
-        public int ConfigId { get; set; }
+        public int SemesterId { get; set; }
         public int? AccountId { get; set; }
         public int? ApplicantId { get; set; }
         public DateTime CreateDate { get; set; }
@@ -30,9 +30,9 @@ namespace TestManagementServices.Models
 
         public virtual Account Account { get; set; }
         public virtual Applicant Applicant { get; set; }
-        public virtual Configuration Config { get; set; }
         public virtual Rank PotentialRank { get; set; }
         public virtual Rank Rank { get; set; }
+        public virtual Semester Semester { get; set; }
         public virtual ICollection<DetailResult> DetailResult { get; set; }
         public virtual ICollection<QuestionInTest> QuestionInTest { get; set; }
     }
