@@ -20,22 +20,22 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Configuration> configurations = db.Configuration
+                List<Semester> configurations = db.Semester
                     .Include(c => c.Company).Include(c => c.Test)
-                    .Include(c => c.CatalogueInConfiguration)
+                    .Include(c => c.CatalogueInSemester)
                     .Where(c => c.CompanyId == account.CompanyId && c.Type == false)
                     .ToList();
                 List<int?> configIds = new List<int?>();
-                configurations.ForEach(c => configIds.Add(c.ConfigId));
+                configurations.ForEach(c => configIds.Add(c.SemesterId));
                 List<Catalogue> catalogueInCompanies = db.Catalogue
-                                        .Include(c => c.CatalogueInConfiguration)
+                                        .Include(c => c.CatalogueInSemester)
                                         .Where(c => c.CompanyId == account.CompanyId)
                                         .ToList();
                 catalogueInCompanies = catalogueInCompanies.GroupBy(c => c.CatalogueId).Select(c => c.First()).ToList();
                 List<Test> tests = db.Test
                     .Include(t => t.Account)
                     .Include(t => t.DetailResult)
-                    .Include(t => t.Config.CatalogueInConfiguration)
+                    .Include(t => t.Semester.CatalogueInSemester)
                     .Where(t => t.Account.CompanyId == account.CompanyId && t.ApplicantId != null)
                     .ToList();
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
@@ -50,11 +50,11 @@ namespace TestManagementServices.Service
                         cloneCatalogues.Add(new CatalogueDTO(c.CatalogueId, c.Name, 0));
                     }
                     GeneralStatisticItemDTO gsi = new GeneralStatisticItemDTO();
-                    gsi.configId = configurations[j].ConfigId;
+                    gsi.configId = configurations[j].SemesterId;
                     double totalGPA = 0;
                     for (int k = 0; k < tests.Count; k++)
                     {
-                        if (tests[k].ConfigId == configurations[j].ConfigId)
+                        if (tests[k].SemesterId == configurations[j].SemesterId)
                         {
                             totalGPA += tests[k].Point == null ? 0 : tests[k].Point.Value;
                             List<DetailResult> details = tests[k].DetailResult.ToList();
@@ -66,7 +66,7 @@ namespace TestManagementServices.Service
                             {
                                 for (int n = 0; n < cloneCatalogues.Count; n++)
                                 {
-                                    if (details[m].CatalogueInConfig.CatalogueId == cloneCatalogues[n].catalogueId)
+                                    if (details[m].CatalogueInSemester.CatalogueId == cloneCatalogues[n].catalogueId)
                                     {
                                         cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
                                         if (cloneCatalogues[n].value > AppConstrain.SCALE_UP_NUMB)
@@ -102,7 +102,7 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Configuration> applicantConfigs = db.Configuration
+                List<Semester> applicantConfigs = db.Semester
                     .Include(c => c.Test)
                     .Where(c => c.CompanyId == testOwnerId && c.Type == false)
                     .ToList();
@@ -122,13 +122,13 @@ namespace TestManagementServices.Service
                     }
                     List<int?> totalOfDidTests = new List<int?>();
                     RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
-                    rankStatisticItem.configId = applicantConfigs[j].ConfigId;
+                    rankStatisticItem.configId = applicantConfigs[j].SemesterId;
                     rankStatisticItem.createDate = applicantConfigs[j].CreateDate;
                     rankStatisticItem.expiredDays = applicantConfigs[j].ExpiredDays;
                     rankStatisticItem.name = applicantConfigs[j].Title;
                     List<RankDTO> cloneRanks = new List<RankDTO>();
-                    List<RankDTO> ranks = db.RankInConfig
-                    .Where(r => r.IsActive == true && r.ConfigId == applicantConfigs[j].ConfigId)
+                    List<RankDTO> ranks = db.RankInSemester
+                    .Where(r => r.IsActive == true && r.SemesterId == applicantConfigs[j].SemesterId)
                     .Select(r => new RankDTO(r.Rank, r.Point))
                     .ToList();
                     foreach (RankDTO r in ranks)
@@ -178,7 +178,7 @@ namespace TestManagementServices.Service
             {
                 if (from == null)
                 {
-                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).CreateDate;
+                    from = context.Semester.FirstOrDefault(x => x.SemesterId == configId).CreateDate;
                 }
                 if (to == null)
                 {
@@ -187,7 +187,7 @@ namespace TestManagementServices.Service
                 var tests = context.Test
                     .Include(x => x.Rank)
                     .Include(x => x.Applicant)
-                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to)
+                    .Where(t => t.SemesterId == configId && t.CreateDate >= from && t.CreateDate <= to)
                     .ToList();
                 List<StatusTestApplicant> result = new List<StatusTestApplicant>();
                 result.Add(new StatusTestApplicant { name = "Total", value = tests.Count });
@@ -204,7 +204,7 @@ namespace TestManagementServices.Service
             {
                 if (from == null)
                 {
-                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).CreateDate;
+                    from = context.Semester.FirstOrDefault(x => x.SemesterId == configId).CreateDate;
                 }
                 if (to == null)
                 {
@@ -213,7 +213,7 @@ namespace TestManagementServices.Service
                 return context.Test
                     .Include(x => x.Rank)
                     .Include(x => x.Applicant)
-                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .Where(t => t.SemesterId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
                     .OrderBy(x => x.Point)
                     .Select(t => new ApplicantResult(t))
                     .ToList();
@@ -226,7 +226,7 @@ namespace TestManagementServices.Service
             {
                 if (from == null)
                 {
-                    from = context.Configuration.FirstOrDefault(x => x.ConfigId == configId).CreateDate;
+                    from = context.Semester.FirstOrDefault(x => x.SemesterId == configId).CreateDate;
                 }
                 if (to == null)
                 {
@@ -234,7 +234,7 @@ namespace TestManagementServices.Service
                 }
                 return context.Test
                     .Include(x => x.Rank)
-                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .Where(t => t.SemesterId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
                     .OrderBy(x => x.CreateDate)
                     .GroupBy(t => t.Rank.Name)
                     .Select(g => new RankApplicantStatistic { name = g.Key, value = g.Count() })
@@ -247,15 +247,15 @@ namespace TestManagementServices.Service
             using(DeverateContext context = new DeverateContext())
             {
                 List<CatalogueStatistic> result = new List<CatalogueStatistic>();
-                var configuration = context.Configuration
-                                            .Include(x => x.CatalogueInConfiguration)
+                var configuration = context.Semester
+                                            .Include(x => x.CatalogueInSemester)
                                             .ThenInclude(x => x.Catalogue)
-                                            .FirstOrDefault(x => x.ConfigId == configId);
-                foreach(var catalogueInConfig in configuration.CatalogueInConfiguration)
+                                            .FirstOrDefault(x => x.SemesterId == configId);
+                foreach(var catalogueInConfig in configuration.CatalogueInSemester)
                 {
                     result.Add(new CatalogueStatistic
                     {
-                        CatalogueInConfigId = catalogueInConfig.CatalogueInConfigId,
+                        CatalogueInConfigId = catalogueInConfig.CatalogueInSemesterId,
                         name = catalogueInConfig.Catalogue.Name,
                         series = new List<CatalogueSeriesItem>()
                     });
@@ -270,7 +270,7 @@ namespace TestManagementServices.Service
                 }
                 var tests = context.Test
                     .Include(x => x.DetailResult)
-                    .Where(t => t.ConfigId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
+                    .Where(t => t.SemesterId == configId && t.CreateDate >= from && t.CreateDate <= to && t.Status == "Submitted")
                     .OrderBy(x => x.CreateDate)
                     .ToList();
                 foreach(var test in tests)
@@ -278,7 +278,7 @@ namespace TestManagementServices.Service
                     var date = test.CreateDate.ToString("dd/MM/yyyy");
                     foreach(var detailResult in test.DetailResult)
                     {
-                        var index = result.FindIndex(x => x.CatalogueInConfigId == detailResult.CatalogueInConfigId);
+                        var index = result.FindIndex(x => x.CatalogueInConfigId == detailResult.CatalogueInSemesterId);
                         var seriesIndex = result[index].series.FindIndex(x => x.name == date);
                         if (seriesIndex >= 0)
                         {
@@ -323,11 +323,11 @@ namespace TestManagementServices.Service
                 {
                     return null;
                 }
-                Configuration configuration = null;
+                Semester configuration = null;
                 if (configId != null)
                 {
-                    configuration = db.Configuration
-                        .Where(c => c.ConfigId == configId)
+                    configuration = db.Semester
+                        .Where(c => c.SemesterId == configId)
                         .FirstOrDefault();
                     if (configuration == null)
                     {
@@ -338,13 +338,13 @@ namespace TestManagementServices.Service
                 {
                     if (isEmployee == null)
                     {
-                        configuration = db.Configuration
+                        configuration = db.Semester
                             .Where(c => c.CompanyId == companyId && c.Type == true)
                             .LastOrDefault();
                     }
                     else
                     {
-                        configuration = db.Configuration
+                        configuration = db.Semester
                             .Where(c => c.CompanyId == companyId && c.Type == isEmployee)
                             .LastOrDefault();
                     }
@@ -358,7 +358,7 @@ namespace TestManagementServices.Service
                     .Include(t => t.Applicant)
                     .Include(t => t.Rank)
                     .Include(t => t.PotentialRank)
-                    .Where(t => t.ConfigId == configuration.ConfigId && t.Status == AppConstrain.SUBMITTED).ToList();
+                    .Where(t => t.SemesterId == configuration.SemesterId && t.Status == AppConstrain.SUBMITTED).ToList();
                 List<UserStatisticDTO> userStatistics = new List<UserStatisticDTO>();
                 if (tests.Count == 0 || tests == null)
                 {
@@ -402,7 +402,7 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Configuration> configurations = db.Configuration
+                List<Semester> configurations = db.Semester
                     .Include(t => t.Test)
                     .ThenInclude(t => t.Account)
                     .Where(t => t.CompanyId == account.CompanyId && t.Type == true).ToList();
@@ -422,13 +422,13 @@ namespace TestManagementServices.Service
                     List<Test> tests = configurations[j].Test.ToList();
                     List<int?> totalOfDidTests = new List<int?>();
                     RankStatisticItemDTO rankStatisticItem = new RankStatisticItemDTO();
-                    rankStatisticItem.configId = configurations[j].ConfigId;
+                    rankStatisticItem.configId = configurations[j].SemesterId;
                     rankStatisticItem.createDate = configurations[j].CreateDate;
                     rankStatisticItem.expiredDays = configurations[j].ExpiredDays;
                     rankStatisticItem.name = configurations[j].Title;
                     List<RankDTO> cloneRanks = new List<RankDTO>();
-                    List<RankDTO> ranks = db.RankInConfig
-                    .Where(r => r.IsActive == true && r.ConfigId == configurations[j].ConfigId)
+                    List<RankDTO> ranks = db.RankInSemester
+                    .Where(r => r.IsActive == true && r.SemesterId == configurations[j].SemesterId)
                     .Select(r => new RankDTO(r.Rank, r.Point))
                     .ToList();
                     foreach (RankDTO r in ranks)
@@ -482,19 +482,19 @@ namespace TestManagementServices.Service
             using (DeverateContext db = new DeverateContext())
             {
                 Account account = db.Account.Where(o => o.AccountId == testOwnerId).First();
-                List<Configuration> configurations = db.Configuration
+                List<Semester> configurations = db.Semester
                     .Include(c => c.Company)
-                    .Include(c => c.CatalogueInConfiguration)
+                    .Include(c => c.CatalogueInSemester)
                     .Where(c => c.CompanyId == account.CompanyId && c.Type == true)
                     .ToList();
                 List<Catalogue> catalogueInCompanies = db.Catalogue
-                                        .Include(c => c.CatalogueInConfiguration)
+                                        .Include(c => c.CatalogueInSemester)
                                         .Where(c => c.CompanyId == account.CompanyId)
                                         .ToList();
                 List<Test> tests = db.Test
                     .Include(t => t.Account)
                     .Include(t => t.DetailResult)
-                    .Include(t => t.Config.CatalogueInConfiguration)
+                    .Include(t => t.Semester.CatalogueInSemester)
                     .Where(t => t.Account.CompanyId == account.CompanyId && t.AccountId != null).ToList();
 
                 List<GeneralStatisticItemDTO> generalStatisticItems = new List<GeneralStatisticItemDTO>();
@@ -509,11 +509,11 @@ namespace TestManagementServices.Service
                         cloneCatalogues.Add(new CatalogueDTO(c.CatalogueId, c.Name, 0));
                     }
                     GeneralStatisticItemDTO gsi = new GeneralStatisticItemDTO();
-                    gsi.configId = configurations[j].ConfigId;
+                    gsi.configId = configurations[j].SemesterId;
                     double totalGPA = 0;
                     for (int k = 0; k < tests.Count; k++)
                     {
-                        if (tests[k].ConfigId == configurations[j].ConfigId)
+                        if (tests[k].SemesterId == configurations[j].SemesterId)
                         {
                             totalGPA += tests[k].Point == null ? 0: tests[k].Point.Value;
                             List<DetailResult> details = tests[k].DetailResult.ToList();
@@ -525,7 +525,7 @@ namespace TestManagementServices.Service
                             {
                                 for (int n = 0; n < cloneCatalogues.Count; n++)
                                 {
-                                    if (details[m].CatalogueInConfig.CatalogueId == cloneCatalogues[n].catalogueId)
+                                    if (details[m].CatalogueInSemester.CatalogueId == cloneCatalogues[n].catalogueId)
                                     {
                                         cloneCatalogues[n].value += AppConstrain.RoundDownNumber(details[m].Point / numberOfTest, AppConstrain.SCALE_DOWN_NUMB);
                                         if (cloneCatalogues[n].value > AppConstrain.SCALE_UP_NUMB)
@@ -564,10 +564,10 @@ namespace TestManagementServices.Service
                 Test test = db.Test
                     .Include(t => t.Rank)
                     .Include(t => t.PotentialRank)
-                    .Include(o => o.Config)
-                    .ThenInclude(c => c.CatalogueInConfiguration)
+                    .Include(o => o.Semester)
+                    .ThenInclude(c => c.CatalogueInSemester)
                     .Include(o => o.DetailResult)
-                    .ThenInclude(c => c.CatalogueInConfig)
+                    .ThenInclude(c => c.CatalogueInSemester)
                     .Where(o => o.TestId == testId).First();
 
                 if (test.DetailResult.Count == 0)
@@ -575,7 +575,7 @@ namespace TestManagementServices.Service
                     return null;
                 }
                 List<Test> tests = db.Test
-                    .Where(t => t.ConfigId == test.ConfigId && t.IsActive == true)
+                    .Where(t => t.SemesterId == test.SemesterId && t.IsActive == true)
                     .ToList();
                 double lowerTestPoint = 0;
                 foreach(Test t in tests)
@@ -598,9 +598,9 @@ namespace TestManagementServices.Service
                     lowerTestPercent = AppConstrain.RoundDownNumber(lowerTestPoint / tests.Count, AppConstrain.SCALE_UP_NUMB);
                 }
                 List<ConfigurationRankDTO> configurationRankDTOs = SystemDAO.GetRankPoint(test);
-                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInConfiguration
+                List<CatalogueInConfigDTO> catalogueInConfigs = db.CatalogueInSemester
                     .Include(c => c.Catalogue)
-                    .Where(c => c.ConfigId == test.ConfigId)
+                    .Where(c => c.SemesterId == test.SemesterId)
                     .Select(c => new CatalogueInConfigDTO(c))
                     .ToList();
                 List<int> catalogueIds = catalogueInConfigs.Select(c => c.catalogueId).ToList();
@@ -609,9 +609,9 @@ namespace TestManagementServices.Service
                     .Where(c => catalogueIds.Contains(c.CatalogueId))
                     .Select(o => new CatalogueDTO(o))
                     .ToList();
-                List<int> rankIds = db.RankInConfig
+                List<int> rankIds = db.RankInSemester
                     .OrderBy(r => r.Point)
-                    .Where(r => r.ConfigId == test.ConfigId)
+                    .Where(r => r.SemesterId == test.SemesterId)
                     .Select(r => r.RankId)
                     .ToList();
                 List<Rank> ranks = db.Rank
@@ -647,7 +647,7 @@ namespace TestManagementServices.Service
                 {
                     for (int j = 0; j < catas.Count; j++)
                     {
-                        if (test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId == catas[j].catalogueId)
+                        if (test.DetailResult.ToList()[i].CatalogueInSemester.CatalogueId == catas[j].catalogueId)
                         {
                             int pos = 0;
                             catas[j].overallPoint = AppConstrain.RoundDownNumber(test.DetailResult.ToList()[i].Point, AppConstrain.SCALE_DOWN_NUMB);
@@ -657,7 +657,7 @@ namespace TestManagementServices.Service
                                 for (int k = 0; k < ranks[pos].CatalogueInRank.Count; k++)
                                 {
                                     CatalogueInRank cir = ranks[pos].CatalogueInRank.ToList()[k];
-                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catas[i].catalogueId == cir.CatalogueId)
+                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInSemester.CatalogueId && catas[i].catalogueId == cir.CatalogueId)
                                     {
                                         catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
                                         if (catas[i].differentPoint >= 0)
@@ -685,7 +685,7 @@ namespace TestManagementServices.Service
                                 for (int k = 0; k < ranks[pos].CatalogueInRank.Count; k++)
                                 {
                                     CatalogueInRank cir = ranks[pos].CatalogueInRank.ToList()[k];
-                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && catas[i].catalogueId == cir.CatalogueId)
+                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInSemester.CatalogueId && catas[i].catalogueId == cir.CatalogueId)
                                     {
                                         catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
                                         if (catas[i].differentPoint >= 0)
@@ -706,7 +706,7 @@ namespace TestManagementServices.Service
                                 foreach (CatalogueInRank cir in catalogueInRanks)
                                 {
 
-                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInConfig.CatalogueId && cir.RankId == test.PotentialRankId)
+                                    if (cir.CatalogueId == test.DetailResult.ToList()[i].CatalogueInSemester.CatalogueId && cir.RankId == test.PotentialRankId)
                                     {
                                         catas[i].differentPoint = test.DetailResult.ToList()[i].Point - cir.Point;
                                         if (catas[i].differentPoint >= 0)
@@ -757,7 +757,7 @@ namespace TestManagementServices.Service
                 List<Test> tests = db.Test
                     .Include(t => t.Account)
                     .Include(t => t.DetailResult)
-                    .ThenInclude(t => t.CatalogueInConfig)
+                    .ThenInclude(t => t.CatalogueInSemester)
                     .Where(t => t.AccountId == accountId)
                     .ToList();
                 if (tests.Count == 0) return null;
@@ -767,15 +767,15 @@ namespace TestManagementServices.Service
                 List<TestHistoryDTO> testHistories = new List<TestHistoryDTO>();
 
                 List<Catalogue> catalogues = db.Catalogue
-                    .Include(c => c.CatalogueInConfiguration)
-                    .ThenInclude(c => c.Config)
+                    .Include(c => c.CatalogueInSemester)
+                    .ThenInclude(c => c.Semester)
                     .Where(c => c.CompanyId == tests.ToList()[0].Account.CompanyId)
                     .ToList();
                 for (int i = 0; i < tests.Count; i++)
                 {
                     TestHistoryDTO test = new TestHistoryDTO();
                     test.testId = tests[i].TestId;
-                    test.title = tests[i].Config.Title;
+                    test.title = tests[i].Semester.Title;
                     test.point = tests[i].Point;
                     test.rankId = tests[i].RankId;
                     test.createDate = tests[i].CreateDate;
@@ -799,7 +799,7 @@ namespace TestManagementServices.Service
                     {
                         for (int j = 0; j < cloneCatalogues.Count; j++)
                         {
-                            if (cloneCatalogues[j].catalogueId == ds.CatalogueInConfig.CatalogueId)
+                            if (cloneCatalogues[j].catalogueId == ds.CatalogueInSemester.CatalogueId)
                             {
                                 cloneCatalogues[j].overallPoint = AppConstrain.RoundDownNumber(ds.Point, AppConstrain.SCALE_DOWN_NUMB);
                             }

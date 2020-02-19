@@ -5,7 +5,6 @@ namespace MailingServices.Models
 {
     public partial class QuestionInTest
     {
-        public int Qitid { get; set; }
         public int TestId { get; set; }
         public int QuestionId { get; set; }
         public int? AnswerId { get; set; }

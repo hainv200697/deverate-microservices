@@ -23,10 +23,10 @@ namespace TestManagementServices.Model
         public string status { get; set; }
 
         public ConfigurationDTO() { }
-        public ConfigurationDTO(Configuration config, Test test)
+        public ConfigurationDTO(Semester config, Test test)
         {
             this.title = config.Title;
-            this.configId = config.ConfigId;
+            this.configId = config.SemesterId;
             this.companyId = config.CompanyId;
             this.createDate = config.CreateDate;
             this.startDate = test.StartDate;

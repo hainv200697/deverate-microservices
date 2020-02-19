@@ -38,7 +38,6 @@ namespace AuthenServices.Model
             this.Email = account.Email;
             this.Address = account.Address;
             this.Gender = account.Gender;
-            this.Avatar = account.Avatar;
             this.JoinDate = account.JoinDate;
             this.RoleId = account.RoleId;
             this.IsActive = account.IsActive;

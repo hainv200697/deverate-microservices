@@ -22,8 +22,8 @@ namespace TestManagementServices.Service
                 {
                     var now = DateTime.UtcNow;
                     var testIds = context.Test
-                        .Include(c => c.Config)
-                        .Where(t => t.IsActive && t.StartTime != null && t.Status == "Doing" && DateTime.Compare(now, t.StartTime.Value.AddMinutes(t.Config.Duration)) > 0)
+                        .Include(c => c.Semester)
+                        .Where(t => t.IsActive && t.StartTime != null && t.Status == "Doing" && DateTime.Compare(now, t.StartTime.Value.AddMinutes(t.Semester.Duration)) > 0)
                         .Select(t => t.TestId)
                         .ToList();
                     foreach (int testId in testIds)
@@ -46,7 +46,7 @@ namespace TestManagementServices.Service
                 {
                     var now = DateTime.UtcNow;
                     var tests = context.Test
-                        .Include(c => c.Config)
+                        .Include(c => c.Semester)
                         .Where(t => t.Status == "Pending"
                         && (DateTime.Compare(now, t.EndDate) > 0))
                         .ToList();

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TestManagementServices.Models
+namespace MailingServices.Models
 {
     public partial class DetailResult
     {

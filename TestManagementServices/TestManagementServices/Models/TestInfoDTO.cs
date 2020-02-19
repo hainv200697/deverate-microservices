@@ -40,7 +40,7 @@ namespace TestManagementServices.Models
 
         public TestInfoDTO(Test test, string configTitle, string name, string applicantName)
         {
-            this.configId = test.ConfigId;
+            this.configId = test.SemesterId;
             this.accountId = test.AccountId;
             this.testId = test.TestId;
             this.title = configTitle;
@@ -52,7 +52,7 @@ namespace TestManagementServices.Models
 
         public TestInfoDTO(Test test)
         {
-            this.configId = test.ConfigId;
+            this.configId = test.SemesterId;
             this.accountId = test.AccountId;
             this.testId = test.TestId;
             this.code = test.Code;
