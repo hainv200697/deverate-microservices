@@ -7,17 +7,25 @@ namespace MailingServices.Models
     {
         public Rank()
         {
-            ConfigurationRank = new HashSet<ConfigurationRank>();
-            Statistic = new HashSet<Statistic>();
+            Account = new HashSet<Account>();
+            CatalogueInRank = new HashSet<CatalogueInRank>();
+            RankInSemester = new HashSet<RankInSemester>();
+            TestPotentialRank = new HashSet<Test>();
+            TestRank = new HashSet<Test>();
         }
 
         public int RankId { get; set; }
+        public int? CompanyId { get; set; }
         public string Name { get; set; }
-        public DateTime? CreateAt { get; set; }
-        public DateTime? UpdateAt { get; set; }
+        public DateTime CreateDate { get; set; }
         public bool IsActive { get; set; }
+        public bool IsDefault { get; set; }
 
-        public virtual ICollection<ConfigurationRank> ConfigurationRank { get; set; }
-        public virtual ICollection<Statistic> Statistic { get; set; }
+        public virtual Company Company { get; set; }
+        public virtual ICollection<Account> Account { get; set; }
+        public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
+        public virtual ICollection<RankInSemester> RankInSemester { get; set; }
+        public virtual ICollection<Test> TestPotentialRank { get; set; }
+        public virtual ICollection<Test> TestRank { get; set; }
     }
 }

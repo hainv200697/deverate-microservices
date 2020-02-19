@@ -8,18 +8,21 @@ namespace MailingServices.Models
         public Company()
         {
             Account = new HashSet<Account>();
-            CatalogueInCompany = new HashSet<CatalogueInCompany>();
+            Catalogue = new HashSet<Catalogue>();
+            Rank = new HashSet<Rank>();
+            Semester = new HashSet<Semester>();
         }
 
         public int CompanyId { get; set; }
         public string Name { get; set; }
         public string Address { get; set; }
-        public DateTime? CreateAt { get; set; }
+        public DateTime CreateDate { get; set; }
         public string Phone { get; set; }
-        public string Fax { get; set; }
         public bool IsActive { get; set; }
 
         public virtual ICollection<Account> Account { get; set; }
-        public virtual ICollection<CatalogueInCompany> CatalogueInCompany { get; set; }
+        public virtual ICollection<Catalogue> Catalogue { get; set; }
+        public virtual ICollection<Rank> Rank { get; set; }
+        public virtual ICollection<Semester> Semester { get; set; }
     }
 }
