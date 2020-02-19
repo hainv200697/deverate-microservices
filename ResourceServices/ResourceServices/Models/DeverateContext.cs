@@ -19,16 +19,16 @@ namespace ResourceServices.Models
         public virtual DbSet<Answer> Answer { get; set; }
         public virtual DbSet<Applicant> Applicant { get; set; }
         public virtual DbSet<Catalogue> Catalogue { get; set; }
-        public virtual DbSet<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
         public virtual DbSet<CatalogueInRank> CatalogueInRank { get; set; }
+        public virtual DbSet<CatalogueInSemester> CatalogueInSemester { get; set; }
         public virtual DbSet<Company> Company { get; set; }
-        public virtual DbSet<Configuration> Configuration { get; set; }
         public virtual DbSet<DetailResult> DetailResult { get; set; }
         public virtual DbSet<Question> Question { get; set; }
         public virtual DbSet<QuestionInTest> QuestionInTest { get; set; }
         public virtual DbSet<Rank> Rank { get; set; }
-        public virtual DbSet<RankInConfig> RankInConfig { get; set; }
+        public virtual DbSet<RankInSemester> RankInSemester { get; set; }
         public virtual DbSet<Role> Role { get; set; }
+        public virtual DbSet<Semester> Semester { get; set; }
         public virtual DbSet<Test> Test { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -127,24 +127,6 @@ namespace ResourceServices.Models
                     .HasConstraintName("FK_CompanyCatalogue_Company");
             });
 
-            modelBuilder.Entity<CatalogueInConfiguration>(entity =>
-            {
-                entity.HasKey(e => e.CatalogueInConfigId)
-                    .HasName("PK_CatalogueInConfiguration_1");
-
-                entity.HasOne(d => d.Catalogue)
-                    .WithMany(p => p.CatalogueInConfiguration)
-                    .HasForeignKey(d => d.CatalogueId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CatalogueInConfiguration_CompanyCatalogue");
-
-                entity.HasOne(d => d.Config)
-                    .WithMany(p => p.CatalogueInConfiguration)
-                    .HasForeignKey(d => d.ConfigId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_CatalogueInConfiguration_Configuration");
-            });
-
             modelBuilder.Entity<CatalogueInRank>(entity =>
             {
                 entity.HasKey(e => new { e.CatalogueId, e.RankId });
@@ -162,6 +144,21 @@ namespace ResourceServices.Models
                     .HasConstraintName("FK_CatalogueInRank_Rank");
             });
 
+            modelBuilder.Entity<CatalogueInSemester>(entity =>
+            {
+                entity.HasOne(d => d.Catalogue)
+                    .WithMany(p => p.CatalogueInSemester)
+                    .HasForeignKey(d => d.CatalogueId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CatalogueInConfiguration_CompanyCatalogue");
+
+                entity.HasOne(d => d.Semester)
+                    .WithMany(p => p.CatalogueInSemester)
+                    .HasForeignKey(d => d.SemesterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_CatalogueInConfiguration_Configuration");
+            });
+
             modelBuilder.Entity<Company>(entity =>
             {
                 entity.Property(e => e.Address)
@@ -177,30 +174,13 @@ namespace ResourceServices.Models
                 entity.Property(e => e.Phone).HasMaxLength(250);
             });
 
-            modelBuilder.Entity<Configuration>(entity =>
-            {
-                entity.HasKey(e => e.ConfigId);
-
-                entity.Property(e => e.CreateDate).HasColumnType("datetime");
-
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasMaxLength(250);
-
-                entity.HasOne(d => d.Company)
-                    .WithMany(p => p.Configuration)
-                    .HasForeignKey(d => d.CompanyId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Configuration_Company");
-            });
-
             modelBuilder.Entity<DetailResult>(entity =>
             {
-                entity.HasKey(e => new { e.TestId, e.CatalogueInConfigId });
+                entity.HasKey(e => new { e.TestId, e.CatalogueInSemesterId });
 
-                entity.HasOne(d => d.CatalogueInConfig)
+                entity.HasOne(d => d.CatalogueInSemester)
                     .WithMany(p => p.DetailResult)
-                    .HasForeignKey(d => d.CatalogueInConfigId)
+                    .HasForeignKey(d => d.CatalogueInSemesterId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_DetailResult_CatalogueInConfiguration1");
 
@@ -263,22 +243,22 @@ namespace ResourceServices.Models
                     .HasConstraintName("FK_CompanyRank_Company");
             });
 
-            modelBuilder.Entity<RankInConfig>(entity =>
+            modelBuilder.Entity<RankInSemester>(entity =>
             {
-                entity.HasKey(e => new { e.RankId, e.ConfigId })
+                entity.HasKey(e => new { e.RankId, e.SemesterId })
                     .HasName("PK_RankInConfig_1");
 
-                entity.HasOne(d => d.Config)
-                    .WithMany(p => p.RankInConfig)
-                    .HasForeignKey(d => d.ConfigId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_RankInConfig_Configuration");
-
                 entity.HasOne(d => d.Rank)
-                    .WithMany(p => p.RankInConfig)
+                    .WithMany(p => p.RankInSemester)
                     .HasForeignKey(d => d.RankId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_RankInConfig_Rank");
+
+                entity.HasOne(d => d.Semester)
+                    .WithMany(p => p.RankInSemester)
+                    .HasForeignKey(d => d.SemesterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_RankInConfig_Configuration");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -286,6 +266,21 @@ namespace ResourceServices.Models
                 entity.Property(e => e.RoleName)
                     .IsRequired()
                     .HasMaxLength(250);
+            });
+
+            modelBuilder.Entity<Semester>(entity =>
+            {
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.Title)
+                    .IsRequired()
+                    .HasMaxLength(250);
+
+                entity.HasOne(d => d.Company)
+                    .WithMany(p => p.Semester)
+                    .HasForeignKey(d => d.CompanyId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Configuration_Company");
             });
 
             modelBuilder.Entity<Test>(entity =>
@@ -318,12 +313,6 @@ namespace ResourceServices.Models
                     .HasForeignKey(d => d.ApplicantId)
                     .HasConstraintName("FK_Test_Applicant");
 
-                entity.HasOne(d => d.Config)
-                    .WithMany(p => p.Test)
-                    .HasForeignKey(d => d.ConfigId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Test_Configuration");
-
                 entity.HasOne(d => d.PotentialRank)
                     .WithMany(p => p.TestPotentialRank)
                     .HasForeignKey(d => d.PotentialRankId)
@@ -333,6 +322,12 @@ namespace ResourceServices.Models
                     .WithMany(p => p.TestRank)
                     .HasForeignKey(d => d.RankId)
                     .HasConstraintName("FK_Test_CompanyRank");
+
+                entity.HasOne(d => d.Semester)
+                    .WithMany(p => p.Test)
+                    .HasForeignKey(d => d.SemesterId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Test_Configuration");
             });
         }
     }

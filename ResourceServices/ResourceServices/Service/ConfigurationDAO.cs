@@ -15,7 +15,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
+                return db.Semester.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -23,7 +23,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
+                return db.Semester.Include(a => a.Company).Where(c => c.CompanyId == companyId && c.Type == type).Select(c => new ConfigurationDTO(c)).OrderByDescending(x => x.configId).ToList();
             }
         }
 
@@ -31,7 +31,7 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                return db.Configuration.Where(x => x.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
+                return db.Semester.Where(x => x.CompanyId == companyId && x.IsActive == true && x.Type == true).Select(x => new ConfigurationDTO(x)).ToList();
             }
         }
 
@@ -40,14 +40,14 @@ namespace ResourceServices.Service
             using (DeverateContext db = new DeverateContext())
             {
 
-                Configuration configuration = new Configuration();
+                Semester configuration = new Semester();
 
-                var newLstCatalougeInConfig = new List<CatalogueInConfiguration>();
-                var newLstRankInConfig = new List<RankInConfig>();
+                var newLstCatalougeInConfig = new List<CatalogueInSemester>();
+                var newLstRankInConfig = new List<RankInSemester>();
 
                 foreach (var item in configurationDTO.catalogueInConfigurations)
                 {
-                    var catalougeInConfig = new CatalogueInConfiguration
+                    var catalougeInConfig = new CatalogueInSemester
                     {
                         CatalogueId = item.catalogueId,
                         WeightPoint = item.weightPoint,
@@ -59,7 +59,7 @@ namespace ResourceServices.Service
 
                 foreach (var item in configurationDTO.rankInConfigs)
                 {
-                    var rankInConfig = new RankInConfig
+                    var rankInConfig = new RankInSemester
                     {
                         RankId = item.rankId,
                         Point = item.point,
@@ -76,9 +76,9 @@ namespace ResourceServices.Service
                 configuration.Title = configurationDTO.title;
                 configuration.Type = configurationDTO.type;
                 configuration.IsActive = true;
-                configuration.CatalogueInConfiguration = newLstCatalougeInConfig;
-                configuration.RankInConfig = newLstRankInConfig;
-                db.Configuration.Add(configuration);
+                configuration.CatalogueInSemester = newLstCatalougeInConfig;
+                configuration.RankInSemester = newLstRankInConfig;
+                db.Semester.Add(configuration);
                 db.SaveChanges();
             }
         }
@@ -87,12 +87,12 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                var config = db.Configuration
-                    .Include(c => c.CatalogueInConfiguration)
+                var config = db.Semester
+                    .Include(c => c.CatalogueInSemester)
                     .ThenInclude(c => c.Catalogue)
-                    .Include(c => c.RankInConfig)
+                    .Include(c => c.RankInSemester)
                     .ThenInclude(c => c.Rank)
-                    .Where(c => c.ConfigId == configId)
+                    .Where(c => c.SemesterId == configId)
                     .Select(c => new ConfigurationDTO(c));
                 return config.FirstOrDefault();
             }
@@ -102,8 +102,8 @@ namespace ResourceServices.Service
         {
             using (DeverateContext db = new DeverateContext())
             {
-                db.Configuration
-                    .Where(x => configIds.Contains(x.ConfigId))
+                db.Semester
+                    .Where(x => configIds.Contains(x.SemesterId))
                     .ToList()
                     .ForEach(x => x.IsActive = isActive);
                 db.SaveChanges();
