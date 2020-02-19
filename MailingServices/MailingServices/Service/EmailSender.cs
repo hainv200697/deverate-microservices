@@ -74,7 +74,7 @@ namespace MailingServices.Service
                 htmlBody = htmlBody.Replace("[title]", testMailDTO.title);
                 htmlBody = htmlBody.Replace("[StartDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.startDate.AddHours(7)));
                 htmlBody = htmlBody.Replace("[EndDate]", String.Format("{0:d/M/yyyy HH:mm:ss}", testMailDTO.endDate.AddHours(7)));
-                htmlBody = htmlBody.Replace("[url]", "http://deverate-system.s3-website-ap-southeast-1.amazonaws.com/test/" + testMailDTO.testId);
+                htmlBody = htmlBody.Replace("[url]", "http://cdn.deverate.xyz/test/" + testMailDTO.testId);
                 htmlBody = htmlBody.Replace("[code]", testMailDTO.code);
                 str.Close();
                 SendMailAsync(testMailDTO.email, subject, htmlBody);
