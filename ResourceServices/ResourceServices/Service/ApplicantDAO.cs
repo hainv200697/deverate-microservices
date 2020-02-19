@@ -38,7 +38,7 @@ namespace AuthenServices.Service
         {
             using (DeverateContext context = new DeverateContext())
             {
-                int configId = context.Configuration.Where(c => c.IsActive == true && c.Type == false).Select(x => x.ConfigId).FirstOrDefault();
+                int configId = context.Semester.Where(c => c.IsActive == true && c.Type == false).Select(x => x.SemesterId).FirstOrDefault();
                 return configId;
             }
 

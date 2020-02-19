@@ -22,10 +22,10 @@ namespace ResourceServices.Model
 
         }
 
-        public CatalogueInConfigurationDTO(CatalogueInConfiguration catalogueInConfiguration)
+        public CatalogueInConfigurationDTO(CatalogueInSemester catalogueInConfiguration)
         {
-            this.catalogueInConfigId = catalogueInConfiguration.CatalogueInConfigId;
-            this.configId = catalogueInConfiguration.ConfigId;
+            this.catalogueInConfigId = catalogueInConfiguration.CatalogueInSemesterId;
+            this.configId = catalogueInConfiguration.SemesterId;
             this.catalogueId = catalogueInConfiguration.CatalogueId;
             this.weightPoint = catalogueInConfiguration.WeightPoint;
             this.numberQuestion = catalogueInConfiguration.NumberQuestion;

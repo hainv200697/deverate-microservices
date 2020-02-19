@@ -16,7 +16,7 @@ namespace ResourceServices.Service
             using (DeverateContext context = new DeverateContext())
             {
                 var approve = context.Test.Include(x => x.Rank).Include(x => x.Account).ThenInclude(x => x.Rank)
-                    .Where(x => x.ConfigId == configId && x.IsApprove == null && x.FinishTime != null && x.RankId != null)
+                    .Where(x => x.SemesterId == configId && x.IsApprove == null && x.FinishTime != null && x.RankId != null)
                     .Select(x => new ApproveRankDTO
                     {
                         testId = x.TestId,
@@ -42,7 +42,7 @@ namespace ResourceServices.Service
                     test.Account.RankId = test.RankId;
                 }
                 context.Test.Update(test);
-                context.Test.Where(x => x.ConfigId < test.ConfigId && x.AccountId == test.AccountId && x.IsApprove == null).ToList().ForEach(x=> x.IsApprove = false);
+                context.Test.Where(x => x.SemesterId < test.SemesterId && x.AccountId == test.AccountId && x.IsApprove == null).ToList().ForEach(x=> x.IsApprove = false);
                 context.SaveChanges();
             }
         }

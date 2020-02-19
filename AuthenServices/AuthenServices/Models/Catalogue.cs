@@ -7,8 +7,8 @@ namespace AuthenServices.Models
     {
         public Catalogue()
         {
-            CatalogueInConfiguration = new HashSet<CatalogueInConfiguration>();
             CatalogueInRank = new HashSet<CatalogueInRank>();
+            CatalogueInSemester = new HashSet<CatalogueInSemester>();
             Question = new HashSet<Question>();
         }
 
@@ -21,8 +21,8 @@ namespace AuthenServices.Models
         public bool IsDefault { get; set; }
 
         public virtual Company Company { get; set; }
-        public virtual ICollection<CatalogueInConfiguration> CatalogueInConfiguration { get; set; }
         public virtual ICollection<CatalogueInRank> CatalogueInRank { get; set; }
+        public virtual ICollection<CatalogueInSemester> CatalogueInSemester { get; set; }
         public virtual ICollection<Question> Question { get; set; }
     }
 }

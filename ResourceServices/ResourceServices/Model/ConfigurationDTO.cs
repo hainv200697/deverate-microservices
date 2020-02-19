@@ -25,9 +25,9 @@ namespace ResourceServices.Model
         {
 
         }
-        public ConfigurationDTO(Configuration configuration)
+        public ConfigurationDTO(Semester configuration)
         {
-            this.configId = configuration.ConfigId;
+            this.configId = configuration.SemesterId;
             this.companyId = configuration.CompanyId;
             this.title = configuration.Title;
             this.createDate = configuration.CreateDate;
@@ -35,8 +35,8 @@ namespace ResourceServices.Model
             this.duration = configuration.Duration;
             this.type = configuration.Type;
             this.isActive = configuration.IsActive;
-            this.catalogueInConfigurations = configuration.CatalogueInConfiguration.Select(x => new CatalogueInConfigurationDTO(x)).ToList();
-            this.rankInConfigs = configuration.RankInConfig.Select(x => new RankInConfigDTO(x)).ToList();
+            this.catalogueInConfigurations = configuration.CatalogueInSemester.Select(x => new CatalogueInConfigurationDTO(x)).ToList();
+            this.rankInConfigs = configuration.RankInSemester.Select(x => new RankInConfigDTO(x)).ToList();
         }
     }
 }

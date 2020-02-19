@@ -16,7 +16,7 @@ namespace AuthenServices.Service
                 var accounts = db.Account
                                 .Where(a => a.CompanyId == companyId && a.RoleId == AppConstrain.ROLE_EMP &&
                                     !db.Test
-                                        .Where(t => t.ConfigId == configId)
+                                        .Where(t => t.SemesterId == configId)
                                         .Select(t => t.AccountId)
                                         .Contains(a.AccountId))
                                 .Select(a => new AccountDTO(a))

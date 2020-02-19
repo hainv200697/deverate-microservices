@@ -19,10 +19,10 @@ namespace ResourceServices.Model
 
         }
 
-        public RankInConfigDTO(RankInConfig rankInConfig)
+        public RankInConfigDTO(RankInSemester rankInConfig)
         {
             this.rankId = rankInConfig.RankId;
-            this.configId = rankInConfig.ConfigId;
+            this.configId = rankInConfig.SemesterId;
             this.isActive = rankInConfig.IsActive;
             this.point = rankInConfig.Point;
             this.rank = rankInConfig.Rank.Name;

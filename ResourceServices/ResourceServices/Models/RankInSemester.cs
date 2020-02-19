@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace ResourceServices.Models
 {
-    public partial class RankInConfig
+    public partial class RankInSemester
     {
         public int RankId { get; set; }
-        public int ConfigId { get; set; }
+        public int SemesterId { get; set; }
         public bool IsActive { get; set; }
         public double Point { get; set; }
 
-        public virtual Configuration Config { get; set; }
         public virtual Rank Rank { get; set; }
+        public virtual Semester Semester { get; set; }
     }
 }
