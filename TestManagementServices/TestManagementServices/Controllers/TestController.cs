@@ -180,11 +180,11 @@ namespace TestManagementServices.Controllers
         }
 
         [HttpPost("SendTestCode")]
-        public IActionResult SendTestCode([FromBody]List<int> listestResendCode)
+        public IActionResult SendTestCode([FromBody]List<int> listestResendCode,bool isEmployee)
         {
             try
             {
-                SystemDAO.SendMailQuizCode(listestResendCode, true);
+                SystemDAO.SendMailQuizCode(listestResendCode, isEmployee);
                 return Ok();
             }
             catch (Exception)

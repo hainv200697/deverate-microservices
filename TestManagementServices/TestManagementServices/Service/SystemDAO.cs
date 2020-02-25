@@ -1118,7 +1118,7 @@ namespace TestManagementServices.Service
                 }
                 else
                 {
-                    list = context.Test.Include(c => c.Semester).Include(a => a.Applicant).Where(x => listestResendCode.Contains(x.ApplicantId.Value))
+                    list = context.Test.Include(c => c.Semester).Include(a => a.Applicant).Where(x => listestResendCode.Contains(x.TestId))
                     .Select(x => new TestMailDTO(
                         x.Applicant.Email,
                         x.Applicant.Fullname,
