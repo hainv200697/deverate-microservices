@@ -50,6 +50,7 @@ namespace MailingServices.Service
             htmlBody = htmlBody.Replace("[passwordURL]", HttpUtility.UrlEncode(messageAccountDTO.Password));
             str.Close();
             SendMailAsync(messageAccountDTO.Email, subject, htmlBody);
+            Console.WriteLine(" [x] messageAccountDTO {0}", messageAccountDTO.Email);
         }
 
         public Task SendEmailAsync(string toEmail, string subject, string message)
@@ -78,6 +79,7 @@ namespace MailingServices.Service
                 htmlBody = htmlBody.Replace("[code]", testMailDTO.code);
                 str.Close();
                 SendMailAsync(testMailDTO.email, subject, htmlBody);
+                Console.WriteLine(" [x] messageAccountDTO {0}", testMailDTO.email);
             }
         }
 
