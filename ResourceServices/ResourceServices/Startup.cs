@@ -38,7 +38,7 @@ namespace Deverate
                 });
 
             //add Dbcontext
-            var connection = @"Server=deverate.cjd2ogwhqpge.ap-southeast-1.rds.amazonaws.com;Database=Deverate;User ID=deverate;Password=pass4deverate;Trusted_Connection=False;";
+            var connection = @"Server=deverate.ckp53lvgge9h.ap-southeast-1.rds.amazonaws.com;Database=Deverate;User ID=deverate;Password=pass4deverate;Trusted_Connection=False;";
             services.AddDbContext<DeverateContext>(options => options.UseSqlServer(connection));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
