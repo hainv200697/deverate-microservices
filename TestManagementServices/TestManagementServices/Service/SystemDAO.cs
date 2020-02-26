@@ -172,13 +172,8 @@ namespace TestManagementServices.Service
                 {
                     return Message.noApplicantException;
                 }
-                CreateTestForApplicant(applicants, con, startDate, endDate, oneForAll);
-                List<int> applicantIds = new List<int>();
-                foreach (ApplicantDTO applicant in applicants)
-                {
-                    applicantIds.Add(applicant.applicantId);
-                }
-                SendMailQuizCode(applicantIds, false);
+                List<int> testIds = CreateTestForApplicant(applicants, con, startDate, endDate, oneForAll);
+                SendMailQuizCode(testIds, false);
                 return null;
             }
         }
@@ -310,7 +305,7 @@ namespace TestManagementServices.Service
         /// <param name="applicants"></param>
         /// <param name="config"></param>
         /// <param name="oneForAll"></param>
-        public static void CreateTestForApplicant(List<ApplicantDTO> applicants, Semester config, DateTime startDate, DateTime endDate, bool oneForAll = false)
+        public static List<int> CreateTestForApplicant(List<ApplicantDTO> applicants, Semester config, DateTime startDate, DateTime endDate, bool oneForAll = false)
         {
             using (DeverateContext db = new DeverateContext())
             {
@@ -401,6 +396,7 @@ namespace TestManagementServices.Service
                 }
                 db.Test.AddRange(tests);
                 db.SaveChanges();
+                return tests.Select(t => t.TestId).ToList();
             }
         }
 
