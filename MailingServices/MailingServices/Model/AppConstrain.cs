@@ -9,6 +9,6 @@ namespace MailingServices.Model
     {
         public const string sender = "anhnhse62597@fpt.edu.vn";
         public const string senderPass = "Darkknightst123";
-        public const string hostname = "34.87.45.18";
+        public const string hostname = "34.87.145.45";
     }
 }

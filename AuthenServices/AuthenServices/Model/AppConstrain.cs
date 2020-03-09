@@ -7,6 +7,6 @@ namespace AuthenServices.Model
 {
     public class AppConstrain
     {
-        public const string hostname = "34.87.45.18";
+        public const string hostname = "34.87.145.45";
     }
 }
