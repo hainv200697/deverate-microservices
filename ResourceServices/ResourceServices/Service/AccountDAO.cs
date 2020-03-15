@@ -14,12 +14,13 @@ namespace AuthenServices.Service
             using(DeverateContext db = new DeverateContext())
             {
                 var accounts = db.Account
+                                .Include(x => x.Rank)
                                 .Where(a => a.CompanyId == companyId && a.RoleId == AppConstrain.ROLE_EMP &&
                                     !db.Test
                                         .Where(t => t.SemesterId == configId)
                                         .Select(t => t.AccountId)
                                         .Contains(a.AccountId))
-                                .Select(a => new AccountDTO(a))
+                                .Select(a => new AccountDTO(a,true))
                                 .ToList();
                 return accounts;
             }
