@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: 	resource-5fdd55dc84-gzncs
+  name: 	resource-5fdd55dc84-lm96x
 spec:
   type: ClusterIP
   selector:
