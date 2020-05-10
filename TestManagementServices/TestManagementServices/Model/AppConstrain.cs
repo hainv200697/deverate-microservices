@@ -37,7 +37,7 @@ namespace TestManagementServices.Model
         public const int SCALE_UP_NUMB = 100;
         public const int SCALE_DOWN_NUMB = 1;
 
-        public const string HOSTNAME = "34.87.38.204:5672";
+        public const string HOSTNAME = "34.87.38.204";
 
         public static double RoundDownNumber(double value, int scaleUp)
         {
