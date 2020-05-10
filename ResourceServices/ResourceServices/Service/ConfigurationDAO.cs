@@ -73,12 +73,59 @@ namespace ResourceServices.Service
                 configuration.CreateDate = DateTime.UtcNow;
                 configuration.ExpiredDays = configurationDTO.expiredDays;
                 configuration.Duration = configurationDTO.duration;
-                configuration.Title = configurationDTO.title;
                 configuration.Type = configurationDTO.type;
                 configuration.IsActive = true;
                 configuration.CatalogueInSemester = newLstCatalougeInConfig;
                 configuration.RankInSemester = newLstRankInConfig;
                 db.Semester.Add(configuration);
+                db.SaveChanges();
+            }
+        }
+
+        public static void CloneConfiguration(int configId, string title)
+        {
+            using (DeverateContext db = new DeverateContext())
+            {
+
+                Semester semester = db.Semester
+                    .Include(c => c.CatalogueInSemester)
+                    .Include(r => r.RankInSemester)
+                    .Where(x => x.SemesterId == configId).FirstOrDefault();
+                var cloneCatalougeInConfig = new List<CatalogueInSemester>();
+                foreach (var item in semester.CatalogueInSemester)
+                {
+                    var catalougeInConfig = new CatalogueInSemester
+                    {
+                        CatalogueId = item.CatalogueId,
+                        WeightPoint = item.WeightPoint,
+                        NumberQuestion = item.NumberQuestion,
+                        IsActive = true
+                    };
+                    cloneCatalougeInConfig.Add(catalougeInConfig);
+                }
+
+                var cloneRankInConfig = new List<RankInSemester>();
+                foreach (var item in semester.RankInSemester)
+                {
+                    var rankInConfig = new RankInSemester
+                    {
+                        RankId = item.RankId,
+                        Point = item.Point,
+                        IsActive = true
+                    };
+                    cloneRankInConfig.Add(rankInConfig);
+                }
+                Semester cloneSemester = new Semester();
+                cloneSemester.CompanyId = semester.CompanyId;
+                cloneSemester.Title = title;
+                cloneSemester.CreateDate = DateTime.UtcNow;
+                cloneSemester.ExpiredDays = semester.ExpiredDays;
+                cloneSemester.Duration = semester.Duration;
+                cloneSemester.Type = semester.Type;
+                cloneSemester.IsActive = true;
+                cloneSemester.CatalogueInSemester = cloneCatalougeInConfig;
+                cloneSemester.RankInSemester = cloneRankInConfig;
+                db.Semester.Add(cloneSemester);
                 db.SaveChanges();
             }
         }

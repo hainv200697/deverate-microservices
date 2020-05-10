@@ -84,6 +84,21 @@ namespace ResourceServices.Controllers
             }
         }
 
+        [Route("CloneConfiguration")]
+        [HttpPost]
+        public ActionResult CloneConfiguration(int configId, String title)
+        {
+            try
+            {
+                ConfigurationDAO.CloneConfiguration(configId, title);
+                return Ok(Message.createConfigSucceed);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500);
+            }
+        }
+
         [Route("ChangeStatusConfiguration")]
         [HttpPut]
         public IActionResult ChangeStatusConfiguration([FromBody] List<int> configIds, bool isActive)
